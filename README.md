@@ -3,7 +3,7 @@
 **Real-Time Anti-Phishing Ecosystem — Live Dashboard** · ISCOMFEST 2026
 
 Penipuan lewat link palsu, nomor tak dikenal, dan file APK "undangan/paket/tilang" terus memakan korban di Indonesia.
-inSpectre membantu siapa pun memeriksa ketiganya **sebelum** terlambat, lewat situs web dan bot Telegram,
+inSpectre membantu siapa pun memeriksa ketiganya **sebelum** terlambat, lewat situs web,
 dengan hasil yang tampil real-time di dashboard.
 
 ## Fitur
