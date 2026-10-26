@@ -689,3 +689,79 @@ html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .b
   .nexus-card { transition:none; }
   .nexus-card:hover { transform:none; }
 }
+
+/* World Monitor - interactive Indonesia map */
+.world-map-frame {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(69, 214, 232, 0.24);
+  border-radius: 14px;
+  background: #0b1420;
+}
+.world-map-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 14px 16px;
+  color: #dceaf5;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+.world-map-toolbar span {
+  color: #8fa7ba;
+  letter-spacing: 0;
+}
+.world-leaflet-map {
+  z-index: 1;
+  background: #101c2a;
+}
+.world-leaflet-map .leaflet-container {
+  font-family: inherit;
+}
+.world-leaflet-map .leaflet-popup-content-wrapper,
+.world-leaflet-map .leaflet-popup-tip {
+  background: #101c2a;
+  color: #e6f1fa;
+}
+.world-leaflet-map .leaflet-popup-content {
+  line-height: 1.7;
+}
+.world-map-legend {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  padding: 12px 16px;
+  color: #b8cad8;
+  font-size: 12px;
+}
+.world-map-legend strong {
+  color: #e6f1fa;
+}
+.world-map-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.world-map-legend i {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+.world-observation {
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+@media (max-width: 600px) {
+  .world-map-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .world-map-legend {
+    gap: 10px 14px;
+  }
+}
