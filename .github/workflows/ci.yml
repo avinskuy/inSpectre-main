@@ -2,7 +2,7 @@ name: inSpectre CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, production-hardening]
   pull_request:
     branches: [main]
 
