@@ -48,3 +48,19 @@ test('keyword hanya dicek di path/query, bukan di nama domain', () => {
   const r = analyzeLink('https://login-kopi.com/menu');
   assert.ok(!r.findings.some((f) => f.rule === 'PHISH_KEYWORD'));
 });
+
+
+test('brand panjang dengan satu salah eja terdeteksi', () => {
+  const r = analyzeLink('https://tokopedi-login.example/');
+  assert.ok(r.findings.some((f) => f.rule === 'BRAND_IMPERSONATION'));
+});
+
+test('nama brand yang hanya menjadi bagian kata tidak otomatis cocok', () => {
+  const r = analyzeLink('https://mandirixyz.example/');
+  assert.ok(!r.findings.some((f) => f.rule === 'BRAND_IMPERSONATION'));
+});
+
+test('nama bank yang hanya muncul di path tidak memicu deteksi brand', () => {
+  const r = analyzeLink('https://example.org/bca-login');
+  assert.ok(!r.findings.some((f) => f.rule === 'BRAND_IMPERSONATION'));
+});
