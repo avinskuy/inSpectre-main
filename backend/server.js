@@ -4,7 +4,7 @@ const cors = require('cors');
 const config = require('./config');
 const { getStats, getRecentScans } = require('./db');
 const { initSocket, emitThreat, emitStats } = require('./emitter');
-const { checkLink } = require('./linkChecker');
+const { checkLinkWithReputation } = require('./safeLinkChecker');
 const { checkNumber, isValidPhone } = require('./numberChecker');
 const { getNews } = require('./news');
 const { analyzeArchive } = require('./archiveScanner');
@@ -167,21 +167,24 @@ app.post('/api/scan-file', scanLimiter, express.raw({ type: 'application/octet-s
   }
 });
 
-app.post('/api/scan', scanLimiter, (req, res) => {
+app.post('/api/scan', scanLimiter, async (req, res) => {
   const { url } = req.body || {};
-  if (!url || typeof url !== 'string') {
+  if (!url || typeof url !== 'string' || !url.trim()) {
     return res.status(400).json({ error: 'Parameter "url" wajib diisi' });
   }
   if (url.length > 2048) {
     return res.status(400).json({ error: 'URL terlalu panjang (maks 2048 karakter)' });
   }
 
-  const target = /^https?:\/\//i.test(url.trim()) ? url.trim() : `https://${url.trim()}`;
+  const target = /^https?:\/\//i.test(url.trim())
+    ? url.trim()
+    : `https://${url.trim()}`;
 
   try {
-    const result = checkLink(target); // checkLink sudah mencatat ke log
+    const result = await checkLinkWithReputation(target);
     emitThreat({ type: 'link', ...result });
     emitStats();
+    res.set('Cache-Control', 'no-store');
     res.json(result);
   } catch (e) {
     console.error('scan error:', e.message);
