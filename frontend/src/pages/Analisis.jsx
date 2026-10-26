@@ -71,7 +71,7 @@ function mapResult(data, kind = 'link') {
     });
   }
 
-  return { level, score, threatScore: Number(data.threatScore) || 0, findings, explanation: data.explanation || null };
+  return { level, score, threatScore: Number(data.threatScore) || 0, findings, explanation: data.explanation || null, reputation: data.reputation || null };
 }
 
 const CTA = {
@@ -208,7 +208,7 @@ export default function Analisis() {
                 />
               ))}
             </div>
-            {result.kind === 'link' && <ExplainabilityPanel explanation={result.explanation} threatScore={result.threatScore} findings={result.findings} />}
+            {result.kind === 'link' && <ExplainabilityPanel explanation={result.explanation} threatScore={result.threatScore} findings={result.findings} reputation={result.reputation} />}
           </Card>
         )}
       </div>
