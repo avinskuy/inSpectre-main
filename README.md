@@ -59,3 +59,26 @@ Tanpa `aapt`, bot akan menjawab bahwa scan APK dilewati.
 ## Lisensi
 
 Lihat [LICENSE](LICENSE).
+
+### Reputasi URL — Google Safe Browsing
+
+Mesin pemeriksaan tautan menggabungkan heuristik lokal dengan pemeriksaan
+reputasi URL melalui Google Safe Browsing Lookup API v4.
+
+- `threat`: URL cocok dengan kategori ancaman yang dikembalikan API; hindari
+  membuka tautan dan memasukkan informasi pribadi.
+- `no_match`: API tidak mengembalikan kecocokan ancaman untuk URL tersebut.
+  Ini **bukan jaminan bahwa URL aman**.
+- `unavailable`: pemeriksaan reputasi tidak tersedia, misalnya karena API key
+  belum dikonfigurasi, batas waktu habis, atau gangguan jaringan/API. Hasil
+  heuristik lokal tetap menjadi lapisan pemeriksaan terpisah.
+
+API key harus disimpan di environment backend server, bukan di frontend,
+repository, respons API, atau log. Pada deployment systemd, simpan variabel
+`GOOGLE_SAFE_BROWSING_API_KEY` dalam file environment yang hanya dapat dibaca
+oleh administrator yang berwenang.
+
+Google Safe Browsing merupakan pemeriksaan reputasi, bukan pemindaian penuh
+isi situs. Hasil dapat tidak mencakup domain baru atau ancaman yang belum
+terdaftar. Gunakan layanan sesuai ketentuan Google yang berlaku untuk jenis
+penggunaan proyek.
