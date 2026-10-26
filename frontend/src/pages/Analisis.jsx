@@ -50,7 +50,7 @@ const RULE_DETAIL = {
 function mapResult(data, kind = 'link') {
   const level = LEVEL_MAP[data.riskLevel] || 'curiga';
   
-  const score = Math.max(0, 100 - (Number(data.threatScore) || 0));
+  const score = Math.max(0, Math.min(100, Number(data.threatScore) || 0));
 
   const findings = (data.findings || []).map((f) => ({
     rule: f.rule,
@@ -66,8 +66,8 @@ function mapResult(data, kind = 'link') {
   if (findings.length === 0) {
     findings.push({
       severity: 'rendah',
-      title: kind === 'number' ? 'Belum ada laporan komunitas' : 'Tidak ada indikator phishing',
-      detail: kind === 'number' ? 'Belum ada laporan yang tercatat untuk nomor ini. Ini bukan bukti bahwa nomor tersebut aman.' : 'Struktur URL terlihat normal. Tetap waspada terhadap ejaan yang mirip situs resmi.',
+      title: kind === 'number' ? 'Belum ada laporan komunitas' : 'Belum ditemukan indikator risiko yang dikenali',
+      detail: kind === 'number' ? 'Belum ada laporan yang tercatat untuk nomor ini. Ini bukan bukti bahwa nomor tersebut aman.' : 'Pemeriksaan heuristik tidak menemukan pola yang dikenali. Ini bukan bukti bahwa situs aman; reputasi domain dan isi halaman belum tentu terverifikasi.',
     });
   }
 
@@ -75,7 +75,7 @@ function mapResult(data, kind = 'link') {
 }
 
 const CTA = {
-  aman: 'Situs ini relatif aman. Tetap waspada dan jangan bagikan data sensitif kalau ragu.',
+  aman: 'Belum ada indikator risiko yang dikenali oleh aturan aktif. Ini bukan jaminan aman atau verifikasi reputasi situs. Pastikan domain melalui kanal resmi sebelum login atau memasukkan data.',
   curiga: 'Jangan login atau isi data pribadi di situs ini sebelum memastikan keasliannya.',
   berbahaya: 'Sangat disarankan TIDAK membuka atau memasukkan data apa pun ke situs ini.',
 };
@@ -186,7 +186,7 @@ export default function Analisis() {
               <div>
                 <RiskBadge level={result.level} />
                 <div>
-                <p className="text-xs text-cyber-muted">Skor keamanan indikatif (bukan probabilitas)</p>
+                <p className="text-xs text-cyber-muted">{result.kind === 'number' ? 'Skor keamanan indikatif (bukan probabilitas)' : 'Skor indikator risiko terdeteksi (0–100; bukan probabilitas)'}</p>
                 <p className="mt-2 text-sm font-medium">{result.note || (result.explanation?.assessment === 'INPUT_TIDAK_VALID' ? 'Alamat tidak dapat dianalisis. Perbaiki format URL sebelum melanjutkan.' : CTA[result.level])}</p>
               </div>
               </div>
