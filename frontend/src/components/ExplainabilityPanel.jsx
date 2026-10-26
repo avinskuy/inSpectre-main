@@ -1,4 +1,4 @@
-export default function ExplainabilityPanel({ explanation, threatScore = 0, findings = [] }) {
+export default function ExplainabilityPanel({ explanation, threatScore = 0, findings = [], reputation = null }) {
   if (!explanation) return null;
   const total = Math.max(0, Math.min(100, Number(threatScore) || 0));
   const breakdown = explanation.scoreBreakdown || findings.map((f) => ({ rule: f.rule, points: f.points || 0, risk: f.risk, evidence: f.evidence }));
@@ -14,6 +14,28 @@ export default function ExplainabilityPanel({ explanation, threatScore = 0, find
         <span className="rounded-full border border-cyber-border px-2.5 py-1 text-xs">Model {explanation.modelVersion || 'heuristik'}</span>
       </div>
       <p className="mt-3 text-sm text-cyber-muted">{explanation.summary}</p>
+      {reputation && (
+        <div className="mt-4 rounded-lg border border-cyber-border p-3">
+          <h4 className="text-sm font-semibold">Reputasi URL — Google Safe Browsing</h4>
+          {reputation.status === 'threat' ? (
+            <div className="mt-2">
+              <p className="text-sm font-semibold text-red-400">Ancaman terdeteksi</p>
+              <p className="mt-1 text-xs text-cyber-muted">Google melaporkan URL ini sebagai ancaman. Hindari membuka tautan atau memasukkan data pribadi.</p>
+              {reputation.threats?.length > 0 && <p className="mt-1 break-words text-xs">Kategori: {reputation.threats.join(', ')}</p>}
+            </div>
+          ) : reputation.status === 'no_match' ? (
+            <div className="mt-2">
+              <p className="text-sm font-semibold text-cyber-safe">Tidak ada kecocokan ancaman</p>
+              <p className="mt-1 text-xs text-cyber-muted">Google Safe Browsing tidak menemukan kecocokan. Ini bukan jaminan situs aman.</p>
+            </div>
+          ) : (
+            <div className="mt-2">
+              <p className="text-sm font-semibold">Pemeriksaan reputasi tidak tersedia</p>
+              <p className="mt-1 text-xs text-cyber-muted">Hasil saat ini hanya mengandalkan indikator heuristik lokal; reputasi URL belum terverifikasi.</p>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         <div className="rounded-lg border border-cyber-border p-3">
