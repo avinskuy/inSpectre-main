@@ -7,6 +7,7 @@ const { initSocket, emitThreat, emitStats } = require('./emitter');
 const { checkLinkWithReputation } = require('./safeLinkChecker');
 const { checkNumber, isValidPhone } = require('./numberChecker');
 const { getNews } = require('./news');
+const { getHotspots } = require('./hotspots');
 const { analyzeArchive } = require('./archiveScanner');
 
 const app = express();
@@ -126,6 +127,24 @@ app.get('/api/news', async (req, res) => {
   } catch (e) {
     console.error('news error:', e.message);
     res.status(502).json({ articles: [], updatedAt: null, error: 'Berita belum dapat dimuat. Coba lagi beberapa saat.' });
+  }
+});
+
+
+app.get('/api/environment/hotspots', async (req, res) => {
+  try {
+    const result = await getHotspots();
+    res.set('Cache-Control', 'public, max-age=60');
+    res.json(result);
+  } catch (error) {
+    console.error('hotspots error:', error.name || 'Error');
+    res.status(502).json({
+      data: [],
+      source: 'NASA FIRMS',
+      status: 'unavailable',
+      updatedAt: null,
+      error: 'Data hotspot belum dapat dimuat.'
+    });
   }
 });
 
