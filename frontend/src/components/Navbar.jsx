@@ -4,7 +4,9 @@ import AccessibilityMenu from './AccessibilityMenu.jsx';
 import Drawer from './Drawer.jsx';
 
 const LINKS = [
-  { href: '#/', label: 'Home', icon: '🏠' },
+  { href: '#/', label: 'Nexus', icon: '⌂' },
+  { href: '#/security', label: 'Security Center', icon: '◈' },
+  { href: '#/world-monitor', label: 'World Monitor', icon: '◎' },
   { href: '#/analisis', label: 'Analisis', icon: '🔍' },
   { href: '#/dashboard', label: 'Dashboard', icon: '▦' },
   { href: '#/history', label: 'Riwayat', icon: '↺' },

@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import Navbar from './components/Navbar.jsx';
 import Home from './pages/Home.jsx';
+import Nexus from './pages/Nexus.jsx';
+import WorldMonitor from './pages/WorldMonitor.jsx';
 import Analisis from './pages/Analisis.jsx';
 import Edukasi from './pages/Edukasi.jsx';
 import History from './pages/History.jsx';
@@ -12,7 +14,9 @@ import BootScreen from './components/BootScreen.jsx';
 import FloatingAssistant from './components/FloatingAssistant.jsx';
 
 const PAGES = {
-  '#/': { Page: Home, title: 'inSpectre — Cek Phishing & Penipuan' },
+  '#/': { Page: Nexus, title: 'inSpectre Nexus — Intelligence Platform' },
+  '#/security': { Page: Home, title: 'Security Center — inSpectre' },
+  '#/world-monitor': { Page: WorldMonitor, title: 'World Monitor — inSpectre Nexus' },
   '#/analisis': { Page: Analisis, title: 'Analisis Keamanan — inSpectre' },
   // Alias kompatibilitas untuk tautan lama; File & QR sekarang berada di dalam Analisis.
   '#/tools': { Page: Analisis, title: 'Analisis Keamanan — inSpectre' },
