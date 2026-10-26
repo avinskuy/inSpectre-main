@@ -115,7 +115,45 @@ function analyzeLink(url) {
   }
 
   const labels = host.split(/[.\-]/).filter(Boolean);
-  const brandHit = BRANDS.find((brand) => brand.length <= 4 ? labels.includes(brand) : labels.some((label) => label.includes(brand)));
+
+  // Fuzzy matching dibatasi ke brand panjang untuk mengurangi false positive.
+  function editDistanceAtMostOne(a, b) {
+    if (a === b) return true;
+    if (Math.abs(a.length - b.length) > 1) return false;
+
+    let i = 0;
+    let j = 0;
+    let edits = 0;
+
+    while (i < a.length && j < b.length) {
+      if (a[i] === b[j]) {
+        i++;
+        j++;
+        continue;
+      }
+
+      edits++;
+      if (edits > 1) return false;
+
+      if (a.length > b.length) i++;
+      else if (b.length > a.length) j++;
+      else {
+        i++;
+        j++;
+      }
+    }
+
+    if (i < a.length || j < b.length) edits++;
+    return edits <= 1;
+  }
+
+  const brandHit = BRANDS.find((brand) =>
+    labels.some((label) =>
+      label === brand ||
+      (brand.length >= 5 && editDistanceAtMostOne(label, brand))
+    )
+  );
+
   if (brandHit) {
     add({ rule: 'BRAND_IMPERSONATION', risk: 'TINGGI', points: 35, category: 'identitas domain',
       desc: `Nama brand "${brandHit}" muncul pada domain yang tidak cocok dengan daftar izin`,
