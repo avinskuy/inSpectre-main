@@ -33,18 +33,65 @@ function categoryFor(text, fallback) {
 }
 function parseFeed(xml, feedCategory) {
   const blocks = xml.match(/<item(?:\s[^>]*)?>[\s\S]*?<\/item>/gi) || [];
+
   return blocks.map((item) => {
     const title = tagValue(item, 'title');
-    const link = tagValue(item, 'link') || (item.match(/<link[^>]*href=["']([^"']+)["']/i) || [])[1] || '';
-    const publishedRaw = tagValue(item, 'pubDate') || tagValue(item, 'published') || tagValue(item, 'updated');
-    const description = tagValue(item, 'description') || tagValue(item, 'summary');
-    const source = tagValue(item, 'source') || (() => { try { return new URL(link).hostname.replace(/^www\./, ''); } catch { return 'Sumber berita'; } })();
-    const publishedAt = publishedRaw && !Number.isNaN(Date.parse(publishedRaw)) ? new Date(publishedRaw).toISOString() : null;
+    const link = tagValue(item, 'link') ||
+      (item.match(/<link[^>]*href=["']([^"']+)["']/i) || [])[1] || '';
+
+    const publishedRaw =
+      tagValue(item, 'pubDate') ||
+      tagValue(item, 'published') ||
+      tagValue(item, 'updated');
+
+    const rawDescription =
+      tagValue(item, 'description') || tagValue(item, 'summary');
+
+    const sourceMatch = item.match(
+      /<source\b[^>]*\burl=["']([^"']+)["'][^>]*>([\s\S]*?)<\/source>/i
+    );
+
+    const sourceUrl = sourceMatch
+      ? decodeEntities(sourceMatch[1]).trim()
+      : '';
+
+    const sourceName = sourceMatch
+      ? decodeEntities(sourceMatch[2].replace(/<[^>]*>/g, '')).trim()
+      : '';
+
+    const description = rawDescription
+      .replace(/<[^>]*>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+
+    const source = sourceName || (() => {
+      try {
+        return new URL(link).hostname.replace(/^www\./, '');
+      } catch {
+        return 'Sumber berita';
+      }
+    })();
+
+    const publishedAt =
+      publishedRaw && !Number.isNaN(Date.parse(publishedRaw))
+        ? new Date(publishedRaw).toISOString()
+        : null;
+
     if (!title || !/^https?:\/\//i.test(link)) return null;
+
+    let publisherUrl = '';
+    try {
+      const parsed = new URL(sourceUrl);
+      if (parsed.protocol === 'https:' || parsed.protocol === 'http:') {
+        publisherUrl = parsed.href;
+      }
+    } catch {}
+
     return {
       id: link,
-      title: title.replace(/\s+-\s+[^-]+$/, (m) => m),
+      title,
       link,
+      publisherUrl,
       description: description.slice(0, 360),
       source: source.slice(0, 100),
       publishedAt,

@@ -90,7 +90,26 @@ export default function Berita() {
             <div className="flex items-center justify-between gap-2"><span className="rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-300">{article.category || 'Keamanan Digital'}</span><span className="text-right text-xs text-gray-500">{relativeTime(article.publishedAt)}</span></div>
             <h2 className="mt-4 text-lg font-bold leading-snug transition group-hover:text-emerald-700 dark:group-hover:text-emerald-300">{article.title}</h2>
             {article.description && <p className="mt-3 line-clamp-4 text-sm leading-6 text-gray-600 dark:text-gray-400">{article.description}</p>}
-            <div className="mt-auto pt-5"><div className="mb-3 flex items-center gap-2 text-xs text-gray-500"><span aria-hidden="true">◉</span><span className="truncate">{article.source}</span></div><a href={article.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm font-bold text-emerald-700 hover:underline dark:text-emerald-300">Baca sumber asli <span aria-hidden="true">↗</span></a></div>
+            <div className="mt-auto pt-5"><div className="mb-3 flex items-center gap-2 text-xs text-gray-500"><span aria-hidden="true">◉</span><span className="truncate">{article.source}</span></div><div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+              <a
+                href={article.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-sm font-bold text-emerald-700 hover:underline dark:text-emerald-300"
+              >
+                Baca berita <span aria-hidden="true">↗</span>
+              </a>
+              {article.publisherUrl && (
+                <a
+                  href={article.publisherUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-gray-600 hover:underline dark:text-gray-300"
+                >
+                  Situs penerbit <span aria-hidden="true">↗</span>
+                </a>
+              )}
+            </div></div>
           </article>)}
         </div> : <div className="rounded-2xl border border-dashed border-cyber-border px-5 py-12 text-center"><p className="text-lg font-semibold">{data.articles?.length ? 'Tidak ada berita yang cocok' : 'Berita belum dapat dimuat'}</p><p className="mx-auto mt-2 max-w-lg text-sm text-gray-500">{data.articles?.length ? 'Coba kata kunci atau kategori lain.' : 'Pastikan backend berjalan dan memiliki akses internet, lalu coba perbarui berita.'}</p><button onClick={() => loadNews(true)} className="mt-4 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">Coba lagi</button></div>}
       </section>
