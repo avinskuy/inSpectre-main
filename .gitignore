@@ -1,0 +1,11 @@
+.env
+.env.*
+!.env.example
+!.env.vps.example
+
+node_modules/
+dist/
+
+*.db
+*.db-shm
+*.db-wal

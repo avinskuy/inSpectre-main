@@ -1,0 +1,7 @@
+node_modules
+.env
+inspectre.db*
+numbers.json*
+*.apk
+downloads
+npm-debug.log*
