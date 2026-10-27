@@ -51,7 +51,7 @@ function checkNumber(raw) {
   const count = record ? record.count : 0;
 
   let threatScore = Math.min(100, count * 20);
-  let riskLevel = 'AMAN';
+  let riskLevel = 'BELUM_DIKETAHUI';
   if (count >= REPORTS_NEEDED * 2) {
     riskLevel = 'BAHAYA';
     threatScore = Math.max(threatScore, 80);
@@ -70,7 +70,7 @@ function checkNumber(raw) {
 
   const note = count > 0
     ? `⚠️ Ada ${count} laporan warga untuk nomor ini. JANGAN transfer uang atau berikan OTP!`
-    : '✅ Tidak ada laporan scam untuk nomor ini. Tetap waspada.';
+    : 'ℹ️ Belum ada laporan warga untuk nomor ini. Ini bukan bukti bahwa nomor tersebut aman.';
 
   logScan('scam_number', norm, threatScore, riskLevel, findings);
 

@@ -21,7 +21,7 @@ function toCards(data) {
   ];
 }
 const EVENT_ICON = { link: '↗', scam_number: '☎', scam_report: '⚑', apk: '▣' };
-const EVENT_LEVEL = { AMAN: 'aman', WASPADA: 'curiga', CURIGA: 'curiga', BAHAYA: 'berbahaya', PHISHING: 'berbahaya' };
+const EVENT_LEVEL = { AMAN: 'aman', BELUM_DIKETAHUI: 'belum-diketahui', WASPADA: 'curiga', CURIGA: 'curiga', BAHAYA: 'berbahaya', PHISHING: 'berbahaya' };
 const eventLabel = (e) => e.url || e.number || e.fileName || '(identitas disamarkan)';
 function formatTime(iso) {
   try { return new Date(iso).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }); }

@@ -11,6 +11,7 @@ import Tools from './Tools.jsx';
 
 const LEVEL_MAP = {
   AMAN: 'aman',
+  BELUM_DIKETAHUI: 'belum-diketahui',
   WASPADA: 'curiga',
   CURIGA: 'curiga',
   PHISHING: 'berbahaya',

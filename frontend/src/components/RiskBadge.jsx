@@ -14,10 +14,16 @@ const STYLES = {
     label: 'Berbahaya',
     cls: 'bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300 border-red-300 dark:border-red-800',
   },
+  'belum-diketahui': {
+    icon: '❔',
+    label: 'Belum diketahui',
+    cls: 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600',
+  },
 };
 
-export default function RiskBadge({ level = 'aman' }) {
-  const s = STYLES[level] || STYLES.aman;
+export default function RiskBadge({ level = 'belum-diketahui' }) {
+  const s = STYLES[level] || STYLES['belum-diketahui'];
+
   return (
     <span
       role="status"
