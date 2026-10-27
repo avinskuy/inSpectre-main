@@ -765,3 +765,127 @@ html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .b
     gap: 10px 14px;
   }
 }
+
+
+/* World Monitor - Air Quality */
+.world-air-panel {
+  margin-top: 28px;
+  padding: 22px;
+  border: 1px solid var(--wm-line);
+  border-radius: 15px;
+  background: #0d1522;
+}
+.world-air-description { color: #9eafc2; font-size: 12px; line-height: 1.8; }
+.world-air-meta {
+  display: flex; flex-wrap: wrap; gap: 8px 18px;
+  margin: 16px 0; color: #8fa7ba; font-size: 11px;
+}
+.world-air-grid {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px; margin-top: 16px;
+}
+.world-air-card {
+  min-width: 0; padding: 16px;
+  border: 1px solid var(--wm-line); border-radius: 12px;
+  background: #101c2a;
+}
+.world-air-card-head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  flex-wrap: wrap; gap: 8px;
+}
+.world-air-card h3 { margin: 0; color: #e6f1fa; font-size: 14px; }
+.world-air-status { font-size: 9px; letter-spacing: .04em; }
+.world-air-status.is-fresh { color: #68d9a3; }
+.world-air-status.is-stale { color: #ffb547; }
+.world-air-value { margin: 18px 0 8px; color: #f5c16b; font-size: 27px; font-weight: 700; }
+.world-air-value span { color: #9eafc2; font-size: 11px; font-weight: 400; }
+.world-air-observed, .world-air-coords { color: #8fa7ba; font-size: 11px; line-height: 1.7; }
+.world-air-warning { color: #ffb547; font-size: 11px; line-height: 1.7; }
+@media(max-width:700px) {
+  .world-air-panel { padding: 15px; }
+  .world-air-grid { grid-template-columns: 1fr; }
+}
+
+/* World Monitor - Weather & Warnings */
+.world-weather-panel {
+  margin-top: 28px;
+  padding: 22px;
+  border: 1px solid var(--wm-line);
+  border-radius: 15px;
+  background: #0d1522;
+}
+.world-region-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 13px;
+  margin: 20px 0;
+}
+.world-region-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  color: #9eafc2;
+  font-size: 12px;
+}
+.world-region-grid select {
+  width: 100%;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid #31445a;
+  border-radius: 10px;
+  background: #101c2a;
+  color: #e6f1fa;
+  font: inherit;
+}
+.world-region-grid select:focus-visible {
+  outline: 2px solid #62e7e0;
+  outline-offset: 2px;
+}
+.world-region-grid select:disabled { opacity: .55; cursor: not-allowed; }
+.world-weather-meta, .world-warning-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 14px 0;
+  color: #8fa7ba;
+  font-size: 11px;
+  line-height: 1.7;
+}
+.world-weather-meta a, .world-warning-meta a {
+  color: #62e7e0;
+  text-underline-offset: 3px;
+}
+.world-weather-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+.world-weather-card, .world-warning-card {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--wm-line);
+  border-radius: 12px;
+  background: #101c2a;
+}
+.world-weather-time { color: #8fa7ba; font-size: 11px; line-height: 1.6; overflow-wrap: anywhere; }
+.world-weather-card h3 { margin: 8px 0; font-size: 14px; line-height: 1.5; }
+.world-weather-temp { margin: 12px 0; color: #f5c16b; font-size: 27px; font-weight: 700; }
+.world-weather-card dl { display: grid; gap: 8px; margin: 0; }
+.world-weather-card dl div { display: flex; justify-content: space-between; gap: 8px; font-size: 11px; }
+.world-weather-card dt { color: #8fa7ba; }
+.world-weather-card dd { margin: 0; color: #e6f1fa; text-align: right; }
+.world-warning-list { display: grid; gap: 12px; margin-top: 16px; }
+.world-warning-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.world-warning-heading h3 { margin: 0; font-size: 14px; line-height: 1.6; }
+.world-warning-heading span { flex-shrink: 0; color: #ffb547; font-size: 10px; }
+.world-warning-card > p { color: #aab9cc; font-size: 12px; line-height: 1.8; overflow-wrap: anywhere; }
+.world-warning-meta { justify-content: space-between; }
+.world-weather-error { color: #ffb547; font-size: 12px; line-height: 1.8; }
+.world-weather-empty { color: #9eafc2; font-size: 12px; line-height: 1.8; }
+@media(max-width:700px) {
+  .world-weather-panel { padding: 15px; }
+  .world-region-grid, .world-weather-grid { grid-template-columns: 1fr; }
+  .world-weather-card, .world-warning-card { padding: 14px; }
+  .world-warning-heading { flex-direction: column; gap: 6px; }
+}

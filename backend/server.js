@@ -9,6 +9,8 @@ const { checkNumber, isValidPhone } = require('./numberChecker');
 const { lookupWhoTag } = require('./whotagProvider');
 const { getNews } = require('./news');
 const { getHotspots } = require('./hotspots');
+const { getAirQuality } = require('./airQuality');
+const { getRegions, getForecast, getWarnings } = require('./weather');
 const { analyzeArchive } = require('./archiveScanner');
 
 const app = express();
@@ -145,6 +147,77 @@ app.get('/api/environment/hotspots', async (req, res) => {
       status: 'unavailable',
       updatedAt: null,
       error: 'Data hotspot belum dapat dimuat.'
+    });
+  }
+});
+
+app.get('/api/environment/air-quality', async (req, res) => {
+  try {
+    const result = await getAirQuality();
+    res.set('Cache-Control', 'public, max-age=60');
+    res.json(result);
+  } catch (error) {
+    console.error('air quality error:', error.name || 'Error');
+    res.status(502).json({
+      data: [],
+      source: 'OpenAQ v3',
+      status: 'unavailable',
+      fetchedAt: null,
+      error: 'Data kualitas udara belum dapat dimuat.'
+    });
+  }
+});
+
+app.get('/api/environment/regions', (req, res) => {
+  try {
+    const parent = typeof req.query.parent === 'string' ? req.query.parent : '';
+    const data = getRegions(parent);
+    res.set('Cache-Control', 'public, max-age=3600');
+    res.json({ status: 'ok', data });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({
+      status: 'error',
+      data: [],
+      error: error.statusCode === 400
+        ? error.message
+        : 'Daftar wilayah belum dapat dimuat.'
+    });
+  }
+});
+
+app.get('/api/environment/weather', async (req, res) => {
+  try {
+    const adm4 = typeof req.query.adm4 === 'string' ? req.query.adm4 : '';
+    const result = await getForecast(adm4);
+    res.set('Cache-Control', 'public, max-age=300');
+    res.json(result);
+  } catch (error) {
+    const status = error.statusCode === 400 ? 400 : 502;
+    console.error('weather forecast error:', error.name || 'Error');
+    res.status(status).json({
+      status: 'unavailable',
+      source: 'BMKG',
+      forecast: [],
+      error: status === 400
+        ? error.message
+        : 'Prakiraan cuaca belum dapat dimuat. Coba lagi beberapa saat.'
+    });
+  }
+});
+
+app.get('/api/environment/weather-warnings', async (req, res) => {
+  try {
+    const result = await getWarnings();
+    res.set('Cache-Control', 'public, max-age=60');
+    res.json(result);
+  } catch (error) {
+    console.error('weather warnings error:', error.name || 'Error');
+    res.status(502).json({
+      status: 'unavailable',
+      source: 'BMKG',
+      warnings: [],
+      fetchedAt: null,
+      error: 'Peringatan cuaca BMKG belum dapat dimuat.'
     });
   }
 });
