@@ -104,39 +104,54 @@ function parseCsv(text) {
   });
 }
 
-async function fetchHotspots({
-  apiKey = process.env.NASA_FIRMS_MAP_KEY,
-  fetchImpl = fetch,
-} = {}) {
-  if (!apiKey) {
-    return {
-      ...cache,
-      status: 'unavailable',
-      error: 'NASA FIRMS belum dikonfigurasi.',
-    };
+async function fetchHotspots({apiKey=process.env.NASA_FIRMS_MAP_KEY, fetchImpl=fetch}={}) {
+  if (!apiKey) return {...cache,status:'unavailable',error:'NASA FIRMS belum dikonfigurasi.'};
+
+  const base = 'https://firms.modaps.eosdis.nasa.gov/api';
+  const headers = {Accept:'text/csv'};
+  const options = {signal:AbortSignal.timeout(REQUEST_TIMEOUT_MS),headers};
+
+  const availabilityUrl =
+    `${base}/data_availability/csv/${encodeURIComponent(apiKey)}/VIIRS_SNPP_NRT`;
+  const availabilityResponse = await fetchImpl(availabilityUrl, options);
+  if (!availabilityResponse.ok) {
+    throw new Error(`KETERSEDIAAN_HTTP_${availabilityResponse.status}`);
   }
 
-  const url =
-    'https://firms.modaps.eosdis.nasa.gov/api/area/csv/' +
-    `${encodeURIComponent(apiKey)}/VIIRS_SNPP_NRT/90,-12,142,8/1`;
+  const availability = (await availabilityResponse.text()).trim().split(/\r?\n/);
+  if (availability.length < 2) throw new Error('TANGGAL_TIDAK_TERSEDIA');
 
-  const response = await fetchImpl(url, {
-    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
-    headers: { Accept: 'text/csv' },
-  });
-
-  if (!response.ok) {
-    throw new Error(`SUMBER_HTTP_${response.status}`);
+  const availabilityHeaders = parseCsvLine(availability[0]).map(x => x.trim().toLowerCase());
+  const availabilityIndex = Object.fromEntries(
+    availabilityHeaders.map((name, i) => [name, i])
+  );
+  for (const field of ['data_id', 'max_date']) {
+    if (availabilityIndex[field] === undefined) throw new Error('FORMAT_KETERSEDIAAN_TIDAK_VALID');
   }
+
+  let latestDate = null;
+  for (const line of availability.slice(1)) {
+    if (!line.trim()) continue;
+    const fields = parseCsvLine(line);
+    if (fields[availabilityIndex.data_id]?.trim() === 'VIIRS_SNPP_NRT') {
+      latestDate = fields[availabilityIndex.max_date]?.trim();
+      break;
+    }
+  }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(latestDate || '') ||
+      Number.isNaN(Date.parse(latestDate))) {
+    throw new Error('TANGGAL_TIDAK_TERSEDIA');
+  }
+
+  const areaUrl =
+    `${base}/area/csv/${encodeURIComponent(apiKey)}/VIIRS_SNPP_NRT/90,-12,142,8/1/${latestDate}`;
+  const response = await fetchImpl(areaUrl, options);
+  if (!response.ok) throw new Error(`SUMBER_HTTP_${response.status}`);
 
   const rows = parseCsv(await response.text());
-
-  // Batasi ke wilayah Indonesia.
-  const data = rows.filter((row) =>
-    row.latitude >= -12 &&
-    row.latitude <= 8 &&
-    row.longitude >= 90 &&
-    row.longitude <= 142
+  const data = rows.filter(row =>
+    row.latitude >= -12 && row.latitude <= 8 &&
+    row.longitude >= 90 && row.longitude <= 142
   );
 
   return {
@@ -147,7 +162,6 @@ async function fetchHotspots({
     error: null,
   };
 }
-
 async function getHotspots(options = {}) {
   const now = Date.now();
 
