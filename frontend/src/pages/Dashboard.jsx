@@ -6,7 +6,7 @@ import { getHistory, getStats } from '../lib/api.js';
 import { useLiveFeed } from '../lib/socket.js';
 
 const fmt = (n) => new Intl.NumberFormat('id-ID').format(Number(n) || 0);
-const levelMap = { AMAN: 'aman', WASPADA: 'curiga', CURIGA: 'curiga', PHISHING: 'berbahaya', BAHAYA: 'berbahaya' };
+const levelMap = { AMAN: 'aman', BELUM_DIKETAHUI: 'belum-diketahui', WASPADA: 'curiga', CURIGA: 'curiga', PHISHING: 'berbahaya', BAHAYA: 'berbahaya' };
 const typeLabel = { link: 'Tautan', scam_number: 'Nomor', scam_report: 'Laporan', apk: 'APK' };
 const time = (value) => { try { return new Date(value).toLocaleString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }); } catch { return '—'; } };
 

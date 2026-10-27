@@ -6,6 +6,7 @@ import { getHistory } from '../lib/api.js';
 
 const RISK_MAP = {
   AMAN: 'aman',
+  BELUM_DIKETAHUI: 'belum-diketahui',
   CURIGA: 'curiga',
   WASPADA: 'curiga',
   BAHAYA: 'berbahaya',
@@ -14,6 +15,7 @@ const RISK_MAP = {
 
 const RISK_LABEL = {
   AMAN: 'AMAN',
+  BELUM_DIKETAHUI: 'BELUM DIKETAHUI',
   CURIGA: 'CURIGA',
   WASPADA: 'WASPADA',
   BAHAYA: 'BAHAYA',
@@ -97,7 +99,7 @@ export default function History() {
 
       <section className="history-filter surface-card" aria-label="Cari dan filter riwayat">
         <label className="filter-search"><span>Cari riwayat</span><input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Cari domain atau jenis aktivitas…" /></label>
-        <label><span>Status risiko</span><select value={riskFilter} onChange={(e) => setRiskFilter(e.target.value)}><option value="SEMUA">Semua status</option><option value="AMAN">Aman</option><option value="WASPADA">Waspada</option><option value="CURIGA">Curiga</option><option value="PHISHING">Phishing</option><option value="BAHAYA">Bahaya</option></select></label>
+        <label><span>Status risiko</span><select value={riskFilter} onChange={(e) => setRiskFilter(e.target.value)}><option value="SEMUA">Semua status</option><option value="BELUM_DIKETAHUI">Belum diketahui</option><option value="AMAN">Aman</option><option value="WASPADA">Waspada</option><option value="CURIGA">Curiga</option><option value="PHISHING">Phishing</option><option value="BAHAYA">Bahaya</option></select></label>
         <label><span>Jenis</span><select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}><option value="SEMUA">Semua jenis</option><option value="link">Tautan</option><option value="scam_number">Nomor scam</option><option value="apk">APK</option></select></label>
       </section>
       <div className="history-result-count">Menampilkan <b>{filteredItems.length}</b> dari <b>{items.length}</b> catatan</div>
@@ -128,7 +130,7 @@ export default function History() {
                 </p>
               </div>
               <div className="flex flex-col items-end gap-1">
-                <RiskBadge level={RISK_MAP[item.riskLevel] || 'curiga'} />
+                <RiskBadge level={RISK_MAP[item.riskLevel] || 'belum-diketahui'} />
                 <span className="text-[10px] text-cyber-muted">
                   {RISK_LABEL[item.riskLevel] || item.riskLevel}
                 </span>
