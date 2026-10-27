@@ -889,3 +889,137 @@ html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .b
   .world-weather-card, .world-warning-card { padding: 14px; }
   .world-warning-heading { flex-direction: column; gap: 6px; }
 }
+
+/* Nexus Situation Brief */
+.nexus-brief {
+  margin-top: 28px;
+  padding: 25px;
+  border: 1px solid #263c50;
+  border-radius: 22px;
+  background:
+    radial-gradient(ellipse at 100% 0%, rgb(36 133 143 / .10), transparent 42%),
+    #0b1421;
+}
+.nexus-brief .nexus-section-head { align-items: center; }
+.nexus-refresh {
+  padding: 10px 13px;
+  border: 1px solid #31515e;
+  border-radius: 9px;
+  background: #112630;
+  color: #62e7e0;
+  font: 700 10px ui-monospace, monospace;
+  letter-spacing: .08em;
+  cursor: pointer;
+}
+.nexus-refresh:disabled { opacity: .55; cursor: wait; }
+.nexus-brief-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin: 0 0 18px;
+  color: #91a6bd;
+  font: 11px/1.7 ui-monospace, monospace;
+}
+.nexus-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #8295aa;
+}
+.nexus-live-dot.is-live {
+  background: #62e7a5;
+  box-shadow: 0 0 12px #62e7a566;
+}
+.nexus-brief-updated { margin-left: auto; color: #71859c; }
+.nexus-situation-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.nexus-situation-card {
+  min-width: 0;
+  padding: 17px;
+  border: 1px solid #26364a;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #111d2d, #0b1420);
+}
+.nexus-situation-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: #c5d3e3;
+  font-size: 12px;
+  font-weight: 650;
+}
+.nexus-source-status {
+  display: inline-block;
+  padding: 4px 6px;
+  border: 1px solid #31515e;
+  border-radius: 5px;
+  color: #62e7e0;
+  font: 700 8px/1.5 ui-monospace, monospace;
+}
+.nexus-source-status.is-stale {
+  border-color: #695331;
+  color: #f5c16b;
+}
+.nexus-source-status.is-unavailable {
+  border-color: #70444b;
+  color: #ff9b9b;
+}
+.nexus-source-status.is-loading { color: #91a6bd; }
+.nexus-situation-value {
+  margin: 20px 0 9px;
+  color: #edf6ff;
+  font-size: clamp(20px, 2.3vw, 29px);
+  font-weight: 750;
+  line-height: 1.25;
+  letter-spacing: -.04em;
+  overflow-wrap: anywhere;
+}
+.nexus-situation-detail {
+  min-height: 48px;
+  margin: 0;
+  color: #91a6bd;
+  font-size: 11px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+.nexus-situation-source {
+  display: block;
+  margin-top: 15px;
+  padding-top: 11px;
+  border-top: 1px solid #26364a;
+  color: #71859c;
+  font: 9px/1.6 ui-monospace, monospace;
+  letter-spacing: .08em;
+}
+.nexus-brief-note {
+  margin: 15px 0 0;
+  color: #ffb0a7;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.nexus-brief-disclaimer {
+  margin: 17px 0 12px;
+  color: #8195aa;
+  font-size: 11px;
+  line-height: 1.8;
+}
+.nexus-brief-link { margin-top: 4px; }
+
+@media (max-width: 900px) {
+  .nexus-situation-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 520px) {
+  .nexus-brief { padding: 18px 14px; border-radius: 17px; }
+  .nexus-brief .nexus-section-head { align-items: flex-start; }
+  .nexus-brief-meta { align-items: flex-start; }
+  .nexus-brief-updated { width: 100%; margin-left: 16px; }
+  .nexus-situation-grid { grid-template-columns: 1fr; gap: 10px; }
+  .nexus-situation-card { padding: 15px; }
+  .nexus-situation-detail { min-height: 0; }
+}
