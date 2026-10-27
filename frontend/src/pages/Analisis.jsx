@@ -107,7 +107,7 @@ export default function Analisis() {
       if (scanType === 'number') {
         const data = await checkNumber(trimmed);
         const mapped = mapResult(data, 'number');
-        setResult({ ...mapped, note: data.note, kind: 'number' });
+        setResult({ ...mapped, note: data.note, kind: 'number', externalReputation: data.externalReputation || null });
         setCheckedUrl(data.number || trimmed);
       } else {
         const data = await scanUrl(trimmed);
@@ -193,7 +193,29 @@ export default function Analisis() {
               </div>
             </div>
 
-            {result.kind === 'number' && <p className="mt-3 rounded-lg border border-cyber-border bg-cyber-panel p-3 text-sm">Pemeriksaan nomor menggunakan jumlah laporan komunitas yang tersedia. Tidak adanya laporan bukan bukti nomor tersebut aman.</p>}
+            {result.kind === 'number' && <>
+              <p className="mt-3 rounded-lg border border-cyber-border bg-cyber-panel p-3 text-sm">Laporan komunitas dan reputasi eksternal adalah sumber yang berbeda. Tidak adanya laporan atau sinyal risiko bukan bukti nomor ini aman.</p>
+              <section className="mt-3 rounded-lg border border-cyber-border bg-cyber-panel p-4" aria-label="Reputasi eksternal">
+                <h3 className="text-sm font-semibold">Reputasi eksternal</h3>
+                <p className="mt-1 text-xs text-cyber-muted">Sumber: WhoTag.me / Getcontact</p>
+                {!result.externalReputation || result.externalReputation.status === 'UNAVAILABLE' ? (
+                  <p className="mt-2 text-sm">Data eksternal tidak tersedia saat ini. Status komunitas di atas tetap ditampilkan terpisah.</p>
+                ) : result.externalReputation.status === 'NO_DATA' ? (
+                  <p className="mt-2 text-sm">Provider tidak memberikan bukti reputasi yang dapat ditampilkan. Ini bukan bukti aman.</p>
+                ) : (
+                  <>
+                    <dl className="mt-3 grid grid-cols-1 gap-2 text-sm sm:grid-cols-2">
+                      <div><dt className="text-cyber-muted">Jumlah tag</dt><dd>{result.externalReputation.tagCount ?? 'Tidak tersedia'}</dd></div>
+                      <div><dt className="text-cyber-muted">Jumlah komentar</dt><dd>{result.externalReputation.commentCount ?? 'Tidak tersedia'}</dd></div>
+                      <div><dt className="text-cyber-muted">Badge provider</dt><dd>{result.externalReputation.badge ?? 'Tidak tersedia'}</dd></div>
+                      <div><dt className="text-cyber-muted">Sinyal trust</dt><dd>{result.externalReputation.trustLevel ?? 'Tidak tersedia'}</dd></div>
+                      <div><dt className="text-cyber-muted">Sinyal spam</dt><dd>{result.externalReputation.spamDegree ?? 'Tidak tersedia'}</dd></div>
+                    </dl>
+                    <p className="mt-3 text-xs text-cyber-muted">{result.externalReputation.caveat || 'Sinyal provider bukan bukti pasti penipuan atau keamanan.'}</p>
+                  </>
+                )}
+              </section>
+            </>}
             <h3 className="mt-4 text-sm font-semibold text-cyber-muted">Temuan:</h3>
             <div className="mt-2 space-y-2">
               {result.findings.map((f) => (
@@ -214,7 +236,7 @@ export default function Analisis() {
         )}
       </div>
 
-      <p className="mt-4 text-xs leading-relaxed text-cyber-muted">Catatan: hasil “aman” bukan jaminan situs atau nomor bebas penipuan. Deteksi tautan menggunakan heuristik, sedangkan pemeriksaan nomor menggunakan laporan komunitas yang tersedia. Jika ragu, verifikasi lewat kanal resmi.</p>
+      <p className="mt-4 text-xs leading-relaxed text-cyber-muted">Catatan: hasil “aman” bukan jaminan situs atau nomor bebas penipuan. Deteksi tautan menggunakan heuristik. Pemeriksaan nomor menggabungkan laporan komunitas dan sinyal eksternal jika tersedia. Jika ragu, verifikasi lewat kanal resmi.</p>
 
       <Card title="💡 Tips" className="mt-8">
         <ul className="list-disc space-y-1 pl-5 text-sm text-cyber-muted">

@@ -24,6 +24,49 @@ db.exec(`
   );
 `);
 
+db.exec(`
+  CREATE TABLE IF NOT EXISTS whotag_cache (
+    phone TEXT PRIMARY KEY,
+    value TEXT NOT NULL,
+    cachedAt INTEGER NOT NULL
+  );
+`);
+
+/* ─── Cache reputasi WhoTag.me ─── */
+function getWhoTagCache(phone) {
+  const row = db.prepare(
+    'SELECT value, cachedAt FROM whotag_cache WHERE phone = ?'
+  ).get(phone);
+  if (!row) return null;
+  try {
+    return { value: JSON.parse(row.value), cachedAt: row.cachedAt };
+  } catch {
+    db.prepare('DELETE FROM whotag_cache WHERE phone = ?').run(phone);
+    return null;
+  }
+}
+
+function setWhoTagCache(phone, value, cachedAt) {
+  db.prepare(`
+    INSERT INTO whotag_cache (phone, value, cachedAt)
+    VALUES (?, ?, ?)
+    ON CONFLICT(phone) DO UPDATE SET
+      value = excluded.value,
+      cachedAt = excluded.cachedAt
+  `).run(phone, JSON.stringify(value), cachedAt);
+  // Pembersihan terbatas: hapus entri lama lebih dari 7 hari.
+  db.prepare('DELETE FROM whotag_cache WHERE cachedAt < ?')
+    .run(cachedAt - 7 * 24 * 60 * 60 * 1000);
+}
+
+function clearWhoTagCache(phone) {
+  if (phone) {
+    db.prepare('DELETE FROM whotag_cache WHERE phone = ?').run(phone);
+  } else {
+    db.prepare('DELETE FROM whotag_cache').run();
+  }
+}
+
 /* ─── Simpan hasil scan ke log ─── */
 function logScan(type, identifier, threatScore, riskLevel, findings) {
   db.prepare(
@@ -71,4 +114,4 @@ function getRecentScans(limit = 20) {
     .map((r) => ({ ...r, identifier: publicIdentifier(r.type, r.identifier) }));
 }
 
-module.exports = { logScan, getStats, getRecentScans };
+module.exports = { logScan, getStats, getRecentScans, getWhoTagCache, setWhoTagCache, clearWhoTagCache };

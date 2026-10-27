@@ -6,6 +6,7 @@ const { getStats, getRecentScans } = require('./db');
 const { initSocket, emitThreat, emitStats } = require('./emitter');
 const { checkLinkWithReputation } = require('./safeLinkChecker');
 const { checkNumber, isValidPhone } = require('./numberChecker');
+const { lookupWhoTag } = require('./whotagProvider');
 const { getNews } = require('./news');
 const { getHotspots } = require('./hotspots');
 const { analyzeArchive } = require('./archiveScanner');
@@ -152,22 +153,46 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', bot: botActive, uptime: process.uptime() });
 });
 
-app.get('/api/check/:nomor', scanLimiter, (req, res) => {
+app.get('/api/check/:nomor', scanLimiter, async (req, res) => {
   const raw = req.params.nomor;
-  if (!isValidPhone(raw)) {
-    return res.status(400).json({ error: 'Nomor tidak valid. Gunakan format 08xx atau +62xx.' });
-  }
-  try {
-    const result = checkNumber(raw);
-    emitThreat({ type: 'scam_number', ...result });
-    emitStats();
-    res.json(result);
-  } catch (e) {
-    console.error('check error:', e.message);
-    res.status(500).json({ error: 'Pengecekan gagal' });
-  }
-});
 
+  if (!isValidPhone(raw)) {
+    return res.status(400).json({
+      error: 'Nomor tidak valid. Gunakan format 08xx atau +62xx.',
+    });
+  }
+
+  // Hasil komunitas dihitung dan dicatat tepat satu kali.
+  let result;
+  try {
+    result = checkNumber(raw);
+  } catch (error) {
+    console.error('community number check error:', error.message);
+    return res.status(500).json({ error: 'Pengecekan gagal' });
+  }
+
+  let externalReputation = {
+    status: 'UNAVAILABLE',
+    reason: 'INVALID_PROVIDER_NUMBER',
+  };
+
+  // Kegagalan provider tidak membatalkan hasil komunitas.
+  if (/^62\d{8,13}$/.test(result.number)) {
+    try {
+      externalReputation = await lookupWhoTag(`+${result.number}`);
+    } catch (error) {
+      console.error('WhoTag provider error:', error.message);
+      externalReputation = {
+        status: 'UNAVAILABLE',
+        reason: 'PROVIDER_ERROR',
+      };
+    }
+  }
+
+  emitThreat({ type: 'scam_number', ...result });
+  emitStats();
+  return res.json({ ...result, externalReputation });
+});
 app.post('/api/scan-file', scanLimiter, express.raw({ type: 'application/octet-stream', limit: '25mb' }), (req, res) => {
   const filename = String(req.query.filename || 'upload.zip').slice(0, 180);
   if (!Buffer.isBuffer(req.body) || req.body.length === 0) {
@@ -222,12 +247,16 @@ server.on('error', (e) => {
   process.exit(1);
 });
 
-server.listen(config.PORT, '127.0.0.1', () => {
-  console.log(`🚀 inSpectre server berjalan di port ${config.PORT}`);
-  if (config.TELEGRAM_TOKEN) {
-    require('./bot');
-    botActive = true;
-  } else {
-    console.warn('⚠️  TELEGRAM_TOKEN kosong — bot Telegram tidak dijalankan (API & dashboard tetap aktif).');
-  }
-});
+if (require.main === module) {
+  server.listen(config.PORT, '127.0.0.1', () => {
+    console.log(`🚀 inSpectre server berjalan di port ${config.PORT}`);
+    if (config.TELEGRAM_TOKEN) {
+      require('./bot');
+      botActive = true;
+    } else {
+      console.warn('⚠️  TELEGRAM_TOKEN kosong — bot Telegram tidak dijalankan (API & dashboard tetap aktif).');
+    }
+  });
+}
+
+module.exports = { app, server };
