@@ -42,6 +42,27 @@ export default function WorldMonitor() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(true);
   const [lastChecked, setLastChecked] = useState(null);
+  const [disastersResult, setDisastersResult] = useState(null);
+  const [disastersLoading, setDisastersLoading] = useState(true);
+  const loadDisasters = useCallback(async () => {
+    try {
+      const response = await fetch("/api/environment/disasters", {
+        headers: { Accept: "application/json" },
+      });
+      const body = await response.json();
+      if (!response.ok) throw new Error(body.error || "API gempa tidak tersedia");
+      setDisastersResult(body);
+    } catch (error) {
+      setDisastersResult(prev => prev || { status: "error", error: error.message });
+    } finally {
+      setDisastersLoading(false);
+    }
+  }, []);
+  useEffect(() => {
+    loadDisasters();
+    const timer = setInterval(loadDisasters, 5 * 60 * 1000);
+    return () => clearInterval(timer);
+  }, [loadDisasters]);
   const [airResult, setAirResult] = useState(null);
   const [airLoading, setAirLoading] = useState(true);
   const [hotspotsOpen, setHotspotsOpen] = useState(false);
@@ -284,6 +305,7 @@ export default function WorldMonitor() {
 
   const airStations = Array.isArray(airResult?.data) ? airResult.data : [];
   const hotspots = Array.isArray(result?.data) ? result.data : [];
+  const quakes = [disastersResult?.latest, ...(disastersResult?.significant || []), ...(disastersResult?.felt || [])].filter((q, i, all) => q && all.findIndex(x => x.id === q.id) === i);
   const connected = result?.status === "ok";
 
   return (
@@ -352,6 +374,14 @@ export default function WorldMonitor() {
                 </CircleMarker>
               );
             })}
+            {quakes.map(q => {
+              const lat = Number(q.latitude), lng = Number(q.longitude);
+              if (!Number.isFinite(lat) || !Number.isFinite(lng) || lat < -12 || lat > 7 || lng < 93 || lng > 142) return null;
+              const color = Number(q.magnitude) >= 5 ? "#ff334f" : "#ff8c42";
+              return <CircleMarker key={`quake-${q.id}`} center={[lat, lng]} radius={Math.min(12, 4 + Number(q.magnitude || 0))} pathOptions={{ color, fillColor: color, fillOpacity: 0.9, weight: 2 }}>
+                <Popup><strong>Gempa BMKG M{q.magnitude}</strong><br />{q.region || "Lokasi tidak tersedia"}<br />Kedalaman: {q.depthKm ?? "?"} km<br />Waktu: {q.time || formatTime(q.occurredAt)}<br />{q.potential || "Informasi potensi tidak tersedia"}<br />Sumber: BMKG</Popup>
+              </CircleMarker>;
+            })}
           </MapContainer>
           <div className="world-map-legend">
             <strong>Legenda confidence</strong>
@@ -386,6 +416,24 @@ export default function WorldMonitor() {
         </p>
       </section>
 
+      <section className="world-status-panel" aria-labelledby="world-disasters-title">
+        <div className="world-panel-head">
+          <div><p className="world-label">DISASTER MONITOR</p><h2 id="world-disasters-title">Gempa bumi Indonesia</h2></div>
+          <span className="world-status-badge">{disastersLoading ? "MEMUAT" : disastersResult?.status === "ok" ? "BMKG TERHUBUNG" : "DATA TERBATAS"}</span>
+        </div>
+        {disastersResult?.latest ? <div>
+          <h3>Gempa terbaru · M{disastersResult.latest.magnitude}</h3>
+          <p>{disastersResult.latest.region || "Lokasi tidak tersedia"}</p>
+          <p>Kedalaman: {disastersResult.latest.depthKm ?? "?"} km · {disastersResult.latest.time || formatTime(disastersResult.latest.occurredAt)}</p>
+          <p>{disastersResult.latest.potential || "Informasi potensi tidak tersedia"}</p>
+        </div> : <p role="status">{disastersResult?.error || "Data gempa belum tersedia."}</p>}
+        {Array.isArray(disastersResult?.significant) && disastersResult.significant.length > 0 && <div>
+          <h3>Gempa signifikan terbaru</h3>
+          <ul>{disastersResult.significant.slice(0, 5).map(q => <li key={q.id}>M{q.magnitude} — {q.region || "Lokasi tidak tersedia"} · {q.depthKm ?? "?"} km · {q.time || formatTime(q.occurredAt)}</li>)}</ul>
+        </div>}
+        <p className="world-disclaimer">Sumber: <a href="https://data.bmkg.go.id/gempabumi/" target="_blank" rel="noreferrer">BMKG</a>. Ikuti informasi resmi BMKG untuk panduan keselamatan.</p>
+        <button type="button" onClick={loadDisasters} disabled={disastersLoading}>{disastersLoading ? "Memuat..." : "Perbarui data gempa"}</button>
+      </section>
       <section className="world-layers" aria-labelledby="world-layers-title">
         <p className="world-label">OBSERVED HOTSPOTS</p>
         <h2 id="world-layers-title">Koordinat titik panas</h2>

@@ -11,6 +11,7 @@ const { getNews } = require('./news');
 const { getHotspots } = require('./hotspots');
 const { getAirQuality } = require('./airQuality');
 const { getRegions, getForecast, getWarnings } = require('./weather');
+const { getDisasters } = require('./disasters');
 const { analyzeArchive } = require('./archiveScanner');
 
 const app = express();
@@ -222,6 +223,25 @@ app.get('/api/environment/weather-warnings', async (req, res) => {
   }
 });
 
+app.get('/api/environment/disasters', async (req, res) => {
+  try {
+    const result = await getDisasters();
+    res.set('Cache-Control', 'public, max-age=60');
+    res.json(result);
+  } catch (error) {
+    console.error('disasters error:', error.name || 'Error');
+    res.status(502).json({
+      status: 'unavailable',
+      source: 'BMKG',
+      sourceUrl: 'https://data.bmkg.go.id/gempabumi/',
+      fetchedAt: null,
+      latest: null,
+      significant: [],
+      felt: [],
+      errors: { all: 'Data gempa belum dapat dimuat. Coba lagi beberapa saat.' }
+    });
+  }
+});
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', bot: botActive, uptime: process.uptime() });
 });
