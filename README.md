@@ -57,43 +57,36 @@ Proyek ini menggabungkan analisis heuristik, pemeriksaan reputasi URL melalui la
 | 🌍 World Monitoring | Peta interaktif untuk memantau indikasi hotspot di Indonesia menggunakan Leaflet, OpenStreetMap, dan integrasi data NASA FIRMS. |
 | 🔄 Pembaruan Data Hotspot | Endpoint hotspot menggunakan cache backend dan antarmuka yang memperbarui data secara berkala. |
 
-## 🌍 World Monitoring — Selesai Dibangun
+## 🌍 World Monitoring & Environmental Intelligence
 
-**Status: selesai untuk tahap pengembangan saat ini. Pengembangan fitur World Monitoring dijeda sementara.**
+Modul ini menggabungkan peta interaktif dan beberapa sumber data lingkungan. Ketersediaan setiap lapisan bergantung pada layanan eksternal, konektivitas, cache, dan konfigurasi deployment.
 
-World Monitoring merupakan modul pemantauan situasi berbasis peta yang menampilkan indikasi hotspot di Indonesia dari data satelit.
+### Lapisan data yang terintegrasi
 
-### Fitur yang sudah diimplementasikan
+- **Hotspot — NASA FIRMS:** indikasi anomali termal dari satelit.
+- **Kualitas udara — OpenAQ:** observasi kualitas udara yang tersedia dari stasiun yang didukung.
+- **Cuaca — BMKG:** prakiraan cuaca berdasarkan kode wilayah administratif.
+- **Peringatan cuaca — BMKG:** informasi peringatan dari feed yang tersedia.
+- **Gempa bumi — BMKG:** informasi kejadian gempa dari feed BMKG.
 
-- Peta interaktif menggunakan Leaflet dan OpenStreetMap.
-- Fokus pemantauan pada wilayah Indonesia.
-- Integrasi data indikasi hotspot NASA FIRMS — VIIRS SNPP Near Real-Time.
-- Penanda lokasi hotspot yang dapat dipilih untuk melihat informasi terkait.
-- Informasi status ketersediaan data dan waktu pembaruan.
-- Tabel koordinat untuk data hotspot yang diterima.
-- Cache data hotspot di backend sekitar lima menit.
-- Pembaruan data secara berkala di antarmuka.
-- Endpoint backend khusus untuk penyediaan data hotspot.
+### Endpoint lingkungan
 
-### Endpoint
+| Method | Endpoint | Keterangan |
+|---|---|---|
+| `GET` | `/api/environment/hotspots` | Data indikasi hotspot NASA FIRMS. |
+| `GET` | `/api/environment/air-quality` | Observasi kualitas udara dari OpenAQ. |
+| `GET` | `/api/environment/regions` | Daftar wilayah; mendukung parameter `parent`. |
+| `GET` | `/api/environment/weather?adm4=<kode-wilayah>` | Prakiraan cuaca BMKG berdasarkan kode wilayah. |
+| `GET` | `/api/environment/weather-warnings` | Feed peringatan cuaca BMKG. |
+| `GET` | `/api/environment/disasters` | Informasi gempa dari BMKG. |
 
-`GET /api/environment/hotspots`
+### Catatan interpretasi dan ketersediaan
 
-Endpoint menyediakan data hotspot untuk kebutuhan World Monitoring. Parameter, format respons, dan perilaku saat sumber eksternal tidak tersedia mengikuti implementasi backend.
-
-### Cara membaca data hotspot
-
-Hotspot satelit bukan konfirmasi kebakaran. Data dapat menunjukkan anomali termal yang memerlukan verifikasi lebih lanjut.
-
-Awan, waktu lintasan satelit, keterlambatan data, karakteristik sensor, dan kondisi pengamatan dapat memengaruhi hasil.
-
-Ketersediaan data bergantung pada layanan NASA FIRMS, konfigurasi API key, dan konektivitas server. Peta dasar OpenStreetMap juga membutuhkan koneksi internet.
-
-### Status pengembangan selanjutnya
-
-Untuk saat ini, pengembangan World Monitoring dihentikan sementara. Tidak ada penambahan lapisan pemantauan baru yang menjadi bagian dari tahap ini.
-
-Integrasi kualitas udara, asap, cuaca, bencana, dan lalu lintas tetap dicatat sebagai rencana pengembangan terpisah, bukan sebagai fitur World Monitoring yang sudah selesai diimplementasikan.
+- Hotspot satelit bukan konfirmasi kebakaran; indikasi termal perlu diverifikasi.
+- Data kualitas udara hanya mewakili observasi yang tersedia dan dapat berbeda menurut lokasi serta waktu pengukuran.
+- Prakiraan dan peringatan mengikuti data yang disediakan BMKG.
+- Data dapat terlambat, tidak lengkap, kedaluwarsa, atau sementara tidak tersedia saat sumber eksternal bermasalah.
+- Peta dasar OpenStreetMap dan sejumlah sumber data membutuhkan koneksi internet.
 
 ## 🧰 Tech Stack
 
@@ -106,6 +99,8 @@ Integrasi kualitas udara, asap, cuaca, bencana, dan lalu lintas tetap dicatat se
 | Komunikasi realtime | Socket.IO |
 | Reputasi URL | Google Safe Browsing, jika dikonfigurasi |
 | Data hotspot | NASA FIRMS |
+| Data kualitas udara | OpenAQ |
+| Prakiraan, peringatan cuaca, dan data gempa | BMKG |
 | Pengujian | Node.js Test Runner |
 
 ## 🏗️ Arsitektur
@@ -127,35 +122,35 @@ Integrasi kualitas udara, asap, cuaca, bencana, dan lalu lintas tetap dicatat se
 │ Number Checker                      │
 │ APK / ZIP Scanner                   │
 │ News dan inSpectre Agent            │
-│ World Monitoring Hotspots           │
-│ SQLite dan layanan pendukung        │
+│ Environmental Intelligence          │
+│ Hotspot · Air Quality · Weather      │
+│ Warnings · Earthquake Data           │
+│ SQLite dan layanan pendukung         │
 └───────────────┬─────────────┬───────┘
                 │             │
                 ▼             ▼
         Google Safe       NASA FIRMS
         Browsing API      Hotspot Data
+              OpenAQ · BMKG
+       Air Quality · Weather · Disasters
 
           Socket.IO → Dashboard Realtime
 ```
 
 Diagram ini menunjukkan gambaran arsitektur logis. Detail implementasi aktual mengikuti kode dan konfigurasi deployment.
 
-## 🗺️ Roadmap — Fitur Mendatang
+## 🗺️ Roadmap — Pengembangan Berikutnya
 
-Fitur berikut merupakan rencana pengembangan, bukan klaim bahwa semuanya sudah tersedia.
-
-| Prioritas | Fitur | Rencana |
+| Status | Area | Fokus |
 |---|---|---|
-| 🛠️ Direncanakan | Air Quality & Smoke | Integrasi data kualitas udara dan indikasi asap dari sumber yang sesuai. |
-| 🛠️ Direncanakan | Weather & Warnings | Informasi cuaca dan peringatan dari sumber resmi yang tersedia. |
-| 🛠️ Direncanakan | Disaster Monitor | Pengembangan lapisan informasi gempa, banjir, dan longsor sesuai ketersediaan data. |
-| 🛠️ Direncanakan | Traffic Monitor | Eksplorasi integrasi informasi lalu lintas dari sumber yang dapat digunakan. |
-| 🛠️ Direncanakan | Dashboard Integration | Menyatukan informasi pemantauan dan status sumber data dalam satu antarmuka. |
-| 🛠️ Direncanakan | Reliability & Observability | Memperjelas status sumber, waktu pembaruan, kegagalan layanan, dan penanganan data kedaluwarsa. |
+| ✅ Terintegrasi | Hotspot | Data indikasi hotspot dari NASA FIRMS. |
+| ✅ Terintegrasi | Air Quality | Observasi kualitas udara melalui OpenAQ. |
+| ✅ Terintegrasi | Weather & Warnings | Prakiraan dan peringatan cuaca dari BMKG. |
+| ✅ Terintegrasi | Disaster Data | Feed informasi gempa dari BMKG. |
+| 🔧 Pengembangan lanjutan | Reliability & Observability | Memperjelas status sumber, waktu pembaruan, kegagalan layanan, dan penanganan data kedaluwarsa. |
+| 🔧 Pengembangan lanjutan | Dashboard Integration | Meninjau konsistensi ringkasan status sumber dan pengalaman lintas modul. |
 
-Roadmap dapat berubah mengikuti ketersediaan sumber data, hasil pengujian, keamanan, dan prioritas pengembangan.
-
-World Monitoring tidak termasuk dalam daftar fitur yang sedang dikembangkan karena tahap pembangunannya telah selesai dan pengembangannya dijeda sementara.
+Status terintegrasi berarti jalur fitur tersedia di aplikasi, bukan jaminan bahwa semua penyedia eksternal selalu aktif atau semua wilayah memiliki data. Prioritas pengembangan berikutnya mengikuti hasil pengujian, keamanan, ketersediaan sumber, dan kebutuhan proyek.
 
 ## 🛡️ Google Safe Browsing
 

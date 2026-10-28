@@ -1,77 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 
-const MODULES = [
-  {
-    id: "security",
-    icon: "◈",
-    status: "READY",
-    title: "Security Center",
-    description: "Mulai dari sinyal risiko digital dan pahami indikator sebelum mengambil tindakan.",
-    href: "#/fitur/security",
-    action: "Jelajahi fitur",
-    tone: "nexus-cyan",
-  },
-  {
-    id: "world",
-    icon: "◎",
-    status: "CONNECTED SOURCES",
-    title: "World Monitor",
-    description: "Jelajahi hotspot, kualitas udara, gempa bumi, dan peringatan cuaca.",
-    href: "#/fitur/world-monitor",
-    action: "Jelajahi fitur",
-    tone: "nexus-amber",
-  },
-  {
-    id: "analisis",
-    icon: "⌕",
-    status: "INVESTIGATION",
-    title: "Analisis",
-    description: "Periksa URL, nomor, file yang didukung, dan QR melalui alat pemeriksaan.",
-    href: "#/fitur/analisis",
-    action: "Jelajahi fitur",
-    tone: "nexus-cyan",
-  },
-  {
-    id: "edukasi",
-    icon: "▤",
-    status: "LEARN",
-    title: "Edukasi",
-    description: "Pelajari pola phishing dan kebiasaan verifikasi untuk aktivitas digital.",
-    href: "#/fitur/edukasi",
-    action: "Jelajahi fitur",
-    tone: "nexus-amber",
-  },
-  {
-    id: "berita",
-    icon: "◉",
-    status: "NEWS FEED",
-    title: "Berita",
-    description: "Ikuti perkembangan keamanan digital dari feed berita yang tersedia.",
-    href: "#/fitur/berita",
-    action: "Jelajahi fitur",
-    tone: "nexus-cyan",
-  },
-  {
-    id: "asisten",
-    icon: "✳",
-    status: "GUIDANCE",
-    title: "Asisten Keamanan",
-    description: "Temukan penjelasan awal dan langkah verifikasi untuk pertanyaan keamanan.",
-    href: "#/fitur/asisten",
-    action: "Jelajahi fitur",
-    tone: "nexus-amber",
-  },
-  {
-    id: "melapor",
-    icon: "↗",
-    status: "RESPONSE GUIDE",
-    title: "Cara Melapor",
-    description: "Pelajari langkah menyiapkan bukti dan menemukan kanal pelaporan resmi.",
-    href: "#/fitur/melapor",
-    action: "Jelajahi fitur",
-    tone: "nexus-cyan",
-  },
-];
 const SOURCES = [
   { id: "hotspots", label: "Hotspot", source: "NASA FIRMS", url: "/api/environment/hotspots" },
   { id: "air", label: "Kualitas udara", source: "OpenAQ", url: "/api/environment/air-quality" },
@@ -81,13 +9,24 @@ const SOURCES = [
 
 function sourceStatus(result) {
   if (!result) return { label: "Memuat", tone: "loading" };
-  if (result.status === "unavailable") return { label: "Tidak tersedia", tone: "unavailable" };
+
+  if (result.status === "unavailable") {
+    return { label: "Tidak tersedia", tone: "unavailable" };
+  }
+
   if (result.status === "stale" || result.status === "partial") {
     return { label: "Data terbatas/lama", tone: "stale" };
   }
-  return { label: "Terhubung", tone: "ok" };
-}
 
+  if (result.status === "ok") {
+    return { label: "Terhubung", tone: "ok" };
+  }
+
+  return {
+    label: "Status tidak diketahui",
+    tone: "unknown",
+  };
+}
 function formatTime(value) {
   if (!value || !Number.isFinite(Date.parse(value))) return "Waktu belum tersedia";
   return new Intl.DateTimeFormat("id-ID", {
@@ -181,9 +120,10 @@ export default function Nexus() {
     return () => window.clearInterval(timer);
   }, [refresh]);
 
-  const availableCount = SOURCES.filter(
-    (source) => data[source.id] && data[source.id].status !== "unavailable"
-  ).length;
+  const availableCount = SOURCES.filter((source) => {
+    const status = data[source.id]?.status;
+    return ["ok", "stale", "partial"].includes(status);
+  }).length;
 
   return (
     <main className="nexus-shell">
@@ -257,36 +197,52 @@ export default function Nexus() {
         </a>
       </section>
 
-      <section className="nexus-modules" aria-labelledby="modules-title">
+      <section className="nexus-about" aria-labelledby="about-title">
         <div className="nexus-section-head">
           <div>
-            <p className="nexus-label">PILIH RUANG KERJA</p>
-            <h2 id="modules-title">Intelligence modules</h2>
+            <p className="nexus-label">TENTANG PLATFORM</p>
+            <h2 id="about-title">Memahami sinyal, bukan sekadar melihat data.</h2>
           </div>
-          <span className="nexus-module-count">07 FEATURES</span>
         </div>
-        <div className="nexus-card-grid">
-          {MODULES.map((module, index) => (
-            <article className={`nexus-card ${module.tone}`} key={module.id}>
-              <div className="nexus-card-top">
-                <span className="nexus-module-icon" aria-hidden="true">{module.icon}</span>
-                <span className="nexus-module-status">{module.status}</span>
-              </div>
-              <p className="nexus-card-index">MODULE / 0{index + 1}</p>
-              <h3>{module.title}</h3>
-              <p className="nexus-card-description">{module.description}</p>
-              <a className="nexus-card-link" href={module.href}>
-                {module.action} <span aria-hidden="true">↗</span>
-              </a>
-              <div className="nexus-card-decoration" aria-hidden="true" />
-            </article>
-          ))}
+        <p className="nexus-about-intro">
+          inSpectre menyatukan alat bantu pemeriksaan keamanan digital dan pemantauan
+          lingkungan dalam satu ruang kerja. Informasi membantu pengguna melakukan
+          pemeriksaan awal, memahami konteks, dan menentukan langkah verifikasi berikutnya.
+        </p>
+        <div className="nexus-principle-grid">
+          <article className="nexus-principle-card">
+            <span className="nexus-principle-index">01 / AMATI</span>
+            <h3>Kumpulkan sinyal</h3>
+            <p>Mulai dari sumber data yang tersedia, indikator digital, dan informasi lingkungan yang relevan.</p>
+          </article>
+          <article className="nexus-principle-card">
+            <span className="nexus-principle-index">02 / PAHAMI</span>
+            <h3>Periksa konteks</h3>
+            <p>Baca status sumber, waktu pembaruan, dan keterbatasan informasi sebelum menarik kesimpulan.</p>
+          </article>
+          <article className="nexus-principle-card">
+            <span className="nexus-principle-index">03 / VERIFIKASI</span>
+            <h3>Tentukan langkah berikutnya</h3>
+            <p>Gunakan hasil sebagai titik awal pemeriksaan lanjutan, bukan pengganti penilaian atau sumber resmi.</p>
+          </article>
         </div>
       </section>
 
-      <section className="nexus-integrity">
+      <section className="nexus-integrity" aria-label="Prinsip integritas data">
         <span aria-hidden="true">ⓘ</span>
-        <p><strong>Data integrity matters.</strong> Status sumber dan waktu observasi dibedakan agar data lama atau tidak tersedia tidak disalahartikan sebagai kondisi terkini.</p>
+        <p><strong>Data integrity matters.</strong> Status sumber, waktu pemeriksaan, dan waktu observasi bisa berbeda. Informasi yang tidak tersedia atau tidak diketahui tidak boleh dianggap sebagai kondisi terkini.</p>
+      </section>
+
+      <section className="nexus-next" aria-labelledby="next-title">
+        <div>
+          <p className="nexus-label">MULAI EKSPLORASI</p>
+          <h2 id="next-title">Pilih ruang kerja sesuai kebutuhan.</h2>
+          <p>Periksa sinyal keamanan digital atau jelajahi pemantauan lingkungan.</p>
+        </div>
+        <div className="nexus-next-actions">
+          <a className="nexus-card-link" href="#/fitur/security">Security Center <span aria-hidden="true">↗</span></a>
+          <a className="nexus-card-link" href="#/world-monitor">World Monitor <span aria-hidden="true">↗</span></a>
+        </div>
       </section>
     </main>
   );

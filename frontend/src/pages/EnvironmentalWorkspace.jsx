@@ -10,9 +10,9 @@ import {
 
 const LAYERS = [
   { number: "01", title: "Hotspot & karhutla", detail: "Indikasi termal satelit NASA FIRMS." },
-  { number: "02", title: "Kualitas udara", detail: "Pemantauan PM2.5 dari stasiun OpenAQ dengan waktu observasi dan penanda data lama." },
+  { number: "02", title: "Kualitas udara", detail: "Observasi PM2.5 dari stasiun OpenAQ." },
   { number: "03", title: "Cuaca & peringatan", detail: "Prakiraan wilayah dan feed peringatan resmi BMKG." },
-  { number: "04", title: "Traffic Monitor", detail: "Pemantauan kondisi lalu lintas masih dalam pengembangan." },
+  { number: "04", title: "Gempa bumi", detail: "Informasi kejadian gempa dari feed BMKG." },
 ];
 
 function formatTime(value) {
@@ -32,13 +32,19 @@ function FitIndonesia() {
 
 function markerColor(confidence) {
   const value = String(confidence ?? "").toLowerCase();
-  if (value === "h" || value === "high" || value === "nominal") return "#ff554d";
-  if (value === "n" || value === "nom" || value === "medium") return "#ffb547";
+  if (value === "h" || value === "high") return "#ff554d";
+  if (value === "n" || value === "nom" || value === "nominal" || value === "medium") return "#ffb547";
   if (value === "l" || value === "low") return "#45d6e8";
   return "#d4e1eb";
 }
 
-export default function WorldMonitor({ feature = 'all' }) {
+export default function WorldMonitor({ feature = "all" }) {
+  const needsHotspots = feature === "all" || feature === "hotspots";
+  const needsAirQuality = feature === "all" || feature === "air-quality";
+  const needsEarthquakes = feature === "all" || feature === "earthquakes";
+  const needsWeather = feature === "all" || feature === "weather";
+  const needsWarnings = feature === "all" || feature === "warnings";
+
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(true);
   const [lastChecked, setLastChecked] = useState(null);
@@ -59,10 +65,11 @@ export default function WorldMonitor({ feature = 'all' }) {
     }
   }, []);
   useEffect(() => {
+    if (!needsEarthquakes) return undefined;
     loadDisasters();
     const timer = setInterval(loadDisasters, 5 * 60 * 1000);
     return () => clearInterval(timer);
-  }, [loadDisasters]);
+  }, [loadDisasters, needsEarthquakes]);
   const [airResult, setAirResult] = useState(null);
   const [airLoading, setAirLoading] = useState(true);
   const [hotspotsOpen, setHotspotsOpen] = useState(false);
@@ -90,10 +97,11 @@ export default function WorldMonitor({ feature = 'all' }) {
   }, []);
 
   useEffect(() => {
+    if (!needsHotspots) return undefined;
     loadHotspots();
     const timer = setInterval(loadHotspots, 5 * 60 * 1000);
     return () => clearInterval(timer);
-  }, [loadHotspots]);
+  }, [loadHotspots, needsHotspots]);
 
   const loadAirQuality = useCallback(async () => {
     setAirLoading(true);
@@ -118,10 +126,11 @@ export default function WorldMonitor({ feature = 'all' }) {
   }, []);
 
   useEffect(() => {
+    if (!needsAirQuality) return undefined;
     loadAirQuality();
     const timer = setInterval(loadAirQuality, 5 * 60 * 1000);
     return () => clearInterval(timer);
-  }, [loadAirQuality]);
+  }, [loadAirQuality, needsAirQuality]);
 
 
   const [weatherRegions, setWeatherRegions] = useState({
@@ -152,6 +161,7 @@ export default function WorldMonitor({ feature = 'all' }) {
   }, []);
 
   useEffect(() => {
+    if (!needsWeather) return undefined;
     let active = true;
     fetchRegions()
       .then((data) => {
@@ -164,9 +174,10 @@ export default function WorldMonitor({ feature = 'all' }) {
         if (active) setRegionError(error.message || "Daftar provinsi gagal dimuat.");
       });
     return () => { active = false; };
-  }, [fetchRegions]);
+  }, [fetchRegions, needsWeather]);
 
   useEffect(() => {
+    if (!needsWeather) return undefined;
     if (!provinceCode) {
       setWeatherRegions((previous) => ({ ...previous, kabupaten: [] }));
       return undefined;
@@ -183,9 +194,10 @@ export default function WorldMonitor({ feature = 'all' }) {
         if (active) setRegionError(error.message || "Daftar kabupaten/kota gagal dimuat.");
       });
     return () => { active = false; };
-  }, [provinceCode, fetchRegions]);
+  }, [provinceCode, fetchRegions, needsWeather]);
 
   useEffect(() => {
+    if (!needsWeather) return undefined;
     if (!kabupatenCode) {
       setWeatherRegions((previous) => ({ ...previous, kecamatan: [] }));
       return undefined;
@@ -202,9 +214,10 @@ export default function WorldMonitor({ feature = 'all' }) {
         if (active) setRegionError(error.message || "Daftar kecamatan gagal dimuat.");
       });
     return () => { active = false; };
-  }, [kabupatenCode, fetchRegions]);
+  }, [kabupatenCode, fetchRegions, needsWeather]);
 
   useEffect(() => {
+    if (!needsWeather) return undefined;
     if (!kecamatanCode) {
       setWeatherRegions((previous) => ({ ...previous, desa: [] }));
       return undefined;
@@ -221,7 +234,7 @@ export default function WorldMonitor({ feature = 'all' }) {
         if (active) setRegionError(error.message || "Daftar desa/kelurahan gagal dimuat.");
       });
     return () => { active = false; };
-  }, [kecamatanCode, fetchRegions]);
+  }, [kecamatanCode, fetchRegions, needsWeather]);
 
   const weatherRequestId = useRef(0);
 
@@ -265,12 +278,13 @@ export default function WorldMonitor({ feature = 'all' }) {
   }, [desaCode]);
 
   useEffect(() => {
+    if (!needsWeather) return undefined;
     loadWeather();
 
     return () => {
       weatherRequestId.current += 1;
     };
-  }, [loadWeather]);
+  }, [loadWeather, needsWeather]);
 
   const loadWarnings = useCallback(async () => {
     setWarningsLoading(true);
@@ -293,10 +307,11 @@ export default function WorldMonitor({ feature = 'all' }) {
   }, []);
 
   useEffect(() => {
+    if (!needsWarnings) return undefined;
     loadWarnings();
     const timer = setInterval(loadWarnings, 3 * 60 * 1000);
     return () => clearInterval(timer);
-  }, [loadWarnings]);
+  }, [loadWarnings, needsWarnings]);
 
   const weatherForecast = Array.isArray(weatherResult?.forecast)
     ? weatherResult.forecast : [];
@@ -736,7 +751,7 @@ export default function WorldMonitor({ feature = 'all' }) {
       </section>}
 
       {feature === "all" && <section className="world-layers" aria-label="Lapisan lingkungan lainnya">
-        <p className="world-label">PLANNED DATA LAYERS</p>
+        <p className="world-label">CONNECTED DATA LAYERS</p>
         <h2>Lapisan pemantauan</h2>
         <div className="world-layer-grid">
           {LAYERS.map((layer) => (
@@ -744,7 +759,7 @@ export default function WorldMonitor({ feature = 'all' }) {
               <span>{layer.number}</span>
               <h3>{layer.title}</h3>
               <p>{layer.detail}</p>
-              <small>{layer.number === "04" ? "DALAM PENGEMBANGAN" : "INTEGRASI AKTIF"}</small>
+              <small>INTEGRASI AKTIF</small>
             </article>
           ))}
         </div>
