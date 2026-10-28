@@ -1347,3 +1347,228 @@ html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .b
 .world-workspace .world-status-badge {
   border-color: color-mix(in srgb, var(--workspace-accent) 45%, transparent);
 }
+
+/* Nexus roadmap homepage — additive styles */
+.nexus-shell .nexus-about,
+.nexus-shell .nexus-next {
+  margin-top: 42px;
+  padding: clamp(22px, 3.5vw, 38px);
+  border: 1px solid rgb(117 173 190 / 22%);
+  border-radius: 24px;
+  background:
+    radial-gradient(ellipse at 100% 0%, rgb(46 123 133 / 12%), transparent 48%),
+    linear-gradient(135deg, rgb(15 26 40 / 96%), rgb(9 17 28 / 96%));
+  box-shadow: 0 18px 44px rgb(0 0 0 / 12%);
+}
+
+.nexus-shell .nexus-about .nexus-section-head {
+  margin-bottom: 18px;
+}
+
+.nexus-shell .nexus-about .nexus-section-head h2,
+.nexus-shell .nexus-next h2 {
+  max-width: 760px;
+  margin: 8px 0 0;
+  color: #e8f0f5;
+  font-size: clamp(25px, 3.3vw, 38px);
+  font-weight: 500;
+  line-height: 1.16;
+  letter-spacing: -0.035em;
+}
+
+.nexus-shell .nexus-about-intro {
+  max-width: 790px;
+  margin: 0;
+  color: #aebfca;
+  font-size: clamp(14px, 1.5vw, 16px);
+  line-height: 1.85;
+}
+
+.nexus-shell .nexus-principle-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.nexus-shell .nexus-principle-card {
+  position: relative;
+  min-width: 0;
+  padding: 22px 20px;
+  overflow: hidden;
+  border: 1px solid rgb(117 173 190 / 18%);
+  border-radius: 17px;
+  background: linear-gradient(145deg, rgb(22 39 54 / 86%), rgb(12 23 36 / 90%));
+  transition: border-color 180ms ease, transform 180ms ease, background 180ms ease;
+}
+
+.nexus-shell .nexus-principle-card::before {
+  position: absolute;
+  top: 0;
+  left: 20px;
+  width: 38px;
+  height: 2px;
+  background: #62e7e0;
+  content: "";
+  opacity: 0.8;
+}
+
+.nexus-shell .nexus-principle-card:nth-child(2)::before {
+  background: #f5c16b;
+}
+
+.nexus-shell .nexus-principle-card:nth-child(3)::before {
+  background: #d98a63;
+}
+
+.nexus-shell .nexus-principle-card:hover {
+  transform: translateY(-3px);
+  border-color: rgb(98 231 224 / 38%);
+  background: linear-gradient(145deg, rgb(25 46 61 / 94%), rgb(12 23 36 / 96%));
+}
+
+.nexus-shell .nexus-principle-index {
+  display: block;
+  margin-bottom: 22px;
+  color: #75dcd7;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
+.nexus-shell .nexus-principle-card:nth-child(2) .nexus-principle-index {
+  color: #f5c16b;
+}
+
+.nexus-shell .nexus-principle-card:nth-child(3) .nexus-principle-index {
+  color: #e5a080;
+}
+
+.nexus-shell .nexus-principle-card h3 {
+  margin: 0 0 10px;
+  color: #e4edf2;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.nexus-shell .nexus-principle-card p {
+  margin: 0;
+  color: #9fb1be;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.nexus-shell .nexus-integrity {
+  display: flex;
+  align-items: flex-start;
+  gap: 13px;
+  margin-top: 22px;
+  padding: 19px 22px;
+  border: 1px solid rgb(245 193 107 / 18%);
+  border-radius: 16px;
+  background: rgb(245 193 107 / 4%);
+  color: #aebbc5;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.nexus-shell .nexus-integrity > span {
+  flex: 0 0 auto;
+  color: #f5c16b;
+  font-size: 18px;
+}
+
+.nexus-shell .nexus-integrity p {
+  margin: 0;
+}
+
+.nexus-shell .nexus-integrity strong {
+  color: #e9d0a1;
+  font-weight: 600;
+}
+
+.nexus-shell .nexus-next {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  background:
+    radial-gradient(ellipse at 0% 100%, rgb(98 231 224 / 9%), transparent 50%),
+    linear-gradient(135deg, #101d2b, #0b1421);
+}
+
+.nexus-shell .nexus-next > div:first-child {
+  max-width: 650px;
+}
+
+.nexus-shell .nexus-next h2 {
+  font-size: clamp(23px, 2.8vw, 32px);
+}
+
+.nexus-shell .nexus-next > div:first-child > p:last-child {
+  margin: 12px 0 0;
+  color: #aebfca;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.nexus-shell .nexus-next-actions {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 13px;
+}
+
+.nexus-shell .nexus-next .nexus-card-link {
+  color: #79e3de;
+  text-decoration-color: rgb(121 227 222 / 35%);
+  text-underline-offset: 5px;
+}
+
+.nexus-shell .nexus-next .nexus-card-link:hover {
+  color: #f5c16b;
+}
+
+.nexus-shell .nexus-source-status.is-unknown {
+  border-color: rgb(174 191 202 / 24%);
+  background: rgb(174 191 202 / 7%);
+  color: #b3c0ca;
+}
+
+@media (max-width: 760px) {
+  .nexus-shell .nexus-principle-grid {
+    grid-template-columns: 1fr;
+    gap: 11px;
+  }
+
+  .nexus-shell .nexus-principle-card {
+    padding: 20px;
+  }
+
+  .nexus-shell .nexus-principle-index {
+    margin-bottom: 13px;
+  }
+
+  .nexus-shell .nexus-next {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .nexus-shell .nexus-next-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nexus-shell .nexus-principle-card {
+    transition: none;
+  }
+
+  .nexus-shell .nexus-principle-card:hover {
+    transform: none;
+  }
+}
