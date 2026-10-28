@@ -6,23 +6,72 @@ const MODULES = [
     icon: "◈",
     status: "READY",
     title: "Security Center",
-    description: "Analisis URL, deteksi indikator phishing, dan pahami risiko digital sebelum bertindak.",
-    href: "#/security",
-    action: "Buka Security Center",
+    description: "Mulai dari sinyal risiko digital dan pahami indikator sebelum mengambil tindakan.",
+    href: "#/fitur/security",
+    action: "Jelajahi fitur",
     tone: "nexus-cyan",
   },
   {
     id: "world",
     icon: "◎",
-    status: "LIVE DATA",
+    status: "CONNECTED SOURCES",
     title: "World Monitor",
-    description: "Pantau hotspot, kualitas udara, gempa, dan peringatan cuaca dari sumber data yang terhubung.",
-    href: "#/world-monitor",
-    action: "Jelajahi World Monitor",
+    description: "Jelajahi hotspot, kualitas udara, gempa bumi, dan peringatan cuaca.",
+    href: "#/fitur/world-monitor",
+    action: "Jelajahi fitur",
     tone: "nexus-amber",
   },
+  {
+    id: "analisis",
+    icon: "⌕",
+    status: "INVESTIGATION",
+    title: "Analisis",
+    description: "Periksa URL, nomor, file yang didukung, dan QR melalui alat pemeriksaan.",
+    href: "#/fitur/analisis",
+    action: "Jelajahi fitur",
+    tone: "nexus-cyan",
+  },
+  {
+    id: "edukasi",
+    icon: "▤",
+    status: "LEARN",
+    title: "Edukasi",
+    description: "Pelajari pola phishing dan kebiasaan verifikasi untuk aktivitas digital.",
+    href: "#/fitur/edukasi",
+    action: "Jelajahi fitur",
+    tone: "nexus-amber",
+  },
+  {
+    id: "berita",
+    icon: "◉",
+    status: "NEWS FEED",
+    title: "Berita",
+    description: "Ikuti perkembangan keamanan digital dari feed berita yang tersedia.",
+    href: "#/fitur/berita",
+    action: "Jelajahi fitur",
+    tone: "nexus-cyan",
+  },
+  {
+    id: "asisten",
+    icon: "✳",
+    status: "GUIDANCE",
+    title: "Asisten Keamanan",
+    description: "Temukan penjelasan awal dan langkah verifikasi untuk pertanyaan keamanan.",
+    href: "#/fitur/asisten",
+    action: "Jelajahi fitur",
+    tone: "nexus-amber",
+  },
+  {
+    id: "melapor",
+    icon: "↗",
+    status: "RESPONSE GUIDE",
+    title: "Cara Melapor",
+    description: "Pelajari langkah menyiapkan bukti dan menemukan kanal pelaporan resmi.",
+    href: "#/fitur/melapor",
+    action: "Jelajahi fitur",
+    tone: "nexus-cyan",
+  },
 ];
-
 const SOURCES = [
   { id: "hotspots", label: "Hotspot", source: "NASA FIRMS", url: "/api/environment/hotspots" },
   { id: "air", label: "Kualitas udara", source: "OpenAQ", url: "/api/environment/air-quality" },
@@ -139,6 +188,7 @@ export default function Nexus() {
   return (
     <main className="nexus-shell">
       <section className="nexus-hero">
+        <img className="nexus-earth-image" src="/earth-asia-static.png" alt="" aria-hidden="true" />
         <div className="nexus-kicker"><span /> INSPECTRE NEXUS / PLATFORM GATEWAY</div>
         <p className="nexus-overline">ONE PLATFORM. MULTIPLE REALITIES.</p>
         <h1>See the signals.<br /><span>Understand the world.</span></h1>
@@ -213,7 +263,7 @@ export default function Nexus() {
             <p className="nexus-label">PILIH RUANG KERJA</p>
             <h2 id="modules-title">Intelligence modules</h2>
           </div>
-          <span className="nexus-module-count">02 MODULES</span>
+          <span className="nexus-module-count">07 FEATURES</span>
         </div>
         <div className="nexus-card-grid">
           {MODULES.map((module, index) => (

@@ -2,7 +2,10 @@ import { useEffect, useState } from 'react';
 import Navbar from './components/Navbar.jsx';
 import Home from './pages/Home.jsx';
 import Nexus from './pages/Nexus.jsx';
+import FeatureLanding from './pages/FeatureLanding.jsx';
 import WorldMonitor from './pages/WorldMonitor.jsx';
+import EnvironmentalIntelligence from './pages/EnvironmentalIntelligence.jsx';
+import EnvironmentalWorkspace from './pages/EnvironmentalWorkspace.jsx';
 import Analisis from './pages/Analisis.jsx';
 import Edukasi from './pages/Edukasi.jsx';
 import History from './pages/History.jsx';
@@ -15,8 +18,21 @@ import FloatingAssistant from './components/FloatingAssistant.jsx';
 
 const PAGES = {
   '#/': { Page: Nexus, title: 'inSpectre Nexus — Intelligence Platform' },
+  '#/fitur/security': { Page: () => <FeatureLanding feature="security" />, title: 'Security Center — inSpectre Nexus' },
+  '#/fitur/world-monitor': { Page: () => <FeatureLanding feature="world-monitor" />, title: 'World Monitor — inSpectre Nexus' },
+  '#/fitur/analisis': { Page: () => <FeatureLanding feature="analisis" />, title: 'Analisis — inSpectre Nexus' },
+  '#/fitur/edukasi': { Page: () => <FeatureLanding feature="edukasi" />, title: 'Edukasi — inSpectre Nexus' },
+  '#/fitur/berita': { Page: () => <FeatureLanding feature="berita" />, title: 'Berita — inSpectre Nexus' },
+  '#/fitur/asisten': { Page: () => <FeatureLanding feature="asisten" />, title: 'Asisten Keamanan — inSpectre Nexus' },
+  '#/fitur/melapor': { Page: () => <FeatureLanding feature="melapor" />, title: 'Cara Melapor — inSpectre Nexus' },
   '#/security': { Page: Home, title: 'Security Center — inSpectre' },
   '#/world-monitor': { Page: WorldMonitor, title: 'World Monitor — inSpectre Nexus' },
+  '#/environmental': { Page: EnvironmentalIntelligence, title: 'Environmental Intelligence — inSpectre Nexus' },
+  '#/environment/hotspots': { Page: () => <EnvironmentalWorkspace feature="hotspots" />, title: 'Hotspot & Karhutla — inSpectre' },
+  '#/environment/air-quality': { Page: () => <EnvironmentalWorkspace feature="air-quality" />, title: 'Kualitas Udara — inSpectre' },
+  '#/environment/weather': { Page: () => <EnvironmentalWorkspace feature="weather" />, title: 'Cuaca — inSpectre' },
+  '#/environment/warnings': { Page: () => <EnvironmentalWorkspace feature="warnings" />, title: 'Peringatan BMKG — inSpectre' },
+  '#/environment/earthquakes': { Page: () => <EnvironmentalWorkspace feature="earthquakes" />, title: 'Gempa Bumi — inSpectre' },
   '#/analisis': { Page: Analisis, title: 'Analisis Keamanan — inSpectre' },
   // Alias kompatibilitas untuk tautan lama; File & QR sekarang berada di dalam Analisis.
   '#/tools': { Page: Analisis, title: 'Analisis Keamanan — inSpectre' },
