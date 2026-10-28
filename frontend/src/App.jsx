@@ -1,3 +1,4 @@
+import Logo from './components/Logo.jsx';
 import { useEffect, useState } from 'react';
 import Navbar from './components/Navbar.jsx';
 import Home from './pages/Home.jsx';
