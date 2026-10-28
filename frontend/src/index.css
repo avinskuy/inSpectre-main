@@ -1023,3 +1023,327 @@ html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .b
   .nexus-situation-card { padding: 15px; }
   .nexus-situation-detail { min-height: 0; }
 }
+
+
+
+/* NEXUS HERO — CONSOLIDATED CINEMATIC LAYOUT */
+.nexus-shell .nexus-hero {
+  position: relative;
+  isolation: isolate;
+  min-height: 520px;
+  padding: clamp(32px, 5vw, 68px);
+  overflow: hidden;
+  border: 1px solid rgb(117 173 190 / 25%);
+  border-radius: 28px;
+  background:
+    radial-gradient(ellipse at 78% 42%, rgb(34 126 143 / 16%), transparent 46%),
+    radial-gradient(ellipse at 8% 100%, rgb(217 108 59 / 8%), transparent 38%),
+    linear-gradient(118deg, #080e19 0%, #101820 54%, #112b34 100%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 3.5%), 0 24px 70px rgb(0 0 0 / 18%);
+}
+
+/* Use the real NASA video, not a second fake globe layer. */
+.nexus-shell .nexus-hero::before {
+  content: none;
+}
+
+.nexus-shell .nexus-hero > .nexus-earth-image {
+  position: absolute;
+  z-index: 0;
+  inset: 50% clamp(18px, 5vw, 72px) auto auto;
+  width: clamp(250px, 39vw, 490px);
+  height: auto;
+  aspect-ratio: 1;
+  transform: translateY(-50%);
+  border: 1px solid rgb(91 190 230 / 35%);
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+  opacity: .88;
+  box-shadow: 0 0 34px rgb(22 140 220 / 20%), inset 0 0 28px #000;
+  -webkit-mask-image: radial-gradient(circle, #000 64%, transparent 72%);
+  mask-image: radial-gradient(circle, #000 64%, transparent 72%);
+  pointer-events: none;
+}
+
+.nexus-shell .nexus-hero > :not(.nexus-earth-image) {
+  position: relative;
+  z-index: 1;
+}
+
+.nexus-shell .nexus-hero::after {
+  z-index: 2;
+  right: 30px;
+  bottom: 24px;
+  color: #8ba7b7;
+  pointer-events: none;
+}
+
+.nexus-shell .nexus-hero > .nexus-kicker {
+  max-width: 54%;
+}
+
+.nexus-shell .nexus-hero > .nexus-kicker span {
+  background: #d96c3b;
+  box-shadow: 0 0 14px rgb(217 108 59 / 55%);
+}
+
+.nexus-shell .nexus-hero > .nexus-overline {
+  max-width: 54%;
+  margin-top: clamp(28px, 4vw, 42px);
+  color: #d96c3b;
+}
+
+.nexus-shell .nexus-hero > h1 {
+  max-width: 54%;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(40px, 5.2vw, 72px);
+  font-weight: 500;
+  letter-spacing: -.045em;
+  line-height: 1.02;
+  text-wrap: balance;
+}
+
+.nexus-shell .nexus-hero > h1 span {
+  color: #d7e3e8;
+}
+
+.nexus-shell .nexus-hero > .nexus-intro {
+  max-width: 54%;
+  color: #bdcbd2;
+}
+
+.nexus-shell .nexus-hero > .nexus-meta {
+  max-width: 54%;
+}
+
+.nexus-shell .nexus-brief {
+  border-color: rgb(117 173 190 / 22%);
+  box-shadow: 0 18px 55px rgb(0 0 0 / 12%);
+}
+
+@media (max-width: 640px) {
+  .nexus-shell .nexus-hero {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding: 28px 22px 28px;
+    border-radius: 22px;
+  }
+
+  .nexus-shell .nexus-hero > .nexus-kicker { order: 1; max-width: 100%; }
+  .nexus-shell .nexus-hero > .nexus-overline {
+    order: 2;
+    max-width: 100%;
+    margin-top: 28px;
+    font-size: 10px;
+  }
+
+  .nexus-shell .nexus-hero > h1 {
+    order: 3;
+    max-width: 100%;
+    font-size: clamp(38px, 10vw, 52px);
+    line-height: 1.04;
+  }
+
+  .nexus-shell .nexus-hero > .nexus-intro {
+    order: 4;
+    max-width: 100%;
+    margin-bottom: 8px;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  .nexus-shell .nexus-hero > .nexus-earth-image {
+    position: relative;
+    inset: auto;
+    order: 5;
+    display: block;
+    width: min(68vw, 270px);
+    height: auto;
+    margin: 12px auto 8px;
+    transform: none;
+  }
+
+  .nexus-shell .nexus-hero > .nexus-meta {
+    order: 6;
+    max-width: 100%;
+    flex-direction: column;
+    gap: 6px;
+    padding-bottom: 14px;
+  }
+
+  .nexus-shell .nexus-hero::after {
+    content: none;
+  }
+}
+
+
+/* World Monitor domain hub */
+.world-hub,
+.environment-hub {
+  --hub-line: rgba(148, 163, 184, .2);
+  width: min(1120px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 34px 0 64px;
+  color: #e7edf5;
+}
+.world-hub-back,
+.environment-back {
+  display: inline-block;
+  margin-bottom: 34px;
+  color: #9eafc3;
+  font-size: .76rem;
+  letter-spacing: .08em;
+  text-decoration: none;
+}
+.world-hub-hero,
+.environment-hero {
+  max-width: 760px;
+  margin-bottom: 34px;
+}
+.world-hub-eyebrow,
+.environment-eyebrow {
+  color: #8ca8c8;
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .18em;
+}
+.world-hub-hero h1,
+.environment-hero h1 {
+  margin: 12px 0;
+  font-size: clamp(2.2rem, 6vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1.04;
+  letter-spacing: -.045em;
+}
+.world-hub-hero h1 span { color: #f5c16b; }
+.environment-hero h1 span { color: #64d6c5; }
+.world-hub-hero > p:last-child,
+.environment-hero > p:last-child {
+  max-width: 620px;
+  color: #a5b3c5;
+  line-height: 1.75;
+}
+.world-hub-grid,
+.environment-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.world-hub-card,
+.environment-card {
+  --card-accent: #65c9d8;
+  position: relative;
+  display: flex;
+  min-height: 210px;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 24px;
+  overflow: hidden;
+  border: 1px solid var(--hub-line);
+  border-radius: 16px;
+  background: linear-gradient(145deg, rgba(22, 35, 52, .96), rgba(10, 18, 30, .96));
+  text-decoration: none;
+  transition: border-color .2s ease, transform .2s ease, background .2s ease;
+}
+.world-hub-card:hover,
+.environment-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--card-accent);
+}
+.world-hub-number,
+.environment-number {
+  color: var(--card-accent);
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .15em;
+}
+.world-hub-card h2,
+.environment-card h2 {
+  margin: 24px 0 8px;
+  color: #f0f5fb;
+  font-size: clamp(1.1rem, 2.4vw, 1.45rem);
+  font-weight: 750;
+}
+.world-hub-card p,
+.environment-card p {
+  margin: 0 0 24px;
+  color: #a5b3c5;
+  font-size: .9rem;
+  line-height: 1.65;
+}
+.world-hub-open,
+.environment-open {
+  margin-top: auto;
+  color: var(--card-accent);
+  font-size: .78rem;
+  font-weight: 750;
+}
+.world-hub-environment { --card-accent: #64d6c5; }
+.world-hub-security { --card-accent: #ff827b; }
+.world-hub-threat { --card-accent: #9bb8ff; }
+.environment-hotspot { --card-accent: #ff6b61; }
+.environment-air { --card-accent: #70d6e4; }
+.environment-weather { --card-accent: #f5c16b; }
+.environment-warning { --card-accent: #c4a5ff; }
+.environment-earthquake { --card-accent: #ff9b70; }
+
+@media (max-width: 600px) {
+  .world-hub,
+  .environment-hub {
+    width: calc(100% - 28px);
+    padding-top: 24px;
+  }
+  .world-hub-grid,
+  .environment-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 11px;
+  }
+  .world-hub-card,
+  .environment-card {
+    min-height: 175px;
+    padding: 20px;
+  }
+  .world-hub-card h2,
+  .environment-card h2 {
+    margin-top: 18px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .world-hub-card,
+  .environment-card {
+    transition: none;
+  }
+}
+
+/* Environmental Intelligence — workspace accents */
+.world-workspace {
+  --workspace-accent: #70d6c8;
+}
+.world-workspace-hotspot { --workspace-accent: #ff7068; }
+.world-workspace-air { --workspace-accent: #70d6e4; }
+.world-workspace-weather { --workspace-accent: #f5c16b; }
+.world-workspace-warning { --workspace-accent: #c4a5ff; }
+.world-workspace-earthquake { --workspace-accent: #ff9b70; }
+
+.world-workspace .world-kicker {
+  color: var(--workspace-accent);
+}
+
+.world-workspace .world-kicker > span {
+  background: var(--workspace-accent);
+  box-shadow: 0 0 14px var(--workspace-accent);
+}
+
+.world-workspace .world-heading h1 {
+  text-wrap: balance;
+}
+
+.world-workspace .world-back:hover {
+  color: var(--workspace-accent);
+}
+
+.world-workspace .world-status-badge {
+  border-color: color-mix(in srgb, var(--workspace-accent) 45%, transparent);
+}
