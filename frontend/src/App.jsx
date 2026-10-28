@@ -1,3 +1,4 @@
+import Logo from './components/Logo.jsx';
 import { useEffect, useState } from 'react';
 import Navbar from './components/Navbar.jsx';
 import Home from './pages/Home.jsx';
@@ -83,10 +84,15 @@ export default function App() {
         <Page />
       </div>
       <FloatingAssistant route={route} />
-      <footer className="site-footer border-t border-cyber-border px-4 py-8 text-center text-sm text-cyber-muted">
-        <p className="font-semibold">inSpectre — Lebih waspada, lebih terlindungi.</p>
-        <p className="mx-auto mt-2 max-w-2xl">Hasil pemeriksaan adalah indikator awal berbasis heuristik, bukan jaminan keamanan atau pengganti verifikasi melalui kanal resmi.</p>
-        <p className="mt-3">© {new Date().getFullYear()} inSpectre · Edukasi keamanan digital</p>
+      <footer className="site-footer relative mt-10 overflow-hidden border-t border-cyan-900/40 bg-slate-950 px-5 py-9 text-center text-sm text-slate-300 sm:py-11">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-400/70 to-transparent" />
+        <div className="relative mx-auto max-w-4xl">
+          <div className="flex justify-center"><Logo /></div>
+          <p className="mt-3 font-semibold tracking-wide text-slate-100">Lebih waspada, lebih terlindungi.</p>
+          <p className="mx-auto mt-4 max-w-2xl text-xs leading-6 text-slate-400 sm:text-sm">Hasil pemeriksaan adalah indikator awal berbasis heuristik, bukan jaminan keamanan atau pengganti verifikasi melalui kanal resmi.</p>
+          <div className="mx-auto my-5 h-px max-w-xs bg-gradient-to-r from-transparent via-slate-700 to-transparent" />
+          <p className="text-xs text-slate-500">© {new Date().getFullYear()} inSpectre <span className="px-1.5 text-cyan-500">·</span> Edukasi keamanan digital</p>
+        </div>
       </footer>
     </div>
   );
