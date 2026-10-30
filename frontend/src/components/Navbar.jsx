@@ -2,27 +2,23 @@ import { useState, useEffect } from 'react';
 import Logo from './Logo.jsx';
 import AccessibilityMenu from './AccessibilityMenu.jsx';
 import Drawer from './Drawer.jsx';
+import NavIcon from './NavIcon.jsx';
 
 const PRIMARY_LINKS = [
-  { href: '#/', label: 'Nexus', icon: '⌂' },
-  { href: '#/fitur/security', label: 'Security Center', icon: '◈' },
-  { href: '#/fitur/world-monitor', label: 'World Monitor', icon: '◎' },
-  { href: '#/fitur/analisis', label: 'Analisis', icon: '⌕' },
+  { href: '#/', label: 'Nexus', icon: 'home' },
+  { href: '#/fitur/security', label: 'Security Center', icon: 'shield' },
+  { href: '#/fitur/world-monitor', label: 'World Monitor', icon: 'globe' },
+  { href: '#/fitur/analisis', label: 'Analisis', icon: 'search' },
 ];
 
 const ALL_LINKS = [
-  ...PRIMARY_LINKS,
-  { href: '#/fitur/edukasi', label: 'Edukasi', icon: '▤' },
-  { href: '#/fitur/berita', label: 'Berita', icon: '◉' },
-  { href: '#/fitur/asisten', label: 'Asisten Keamanan', icon: '✳' },
-  { href: '#/fitur/melapor', label: 'Cara Melapor', icon: '↗' },
-  { href: '#/security', label: 'Workspace Security Center', icon: '◈' },
-  { href: '#/world-monitor', label: 'Workspace World Monitor', icon: '◎' },
-  { href: '#/analisis', label: 'Workspace Analisis', icon: '⌕' },
-  { href: '#/dashboard', label: 'Dashboard', icon: '▦' },
-  { href: '#/history', label: 'Riwayat', icon: '↺' },
+  { href: '#/fitur/edukasi', label: 'Edukasi', icon: 'book' },
+  { href: '#/fitur/berita', label: 'Berita', icon: 'news' },
+  { href: '#/fitur/asisten', label: 'Asisten Keamanan', icon: 'spark' },
+  { href: '#/fitur/melapor', label: 'Cara Melapor', icon: 'arrow' },
+  { href: '#/dashboard', label: 'Dashboard', icon: 'dashboard' },
+  { href: '#/history', label: 'Riwayat', icon: 'history' },
 ];
-
 function routeIsActive(current, href) {
   if (href === '#/') return current === '#/';
   return current === href;
@@ -45,7 +41,7 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-30 border-b border-gray-200 dark:border-gray-800 bg-white/90 dark:bg-gray-950/90 backdrop-blur">
+      <header className="sticky top-0 z-30 border-b border-white/10 bg-[#0b1220]/95 text-slate-100 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4">
           <a
             href="#/"
@@ -64,11 +60,11 @@ export default function Navbar() {
                     aria-current={routeIsActive(current, link.href) ? 'page' : undefined}
                     className={`relative flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
                       routeIsActive(current, link.href)
-                        ? 'bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300'
-                        : 'text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800'
+                        ? 'bg-[#f5b96b]/15 text-[#f5b96b]'
+                        : 'text-slate-300 hover:bg-white/5 hover:text-[#7dd3fc]'
                     }`}
                   >
-                    <span aria-hidden="true">{link.icon}</span>
+                    <NavIcon name={link.icon} className="h-4 w-4" />
                     <span>{link.label}</span>
                   </a>
                 </li>
@@ -84,7 +80,7 @@ export default function Navbar() {
               aria-label="Buka semua fitur dan utilitas"
               aria-expanded={drawerOpen}
               aria-haspopup="dialog"
-              className="inline-flex items-center gap-2 rounded-xl border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
+              className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-3 py-2 text-sm font-medium text-slate-200 transition-colors hover:border-[#7dd3fc]/40 hover:bg-white/5 hover:text-[#7dd3fc]"
             >
               <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
                 <path d="M4 6h16M4 12h16M4 18h16" strokeLinecap="round" />
@@ -98,6 +94,7 @@ export default function Navbar() {
       <Drawer
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
+        primaryLinks={PRIMARY_LINKS}
         links={ALL_LINKS}
         current={current}
       />

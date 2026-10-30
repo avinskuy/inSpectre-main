@@ -25,11 +25,26 @@ Deteksi tautan mencurigakan. Kenali indikator risiko. Lebih waspada terhadap pen
 
 ## 📌 Tentang Proyek
 
-**inSpectre** adalah ekosistem pemeriksaan keamanan digital yang membantu pengguna mengenali indikasi phishing, nomor yang dilaporkan, file mencurigakan, dan informasi keamanan yang relevan.
+**inSpectre — Environmental & Threat Intelligence Platform** adalah platform intelijen terpadu yang dirancang untuk membantu pengguna memahami, memantau, dan merespons informasi serta indikasi ancaman di lingkungan digital maupun dunia nyata.
 
-Proyek ini menggabungkan analisis heuristik, pemeriksaan reputasi URL melalui layanan eksternal jika tersedia, dashboard aktivitas, serta World Monitoring untuk melihat indikasi hotspot di Indonesia berdasarkan data satelit.
+inSpectre tidak hanya berfokus pada pemeriksaan phishing atau keamanan file. Platform ini mengintegrasikan berbagai modul dalam satu ekosistem, mulai dari **Digital Security & Threat Detection**, **Environmental Intelligence**, **World Monitoring**, hingga **Security Awareness dan AI Assistance**.
 
-> **Penting:** inSpectre merupakan alat bantu kewaspadaan. Hasil pemeriksaan bukan jaminan bahwa URL, nomor, atau file aman maupun berbahaya.
+Melalui pendekatan tersebut, inSpectre menghubungkan pemeriksaan keamanan digital, pemantauan kondisi lingkungan, informasi kebencanaan, berita keamanan, edukasi, dan dukungan asisten cerdas dalam satu pusat informasi.
+
+### Ruang Lingkup Platform
+
+- 🛡️ **Digital Security:** pemeriksaan URL, indikasi phishing, reputasi tautan, nomor telepon, APK, ZIP, dan QR Code.
+- 🌍 **Environmental Intelligence:** pemantauan hotspot satelit, kualitas udara, prakiraan cuaca, peringatan cuaca, dan informasi gempa bumi.
+- 🛰️ **World Monitoring:** visualisasi data dan indikasi situasional melalui peta interaktif.
+- 📊 **Security Dashboard:** ringkasan statistik, aktivitas, dan informasi penting dari berbagai modul.
+- 📰 **Security Intelligence:** berita dan informasi keamanan yang relevan.
+- 🤖 **AI Assistance:** asisten berbasis model bahasa untuk membantu pengguna memahami informasi dan memperoleh panduan.
+- 📚 **Security Awareness:** edukasi, studi kasus, checklist, dan kuis.
+- 🧾 **Activity & Reporting:** riwayat pemeriksaan, pelaporan, pencarian, dan ekspor data yang tersedia.
+
+Dengan menggabungkan berbagai sumber data, teknologi analisis, dan visualisasi dalam satu platform, **inSpectre bertujuan menjadi pusat Environmental & Threat Intelligence yang membantu pengguna memperoleh gambaran situasi secara lebih menyeluruh.**
+
+> **Penting:** inSpectre merupakan platform pendukung informasi dan kewaspadaan, bukan sistem yang menjamin seluruh ancaman dapat terdeteksi atau menggantikan verifikasi dari pihak berwenang maupun tenaga ahli.
 
 ## 🚦 Status Pengembangan
 
@@ -46,7 +61,7 @@ Proyek ini menggabungkan analisis heuristik, pemeriksaan reputasi URL melalui la
 | 🔗 Link Phishing Checker | Menganalisis indikator seperti TLD berisiko, peniruan brand, kata kunci mencurigakan, alamat IP langsung, subdomain berlapis, homoglyph, URL shortener, dan penggunaan HTTPS. |
 | 🛡️ Google Safe Browsing | Memeriksa reputasi URL terhadap kategori ancaman yang didukung API jika dikonfigurasi dan tersedia. |
 | 📱 Pemeriksaan Nomor | Memeriksa nomor berdasarkan data laporan yang tersedia. |
-| 📦 APK/ZIP Scanner | Analisis statis struktur arsip, jalur, ekstensi, string, dan indikator yang dapat dibaca. Bukan antivirus. |
+| 📦 APK/ZIP Scanner | Analisis statis struktur arsip, jalur, ekstensi, string, serta AndroidManifest.xml APK menggunakan AAPT jika tersedia. Bukan antivirus. |
 | ▦ QR Code Checker | Mendekode QR di browser tanpa otomatis membuka URL hasil dekode. |
 | 📡 Live Dashboard | Menampilkan statistik dan aktivitas melalui Socket.IO. |
 | 📰 Berita Keamanan | Menampilkan berita keamanan beserta tautan penerbit jika tersedia. |
@@ -173,19 +188,17 @@ Pemeriksaan reputasi bukan pemindaian menyeluruh terhadap isi situs. Ancaman bar
 - QR didekode di browser; URL hasil dekode tidak dibuka otomatis.
 - APK/ZIP diperiksa secara statis dan tidak dijalankan sebagai aplikasi.
 - Analisis bersifat heuristik dan bukan pengganti antivirus.
-- Manifest APK biner mungkin tidak dapat diurai sepenuhnya.
+- AndroidManifest.xml dianalisis menggunakan AAPT jika tersedia; jika gagal, keterbatasan analisis dicantumkan pada hasil.
 - Format arsip atau kompresi tertentu dapat ditolak atau dianalisis secara terbatas.
-- Jika pemeriksaan APK memerlukan `aapt`, alat tersebut harus tersedia dan dikonfigurasi melalui `AAPT_PATH` atau `ANDROID_HOME`.
+- Pemeriksaan Manifest APK memerlukan AAPT. Lokasi executable dapat ditentukan melalui `AAPT_PATH`.
 
 ## 🔐 Privasi dan Keamanan
 
 - Data nomor pada tampilan publik disamarkan sesuai mekanisme privasi aplikasi.
 - Data URL yang ditampilkan atau disiarkan melewati mekanisme penyaringan privasi.
-- ID pelapor Telegram disimpan dalam bentuk hash pada alur yang menggunakannya.
 - File yang diunggah ditangani melalui alur pemindaian backend.
 - Server tidak membuka URL target secara langsung untuk memeriksa isi situs. Namun, ketika pemeriksaan reputasi aktif, URL dikirim ke Google Safe Browsing untuk pencocokan reputasi.
 - Jangan mengirim URL rahasia atau sensitif ke layanan pemeriksaan eksternal.
-- Integrasi Telegram tersedia di kode proyek, tetapi bot Telegram dinonaktifkan pada deployment demo saat ini.
 - API key dan token harus disimpan di environment variable atau mekanisme secret yang sesuai, bukan di repository.
 
 ## ⚠️ Batasan

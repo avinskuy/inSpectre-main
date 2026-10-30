@@ -149,7 +149,7 @@ export default function Nexus() {
             <h2 id="situation-title">Situation Brief</h2>
           </div>
           <button className="nexus-refresh" type="button" onClick={refresh} disabled={loading}>
-            {loading ? "MEMUAT..." : "↻ REFRESH"}
+            {loading ? "MEMUAT..." : <><svg className="nexus-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.9-3M4 4v4h4M4 13a8 8 0 0 0 14.9 3M20 20v-4h-4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg> REFRESH</>}
           </button>
         </div>
 
@@ -193,7 +193,7 @@ export default function Nexus() {
           Waktu pemeriksaan tidak selalu sama dengan waktu observasi data.
         </p>
         <a className="nexus-card-link nexus-brief-link" href="#/world-monitor">
-          Buka pemantauan lengkap <span aria-hidden="true">↗</span>
+          Buka pemantauan lengkap <svg className="nexus-link-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>
         </a>
       </section>
 
@@ -229,7 +229,7 @@ export default function Nexus() {
       </section>
 
       <section className="nexus-integrity" aria-label="Prinsip integritas data">
-        <span aria-hidden="true">ⓘ</span>
+        <span className="nexus-integrity-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.7"/><path d="M12 11v5M12 8h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg></span>
         <p><strong>Data integrity matters.</strong> Status sumber, waktu pemeriksaan, dan waktu observasi bisa berbeda. Informasi yang tidak tersedia atau tidak diketahui tidak boleh dianggap sebagai kondisi terkini.</p>
       </section>
 
@@ -240,8 +240,8 @@ export default function Nexus() {
           <p>Periksa sinyal keamanan digital atau jelajahi pemantauan lingkungan.</p>
         </div>
         <div className="nexus-next-actions">
-          <a className="nexus-card-link" href="#/fitur/security">Security Center <span aria-hidden="true">↗</span></a>
-          <a className="nexus-card-link" href="#/world-monitor">World Monitor <span aria-hidden="true">↗</span></a>
+          <a className="nexus-card-link" href="#/fitur/security">Security Center <svg className="nexus-link-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg></a>
+          <a className="nexus-card-link" href="#/world-monitor">World Monitor <svg className="nexus-link-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg></a>
         </div>
       </section>
     </main>

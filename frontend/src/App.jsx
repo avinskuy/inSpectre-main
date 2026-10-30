@@ -15,7 +15,6 @@ import Berita from './pages/Berita.jsx';
 import AsistenAI from './pages/AsistenAI.jsx';
 import Melapor from './pages/Melapor.jsx';
 import BootScreen from './components/BootScreen.jsx';
-import FloatingAssistant from './components/FloatingAssistant.jsx';
 
 const PAGES = {
   '#/': { Page: Nexus, title: 'inSpectre Nexus — Intelligence Platform' },
@@ -83,15 +82,36 @@ export default function App() {
       <div id="main-content" tabIndex={-1} key={route} className="page-transition">
         <Page />
       </div>
-      <FloatingAssistant route={route} />
-      <footer className="site-footer relative mt-10 overflow-hidden border-t border-cyan-900/40 bg-slate-950 px-5 py-9 text-center text-sm text-slate-300 sm:py-11">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-400/70 to-transparent" />
+      <footer className="site-footer relative mt-10 overflow-hidden border-t border-white/10 bg-[#0b1220] px-5 py-10 text-center text-sm text-slate-300 sm:py-12">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#7dd3fc]/60 to-transparent" />
         <div className="relative mx-auto max-w-4xl">
           <div className="flex justify-center"><Logo /></div>
-          <p className="mt-3 font-semibold tracking-wide text-slate-100">Lebih waspada, lebih terlindungi.</p>
-          <p className="mx-auto mt-4 max-w-2xl text-xs leading-6 text-slate-400 sm:text-sm">Hasil pemeriksaan adalah indikator awal berbasis heuristik, bukan jaminan keamanan atau pengganti verifikasi melalui kanal resmi.</p>
-          <div className="mx-auto my-5 h-px max-w-xs bg-gradient-to-r from-transparent via-slate-700 to-transparent" />
-          <p className="text-xs text-slate-500">© {new Date().getFullYear()} inSpectre <span className="px-1.5 text-cyan-500">·</span> Edukasi keamanan digital</p>
+          <p className="mt-4 font-semibold tracking-wide text-slate-100">Lebih waspada, lebih terlindungi.</p>
+          <p className="mx-auto mt-3 max-w-2xl text-xs leading-6 text-slate-400 sm:text-sm">
+            inSpectre merupakan platform intelijen terpadu untuk membantu memahami ancaman digital,
+            menganalisis potensi risiko, dan memantau informasi lingkungan yang relevan.
+          </p>
+          <p className="mx-auto mt-3 max-w-2xl text-xs leading-6 text-slate-500">
+            Hasil pemeriksaan adalah indikator awal berbasis heuristik, bukan jaminan keamanan
+            atau pengganti verifikasi melalui kanal resmi.
+          </p>
+          <div className="mx-auto my-6 h-px max-w-xs bg-gradient-to-r from-transparent via-slate-700 to-transparent" />
+          <div className="flex justify-center">
+            <a href="https://www.instagram.com/avinnn_z?rpxt=aTBsazU4NWRtcGFu"
+              target="_blank" rel="noopener noreferrer"
+              aria-label="Instagram inSpectre"
+              className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-300 transition-colors hover:border-[#F5B96B]/50 hover:text-[#F5B96B]">
+              <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+                <rect x="3" y="3" width="18" height="18" rx="5"/>
+                <circle cx="12" cy="12" r="4"/>
+                <circle cx="17.5" cy="6.8" r="1" fill="currentColor" stroke="none"/>
+              </svg>
+            </a>
+          </div>
+          <p className="mt-6 text-xs text-slate-500">
+            © {new Date().getFullYear()} Copyright by Muhammad Afiq Rovindo
+          </p>
+          <p className="mt-1 text-[11px] text-slate-600">inSpectre · Digital & Environmental Intelligence</p>
         </div>
       </footer>
     </div>

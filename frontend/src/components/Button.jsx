@@ -1,10 +1,10 @@
 const VARIANTS = {
   primary:
-    'bg-emerald-500 text-gray-950 hover:bg-emerald-400 focus-visible:ring-emerald-500',
+    'bg-[#f5b96b] text-[#0b1220] hover:bg-[#ffd08d] focus-visible:ring-[#f5b96b]',
   danger:
     'bg-red-600 text-white hover:bg-red-500 focus-visible:ring-red-600',
   outline:
-    'border border-gray-300 dark:border-gray-700 bg-transparent hover:bg-gray-100 dark:hover:bg-gray-800 focus-visible:ring-gray-500',
+    'border border-white/15 bg-transparent text-slate-200 hover:border-[#62dcd5]/50 hover:bg-white/5 hover:text-[#62dcd5] focus-visible:ring-[#62dcd5]',
 };
 VARIANTS.secondary = VARIANTS.outline; // alias — dipakai di halaman Riwayat
 
