@@ -2,8 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ===== Palet warna: terang (default) & gelap (class .dark di <html>) =====
-   Tiap warna punya 2 bentuk: hex (--x) untuk CSS/SVG biasa dan channel (--x-rgb) untuk Tailwind. */
 :root {
   --bg: #ffffff;      --bg-rgb: 255 255 255;
   --panel: #f9fafb;   --panel-rgb: 249 250 251;
@@ -43,7 +41,6 @@ body {
   font-family: 'JetBrains Mono', monospace;
 }
 
-/* ===== Aksesibilitas: dipicu dari AccessibilityMenu lewat atribut data-* di <html> ===== */
 html[data-font-size='large'] {
   font-size: 118%;
 }
@@ -66,8 +63,6 @@ html[data-reduce-motion='true'] *::after {
   }
 }
 
-/* ===== Animations ===== */
-
 @keyframes fadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }
@@ -87,7 +82,6 @@ html[data-reduce-motion='true'] *::after {
 }
 .animate-item-in { animation: itemIn .25s ease both; }
 
-/* Navbar */
 @keyframes navFade {
   from { opacity: 0; transform: translateY(-6px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -100,21 +94,18 @@ html[data-reduce-motion='true'] *::after {
 }
 .animate-underline { animation: underlineGrow .25s ease both; }
 
-/* Drawer */
 @keyframes slideInLeft {
   from { transform: translateX(-100%); }
   to   { transform: translateX(0); }
 }
 .animate-slide-in-left { animation: slideInLeft .25s ease both; }
 
-/* Indikator "live" */
 @keyframes blip {
   0%, 100% { opacity: 1; }
   50%      { opacity: .2; }
 }
 .animate-blink { animation: blip 1.2s ease-in-out infinite; }
 
-/* Dashboard.jsx (halaman lama bertema radar) */
 @keyframes radarSweep {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
@@ -166,20 +157,15 @@ html[data-reduce-motion='true'] *::after {
   box-shadow: 0 8px 30px rgba(0, 0, 0, .4);
 }
 
-/* ===== Scrollbar ===== */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: rgb(var(--muted-rgb) / .4); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: rgb(var(--muted-rgb) / .6); }
-
-/* ===== Selection ===== */
 ::selection {
   background: #10b981;
   color: #06120c;
 }
 
-
-/* Aksesibilitas dasar: fokus keyboard terlihat, target sentuh nyaman, dan skip link. */
 :focus-visible {
   outline: 3px solid #0d9488;
   outline-offset: 3px;
@@ -202,7 +188,6 @@ button, input, select, textarea, a { -webkit-tap-highlight-color: transparent; }
   input, select, textarea { font-size: 16px; }
 }
 
-/* ===== inSpectre competition UI system ===== */
 :root {
   --bg: #f5f7fb; --bg-rgb: 245 247 251;
   --panel: #ffffff; --panel-rgb: 255 255 255;
@@ -306,8 +291,6 @@ body { background: var(--bg); color: var(--text); font-family: 'Space Grotesk', 
 @media (max-width: 640px) { .analysis-shell form { padding: 13px; }.analysis-shell > div:first-child h1 { font-size: 32px; }.analysis-shell form button[type='submit'] { width: 100%; }.analysis-shell > div[aria-live] { min-width: 0; }.analysis-shell code { overflow-wrap: anywhere; } }
 .scan-mode-switch { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 12px; }.scan-mode-switch button { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 9px 14px; border: 1px solid var(--border); border-radius: 11px; color: var(--muted); background: var(--panel); font-size: 12px; font-weight: 750; transition: background .2s ease, border-color .2s ease, color .2s ease; }.scan-mode-switch button.active { border-color: rgb(var(--accent-rgb) / .45); color: var(--accent); background: rgb(var(--accent-rgb) / .09); box-shadow: inset 0 0 0 1px rgb(var(--accent-rgb) / .08); }
 
-
-/* ===== v5: editorial cyber UI, motion & depth ===== */
 :root {
   --bg: #f4f7f6; --bg-rgb: 244 247 246;
   --panel: #ffffff; --panel-rgb: 255 255 255;
@@ -329,13 +312,11 @@ body { background: var(--bg); color: var(--text); font-family: 'Space Grotesk', 
 body { letter-spacing: -.008em; }
 .app-root { min-height: 100vh; background-image: radial-gradient(ellipse at 5% 0%, rgb(var(--accent-rgb) / .055), transparent 33%); }
 .page-shell { padding-top: 34px; }
-/* More tactile, less template-like navigation */
 header.sticky { border-color: var(--border) !important; background: rgb(var(--panel-rgb) / .88) !important; box-shadow: 0 6px 24px rgb(10 35 27 / .035); }
 header.sticky > div { max-width: 1320px; height: 72px; }
 header.sticky nav a { min-height: 40px; border-radius: 11px !important; font-size: 12px !important; letter-spacing: .005em; }
 header.sticky nav a[aria-current="page"] { background: rgb(var(--accent-rgb) / .09); color: var(--accent) !important; }
 header.sticky nav a span[aria-hidden="true"] { font-size: 13px; filter: saturate(.72); }
-/* Home hero gains a richer layered atmosphere */
 .hero-panel { min-height: 468px; border-radius: 28px; border-color: rgb(112 231 199 / .2); background: linear-gradient(118deg, #081b19 0%, #0b2927 48%, #12483d 100%); box-shadow: 0 28px 80px rgb(9 43 34 / .18); }
 .hero-panel::before { content: ""; position: absolute; width: 420px; height: 420px; right: 8%; top: -44%; border: 1px solid rgb(112 231 199 / .15); border-radius: 50%; box-shadow: 0 0 0 42px rgb(112 231 199 / .025), 0 0 0 84px rgb(112 231 199 / .02); pointer-events: none; }
 .hero-panel::after { content: "INSPECT / PROTECT"; position: absolute; right: 26px; top: 24px; color: rgb(199 244 228 / .38); font: 700 9px/1 'JetBrains Mono', monospace; letter-spacing: .2em; }
@@ -352,7 +333,6 @@ header.sticky nav a span[aria-hidden="true"] { font-size: 13px; filter: saturate
 @keyframes orbitBreathe { 0%,100% { transform: rotate(-24deg) scaleY(.68) scale(1); opacity: .7; } 50% { transform: rotate(-12deg) scaleY(.68) scale(1.04); opacity: 1; } }
 @keyframes shieldHover { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 @keyframes chipHover { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-/* Editorial section headings and asymmetry */
 .section-block { margin-top: 62px; }
 .section-heading { margin-bottom: 23px; }
 .section-heading .eyebrow, .live-heading .eyebrow, .panel-heading .eyebrow { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: .17em; }
@@ -374,7 +354,6 @@ header.sticky nav a span[aria-hidden="true"] { font-size: 13px; filter: saturate
 .event-row:hover { padding-inline: 10px; background: rgb(var(--accent-rgb) / .035); }
 .connection-pill { border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 10px; }
 .safety-note { border-radius: 13px; }
-/* Smooth page arrival; respect reduce-motion settings below */
 #main-content > * { animation: pageArrive .42s cubic-bezier(.2,.7,.2,1) both; }
 @keyframes pageArrive { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 button, a, input, select, textarea { transition-timing-function: cubic-bezier(.2,.7,.2,1); }
@@ -422,7 +401,6 @@ button:active { transform: scale(.985); }
   .feature-card::after { transition: none !important; }
 }
 
-/* ===== Midnight Intelligence boot screen ===== */
 .page-transition { animation: pageReveal .42s cubic-bezier(.2,.75,.25,1) both; }
 @keyframes pageReveal { from { opacity: 0; transform: translateY(8px); filter: blur(2px); } to { opacity: 1; transform: translateY(0); filter: blur(0); } }
 .boot-screen { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; overflow: hidden; color: #eaf0fa; background: #0B1220; animation: bootLeave .45s ease 2.85s forwards; }
@@ -442,7 +420,6 @@ button:active { transform: scale(.985); }
 @keyframes bootFloat { 50% { transform: translateY(-5px); } }
 @keyframes bootGridMove { to { background-position: 0 48px, 48px 0; } }
 
-/* Floating contextual safety assistant */
 .floating-assistant { position: fixed; z-index: 70; right: max(22px, env(safe-area-inset-right)); bottom: max(22px, env(safe-area-inset-bottom)); font-family: 'Space Grotesk', system-ui, sans-serif; }
 .assistant-launcher { position: relative; display: flex; align-items: center; justify-content: center; gap: 9px; min-width: 58px; height: 58px; padding: 0 17px; border: 1px solid rgb(255 255 255 / .22); border-radius: 999px; color: #06251f; background: linear-gradient(135deg, #85f1d8, #36c6aa); box-shadow: 0 12px 35px rgb(4 125 105 / .32), inset 0 1px 0 rgb(255 255 255 / .6); cursor: pointer; transition: transform .2s ease, box-shadow .2s ease, background .2s ease; }
 .assistant-launcher:hover { transform: translateY(-3px); box-shadow: 0 17px 42px rgb(4 125 105 / .4); }
@@ -479,7 +456,6 @@ button:active { transform: scale(.985); }
 @media (prefers-reduced-motion: reduce) { .boot-screen, .boot-grid, .boot-progress span, .boot-pulse, .launcher-orbit, .page-transition, .assistant-popover, .assistant-tip-card { animation: none !important; } .assistant-launcher, .assistant-primary-action { transition: none !important; } }
 html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .boot-grid, html[data-reduce-motion='true'] .boot-progress span, html[data-reduce-motion='true'] .boot-pulse, html[data-reduce-motion='true'] .launcher-orbit, html[data-reduce-motion='true'] .page-transition, html[data-reduce-motion='true'] .assistant-popover, html[data-reduce-motion='true'] .assistant-tip-card { animation: none !important; }
 
-/* inSpectre Nexus */
 .nexus-shell,.world-shell {
   width:min(1180px,calc(100% - 40px));
   margin:0 auto;
@@ -686,7 +662,6 @@ html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .b
   .nexus-card:hover { transform:none; }
 }
 
-/* World Monitor - interactive Indonesia map */
 .world-map-frame {
   position: relative;
   overflow: hidden;
@@ -762,8 +737,6 @@ html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .b
   }
 }
 
-
-/* World Monitor - Air Quality */
 .world-air-panel {
   margin-top: 28px;
   padding: 22px;
@@ -802,7 +775,6 @@ html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .b
   .world-air-grid { grid-template-columns: 1fr; }
 }
 
-/* World Monitor - Weather & Warnings */
 .world-weather-panel {
   margin-top: 28px;
   padding: 22px;
@@ -886,7 +858,6 @@ html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .b
   .world-warning-heading { flex-direction: column; gap: 6px; }
 }
 
-/* Nexus Situation Brief */
 .nexus-brief {
   margin-top: 28px;
   padding: 25px;
@@ -1020,9 +991,6 @@ html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .b
   .nexus-situation-detail { min-height: 0; }
 }
 
-
-
-/* NEXUS HERO — CONSOLIDATED CINEMATIC LAYOUT */
 .nexus-shell .nexus-hero {
   position: relative;
   isolation: isolate;
@@ -1038,7 +1006,6 @@ html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .b
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 3.5%), 0 24px 70px rgb(0 0 0 / 18%);
 }
 
-/* Use the real NASA video, not a second fake globe layer. */
 .nexus-shell .nexus-hero::before {
   content: none;
 }
@@ -1174,8 +1141,6 @@ html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .b
   }
 }
 
-
-/* World Monitor domain hub */
 .world-hub,
 .environment-hub {
   --hub-line: rgba(148, 163, 184, .2);
@@ -1313,7 +1278,6 @@ html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .b
   }
 }
 
-/* Environmental Intelligence — workspace accents */
 .world-workspace {
   --workspace-accent: #70d6c8;
 }
@@ -1344,7 +1308,6 @@ html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .b
   border-color: color-mix(in srgb, var(--workspace-accent) 45%, transparent);
 }
 
-/* Nexus roadmap homepage — additive styles */
 .nexus-shell .nexus-about,
 .nexus-shell .nexus-next {
   margin-top: 42px;
@@ -1568,11 +1531,6 @@ html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .b
     transform: none;
   }
 }
-
-/* =========================================================
-   INSPECTRE NEXUS — MIDNIGHT INTELLIGENCE REDESIGN
-   Responsive: mobile / tablet / desktop
-   ========================================================= */
 
 @keyframes nexusStarDrift {
   from { background-position: 0 0, 35px 45px, 0 0; }
@@ -2117,7 +2075,6 @@ html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .b
   }
 }
 
-/* NEXUS ORBIT REFINEMENT — MOBILE + PARTICLE DEPTH */
 .nexus-shell .nexus-hero::before {
   opacity: .72;
   background-image:
@@ -2177,7 +2134,6 @@ html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .b
   .nexus-shell .nexus-kicker span::after { animation: none !important; }
 }
 
-/* NEXUS MINI PLANETARY SYSTEM */
 .nexus-shell .nexus-hero::after {
   content: "";
   position: absolute;
@@ -2221,9 +2177,6 @@ html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .b
   }
 }
 
-/* NEXUS TRUE PLANETS — CLEAN GLOBE */
-
-/* Remove the leftover orbit frame and its box shadow */
 .nexus-shell .nexus-hero::after {
   content: "";
   position: absolute;
@@ -2287,7 +2240,6 @@ html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .b
   }
 }
 
-/* NEXUS MOBILE HERO — EARTH FIRST LAYOUT */
 @media (max-width: 640px) {
   .nexus-shell .nexus-hero > .nexus-earth-image {
     order: 4 !important;
@@ -2309,7 +2261,6 @@ html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .b
   }
 }
 
-/* NEXUS CENTERED COMPOSITION */
 @media (max-width: 640px) {
   .nexus-shell .nexus-hero {
     align-items: center;
@@ -2365,7 +2316,6 @@ html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .b
   }
 }
 
-/* ===== inSpectre Midnight Intelligence Design Tokens ===== */
 :root {
   --brand-navy: #0b1220;
   --brand-panel: #162235;
@@ -2379,7 +2329,6 @@ html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .b
   --brand-cyan: #62dcd5;
 }
 
-/* ===== MIDNIGHT INTELLIGENCE — STAT CARDS ===== */
 .stat-card {
   background: var(--brand-panel);
   border-color: rgb(255 255 255 / 10%);
@@ -2397,9 +2346,6 @@ html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .b
   color: var(--brand-amber);
 }
 
-/* ===== NEXUS PERFORMANCE — LIGHT MOTION ===== */
-
-/* Hero atmosphere dan starfield tetap tampil, tanpa gerakan terus-menerus */
 .nexus-shell .nexus-hero {
   animation: none !important;
 }
@@ -2408,19 +2354,16 @@ html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .b
   animation: none !important;
 }
 
-/* Orbit tetap terlihat sebagai elemen dekoratif */
 .nexus-shell .nexus-hero::after {
   animation: none !important;
 }
 
-/* Earth tidak lagi mengambang atau memakai drop-shadow berat */
 .nexus-shell .nexus-earth-image,
 .nexus-shell .nexus-hero > .nexus-earth-image {
   animation: none !important;
   filter: none !important;
 }
 
-/* Hilangkan pulse dan ring berulang pada indikator */
 .nexus-shell .nexus-kicker span {
   animation: none !important;
 }
@@ -2429,12 +2372,10 @@ html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .b
   animation: none !important;
 }
 
-/* Planet dekoratif versi mobile tetap terlihat, tanpa animasi */
 .nexus-shell .nexus-hero::after {
   background-repeat: no-repeat;
 }
 
-/* Transisi interaksi tetap ada, tetapi lebih ringan */
 .nexus-shell .nexus-situation-card,
 .nexus-shell .nexus-principle-card {
   transition:
@@ -2443,7 +2384,6 @@ html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .b
     box-shadow .2s ease;
 }
 
-/* ===== NEXUS PERFORMANCE — LIGHT MOTION ===== */
 .nexus-shell .nexus-hero,
 .nexus-shell .nexus-hero::before,
 .nexus-shell .nexus-hero::after,
@@ -2470,7 +2410,6 @@ html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .b
     box-shadow .2s ease;
 }
 
-/* ===== HOME — MIDNIGHT INTELLIGENCE ===== */
 .page-shell {
   --home-navy: #0b1220;
   --home-panel: #162235;
@@ -2564,7 +2503,6 @@ html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .b
   .page-shell .event-symbol { flex-basis: 33px; }
 }
 
-/* ===== NEXUS — MIDNIGHT INTELLIGENCE REFINEMENT ===== */
 .nexus-shell {
   --nexus-amber: #f5b96b;
   --nexus-cyan: #62dcd5;
@@ -2771,7 +2709,6 @@ html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .b
   }
 }
 
-/* ===== IN SPECTRE AGENT — CHAT EXPERIENCE ===== */
 .agent-chat {
   --agent-bg: #0b1220;
   --agent-panel: #162235;
@@ -2958,7 +2895,6 @@ html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .b
   .agent-composer-note { margin-inline: 12px; line-height: 1.5; }
 }
 
-/* FIX: CHAT PANEL FIXED HEIGHT + INTERNAL SCROLL */
 .agent-chat {
   min-height: 0;
 }
@@ -2990,7 +2926,6 @@ html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .b
   }
 }
 
-/* FINAL FIX — LOCK AGENT CHAT VIEWPORT */
 .agent-chat,
 .agent-chat * {
   box-sizing: border-box;
@@ -3036,7 +2971,6 @@ html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .b
   }
 }
 
-/* ===== ANALISIS — MIDNIGHT INTELLIGENCE ===== */
 .analysis-shell {
   --analysis-bg: #0b1220;
   --analysis-panel: #162235;
@@ -3123,7 +3057,6 @@ html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .b
   .analysis-shell .analysis-mode-card { min-height: 78px; padding: 13px; }
 }
 
-/* NEXUS — MOBILE EARTH CENTER PLACEMENT */
 @media (max-width: 640px) {
   .nexus-shell .nexus-hero > .nexus-earth-image {
     position: relative !important;
@@ -3147,7 +3080,6 @@ html[data-reduce-motion='true'] .boot-screen, html[data-reduce-motion='true'] .b
   }
 }
 
-/* ===== MIDNIGHT INTELLIGENCE — NAVBAR & FOOTER BRAND FIX ===== */
 header.sticky {
   background: rgba(11, 18, 32, .97) !important;
   border-color: rgba(125, 211, 252, .16) !important;
@@ -3174,7 +3106,6 @@ header.sticky nav a:hover {
   ) !important;
 }
 
-/* ===== HOME HERO — REMOVE FOREST GREEN TINT ===== */
 .app-root:has(.page-shell .hero-panel) {
   background-color: #0b1220 !important;
   background-image:
@@ -3220,7 +3151,6 @@ header.sticky nav a:hover {
   }
 }
 
-/* HOME PAGE — OUTER CANVAS COLOR FIX */
 body:has(.page-shell .hero-panel) {
   background: #0b1220 !important;
 }
@@ -3229,7 +3159,6 @@ html:has(.page-shell .hero-panel) {
   background: #0b1220 !important;
 }
 
-/* ===== MIDNIGHT INTELLIGENCE — DASHBOARD & HISTORY ===== */
 .dashboard-shell,
 .history-shell {
   --workspace-bg: #0b1220;
