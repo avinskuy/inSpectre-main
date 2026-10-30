@@ -13,12 +13,15 @@ const { getAirQuality } = require('./airQuality');
 const { getRegions, getForecast, getWarnings } = require('./weather');
 const { getDisasters } = require('./disasters');
 const { analyzeArchive } = require('./archiveScanner');
+const {
+  analyzeApkManifest,
+  evaluateApkManifest,
+} = require('./apkManifestAnalyzer');
 
 const app = express();
 // Di container production, hanya reverse proxy internal yang boleh meneruskan client IP.
 app.set('trust proxy', process.env.TRUST_PROXY === '1' ? 1 : false);
 const server = http.createServer(app);
-let botActive = false;
 
 app.use(cors({ origin: config.CORS_ORIGINS }));
 app.use(express.json({ limit: '10kb' }));
@@ -243,7 +246,7 @@ app.get('/api/environment/disasters', async (req, res) => {
   }
 });
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', bot: botActive, uptime: process.uptime() });
+  res.json({ status: 'ok', uptime: process.uptime() });
 });
 
 app.get('/api/check/:nomor', scanLimiter, async (req, res) => {
@@ -286,7 +289,7 @@ app.get('/api/check/:nomor', scanLimiter, async (req, res) => {
   emitStats();
   return res.json({ ...result, externalReputation });
 });
-app.post('/api/scan-file', scanLimiter, express.raw({ type: 'application/octet-stream', limit: '25mb' }), (req, res) => {
+app.post('/api/scan-file', scanLimiter, express.raw({ type: 'application/octet-stream', limit: '25mb' }), async (req, res) => {
   const filename = String(req.query.filename || 'upload.zip').slice(0, 180);
   if (!Buffer.isBuffer(req.body) || req.body.length === 0) {
     return res.status(400).json({ error: 'File kosong atau tidak terbaca.' });
@@ -294,9 +297,67 @@ app.post('/api/scan-file', scanLimiter, express.raw({ type: 'application/octet-s
   if (req.body.length > 25 * 1024 * 1024) {
     return res.status(413).json({ error: 'Ukuran file melebihi batas 25 MB.' });
   }
+
   try {
     const result = analyzeArchive(req.body, filename);
-    emitThreat({ type: 'apk', fileName: result.fileName, riskLevel: result.riskLevel, threatScore: result.threatScore, scannedAt: result.scannedAt });
+    const isApk = /\.apk$/i.test(filename);
+
+    if (isApk) {
+      const manifestResult = await analyzeApkManifest(req.body);
+      result.manifestAnalysis = manifestResult.status;
+
+      if (manifestResult.status === 'ANALYZED') {
+        const evaluated = evaluateApkManifest(manifestResult.manifest);
+
+        // Ganti heuristik permission berbasis teks dengan hasil Manifest biner.
+        result.findings = result.findings.filter(
+          (item) => item.rule !== 'SENSITIVE_ANDROID_CAPABILITIES'
+        );
+
+        const manifestFindings = evaluated.findings.map((item) => ({
+          rule: item.rule,
+          risk: item.severity,
+          points: item.points,
+          title: item.title,
+          evidence: item.evidence,
+          recommendation: item.recommendation,
+          detail: item.context,
+        }));
+
+        result.findings.push(...manifestFindings);
+        result.manifest = manifestResult.manifest;
+        result.threatScore = Math.min(
+          100,
+          result.findings.reduce((total, item) => total + (Number(item.points) || 0), 0)
+        );
+        result.manifestSummary = evaluated.summary;
+      } else {
+        result.manifestAnalysisReason = manifestResult.reason;
+        result.explanation.limitations.push(
+          'Manifest APK tidak berhasil dianalisis oleh AAPT. Temuan permission berbasis teks hanya merupakan fallback dan dapat melewatkan permission pada Manifest biner.'
+        );
+      }
+
+      result.riskLevel = result.threatScore >= 60
+        ? 'BAHAYA'
+        : result.threatScore >= 35
+          ? 'CURIGA'
+          : result.threatScore >= 15
+            ? 'WASPADA'
+            : 'AMAN';
+
+      result.explanation.method += manifestResult.status === 'ANALYZED'
+        ? ' serta analisis AndroidManifest.xml menggunakan AAPT.'
+        : '; analisis Manifest biner tidak tersedia.';
+    }
+
+    emitThreat({
+      type: 'apk',
+      fileName: result.fileName,
+      riskLevel: result.riskLevel,
+      threatScore: result.threatScore,
+      scannedAt: result.scannedAt,
+    });
     res.set('Cache-Control', 'no-store');
     res.json(result);
   } catch (e) {
@@ -343,12 +404,6 @@ server.on('error', (e) => {
 if (require.main === module) {
   server.listen(config.PORT, '127.0.0.1', () => {
     console.log(`🚀 inSpectre server berjalan di port ${config.PORT}`);
-    if (config.TELEGRAM_TOKEN) {
-      require('./bot');
-      botActive = true;
-    } else {
-      console.warn('⚠️  TELEGRAM_TOKEN kosong — bot Telegram tidak dijalankan (API & dashboard tetap aktif).');
-    }
   });
 }
 

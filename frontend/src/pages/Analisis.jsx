@@ -132,7 +132,20 @@ export default function Analisis() {
         <p className="mt-3 text-sm text-cyber-muted">Tips privasi: jangan masukkan kata sandi, kode OTP, atau data pribadi ke kolom ini.</p>
       </div>
 
-      <div className="scan-mode-switch" role="group" aria-label="Pilih jenis pemeriksaan"><button type="button" className={scanType === 'link' ? 'active' : ''} aria-pressed={scanType === 'link'} onClick={() => { setScanType('link'); setUrl(''); setResult(null); setError(''); }}>↗ Periksa tautan</button><button type="button" className={scanType === 'number' ? 'active' : ''} aria-pressed={scanType === 'number'} onClick={() => { setScanType('number'); setUrl(''); setResult(null); setError(''); }}>☎ Periksa nomor scam</button><button type="button" className={scanType === 'fileqr' ? 'active' : ''} aria-pressed={scanType === 'fileqr'} onClick={() => { setScanType('fileqr'); setUrl(''); setResult(null); setError(''); }}>▣ File &amp; QR</button></div>
+      <div className="analysis-mode-grid" role="group" aria-label="Pilih jenis pemeriksaan">
+        <button type="button" className={`analysis-mode-card ${scanType === 'link' ? 'active' : ''}`} aria-pressed={scanType === 'link'} onClick={() => { setScanType('link'); setUrl(''); setResult(null); setError(''); }}>
+          <span className="analysis-mode-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M10 13.5 14 9.5M8.5 15.5l-2 2a3.5 3.5 0 0 1-5-5l4-4a3.5 3.5 0 0 1 5 0M15.5 8.5l2-2a3.5 3.5 0 0 1 5 5l-4 4a3.5 3.5 0 0 1-5 0" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/></svg></span>
+          <span className="analysis-mode-copy"><strong>Periksa Tautan</strong><small>Deteksi phishing dan URL mencurigakan</small></span><span className="analysis-mode-arrow">→</span>
+        </button>
+        <button type="button" className={`analysis-mode-card ${scanType === 'number' ? 'active' : ''}`} aria-pressed={scanType === 'number'} onClick={() => { setScanType('number'); setUrl(''); setResult(null); setError(''); }}>
+          <span className="analysis-mode-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 3.5h10A2.5 2.5 0 0 1 19.5 6v12a2.5 2.5 0 0 1-2.5 2.5H7A2.5 2.5 0 0 1 4.5 18V6A2.5 2.5 0 0 1 7 3.5Z" stroke="currentColor" strokeWidth="1.7"/><path d="M9 7.5h6M9 11h6M10 17h4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round"/></svg></span>
+          <span className="analysis-mode-copy"><strong>Periksa Nomor Scam</strong><small>Cek laporan komunitas dan reputasi</small></span><span className="analysis-mode-arrow">→</span>
+        </button>
+        <button type="button" className={`analysis-mode-card ${scanType === 'fileqr' ? 'active' : ''}`} aria-pressed={scanType === 'fileqr'} onClick={() => { setScanType('fileqr'); setUrl(''); setResult(null); setError(''); }}>
+          <span className="analysis-mode-icon"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="1.7"/><rect x="13.5" y="3.5" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="1.7"/><rect x="3.5" y="13.5" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="1.7"/><path d="M14 14h2v2h-2zM18 14h2v2h-2zM14 18h2v2h-2zM18 18h2v2h-2z" fill="currentColor"/></svg></span>
+          <span className="analysis-mode-copy"><strong>File &amp; QR</strong><small>Periksa file APK, ZIP, dan kode QR</small></span><span className="analysis-mode-arrow">→</span>
+        </button>
+      </div>
       {scanType === 'fileqr' ? <div className="mt-6"><Tools embedded /></div> : <>
       <form onSubmit={onSubmit} className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-end" noValidate>
         <div className="min-w-0 flex-1">
