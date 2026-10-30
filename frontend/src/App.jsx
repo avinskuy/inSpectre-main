@@ -34,7 +34,6 @@ const PAGES = {
   '#/environment/warnings': { Page: () => <EnvironmentalWorkspace feature="warnings" />, title: 'Peringatan BMKG — inSpectre' },
   '#/environment/earthquakes': { Page: () => <EnvironmentalWorkspace feature="earthquakes" />, title: 'Gempa Bumi — inSpectre' },
   '#/analisis': { Page: Analisis, title: 'Analisis Keamanan — inSpectre' },
-  // Alias kompatibilitas untuk tautan lama; File & QR sekarang berada di dalam Analisis.
   '#/tools': { Page: Analisis, title: 'Analisis Keamanan — inSpectre' },
   '#/edukasi': { Page: Edukasi, title: 'Edukasi Phishing — inSpectre' },
   '#/berita': { Page: Berita, title: 'Threat Intelligence — inSpectre' },
@@ -52,7 +51,6 @@ export default function App() {
 
   useEffect(() => {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    // Keep the splash visible long enough for the brand and loading message to be read.
     const timer = window.setTimeout(() => setBooting(false), reduceMotion ? 1800 : 3300);
     return () => window.clearTimeout(timer);
   }, []);
@@ -65,7 +63,6 @@ export default function App() {
 
   const { Page, title } = PAGES[route] || PAGES['#/'];
 
-  // Pindah halaman: kembali ke atas + judul tab sesuai halaman
   useEffect(() => {
     window.scrollTo(0, 0);
     document.title = title;
