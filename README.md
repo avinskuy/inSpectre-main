@@ -262,7 +262,7 @@ Konfigurasikan environment backend sesuai layanan yang digunakan. Variabel yang 
 
 - `GOOGLE_SAFE_BROWSING_API_KEY` — pemeriksaan reputasi URL.
 - `NASA_FIRMS_MAP_KEY` — data hotspot NASA FIRMS.
-- `GEMINI_API_KEY` atau `OPENROUTER_API_KEY` — integrasi model bahasa, sesuai konfigurasi backend.
+- `OPENROUTER_API_KEY` — integrasi model bahasa, sesuai konfigurasi backend.
 
 Ikuti konfigurasi aktual pada proyek sebelum menjalankan server. Jangan menaruh API key, token, atau rahasia lainnya di repository maupun frontend.
 
