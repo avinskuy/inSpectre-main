@@ -1,7 +1,7 @@
 // emitter.js — Socket.IO untuk broadcast threat ke dashboard real-time
 const { Server } = require('socket.io');
 const config = require('./config');
-const { maskNumber, publicUrl } = require('./privacy');
+const { maskNumber, publicUrl } = require('./services/storage/privacy');
 
 let io = null;
 
@@ -31,7 +31,7 @@ function emitThreat(report) {
 function emitStats() {
   if (!io) return;
   try {
-    const { getStats } = require('./db');
+    const { getStats } = require('./services/storage/db');
     io.emit('stats_update', getStats());
   } catch (e) { /* abaikan jika db error */ }
 }
