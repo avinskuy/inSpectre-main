@@ -99,9 +99,10 @@ test('riwayat hanya berisi scan milik akun yang sedang masuk', async () => {
   const bobRows = await bobHistory.json();
 
   assert.equal(aliceRows.length, 1);
-  assert.equal(aliceRows[0].riskLevel, 'AMAN');
+  assert.equal(aliceRows[0].identifier, 'alice.example.test/path');
   assert.equal(bobRows.length, 1);
-  assert.equal(bobRows[0].riskLevel, 'PHISHING');
+  assert.equal(bobRows[0].identifier, 'bob.example.test/path');
+  assert.notEqual(aliceRows[0].identifier, bobRows[0].identifier);
 });
 
 test('login gagal untuk kata sandi yang salah dan logout mengakhiri sesi', async () => {
