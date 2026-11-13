@@ -3,6 +3,7 @@ import Card from '../components/Card.jsx';
 import RiskBadge from '../components/RiskBadge.jsx';
 import Button from '../components/Button.jsx';
 import { getHistory } from '../lib/api.js';
+import { useAuth } from '../lib/AuthContext.jsx';
 
 const RISK_MAP = {
   AMAN: 'aman',
@@ -36,6 +37,7 @@ function formatTime(iso) {
 }
 
 export default function History() {
+  const { user } = useAuth();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -87,7 +89,7 @@ export default function History() {
         <div>
           <p className="eyebrow">JEJAK PEMERIKSAAN</p>
           <h1 className="text-3xl font-bold">Riwayat <span style={{ color: 'var(--accent)' }}>Scan</span></h1>
-          <p className="mt-2 text-cyber-muted">Daftar situs dan nomor yang telah diperiksa, terbaru di atas.</p>
+          <p className="mt-2 text-cyber-muted">Riwayat pribadi untuk akun {user?.displayName || 'kamu'}, terbaru di atas.</p>
         </div>
         <div className="history-actions">
           {items.length > 0 && <Button variant="outline" onClick={exportCsv} disabled={!filteredItems.length}>↓ Ekspor CSV</Button>}

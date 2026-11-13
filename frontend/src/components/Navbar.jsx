@@ -3,6 +3,7 @@ import Logo from './Logo.jsx';
 import AccessibilityMenu from './AccessibilityMenu.jsx';
 import Drawer from './Drawer.jsx';
 import NavIcon from './NavIcon.jsx';
+import { useAuth } from '../lib/AuthContext.jsx';
 
 const PRIMARY_LINKS = [
   { href: '#/', label: 'Nexus', icon: 'home' },
@@ -25,6 +26,7 @@ function routeIsActive(current, href) {
 }
 
 export default function Navbar() {
+  const { user, logout } = useAuth();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [current, setCurrent] = useState(
     typeof window !== 'undefined' ? window.location.hash || '#/' : '#/'
@@ -73,6 +75,7 @@ export default function Navbar() {
           </nav>
 
           <div className="flex shrink-0 items-center gap-2">
+            {user ? <button type="button" onClick={async () => { await logout(); window.location.hash = '#/'; }} className="rounded-xl border border-white/15 px-3 py-2 text-xs font-semibold text-slate-300">Keluar</button> : <a href="#/login" className="rounded-xl bg-[#f5b96b] px-3 py-2 text-xs font-bold text-slate-950">Masuk</a>}
             <AccessibilityMenu />
             <button
               type="button"

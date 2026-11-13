@@ -1,9 +1,8 @@
-// Satu-satunya tempat yang tahu alamat backend.
-// Dev: '/api' (diteruskan oleh proxy Vite). Produksi lintas domain: set VITE_API_URL.
-const BASE = import.meta.env.VITE_API_URL || '/api';
+// API HTTP memakai /api same-origin melalui Cloudflare Pages Function.
+const BASE = '/api';
 
 // Origin backend untuk Socket.IO (sama dengan origin halaman bila BASE relatif)
-export const API_ORIGIN = new URL(BASE, window.location.origin).origin;
+export const API_ORIGIN = new URL(import.meta.env.VITE_SOCKET_URL || window.location.origin, window.location.origin).origin;
 
 async function handle(res) {
   if (!res.ok) {
@@ -16,7 +15,7 @@ async function handle(res) {
 async function request(path, options) {
   let res;
   try {
-    res = await fetch(`${BASE}${path}`, options);
+    res = await fetch(`${BASE}${path}`, { credentials: 'include', ...options });
   } catch {
     throw new Error('Tidak bisa terhubung ke server. Pastikan backend sedang berjalan.');
   }
@@ -44,6 +43,7 @@ export async function scanArchive(file) {
   let res;
   try {
     res = await fetch(`${BASE}/scan-file?filename=${encodeURIComponent(file.name)}`, {
+      credentials: 'include',
       method: 'POST',
       headers: { 'Content-Type': 'application/octet-stream' },
       body: file,

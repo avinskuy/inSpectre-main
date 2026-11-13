@@ -2,7 +2,8 @@ const express = require('express');
 const http = require('http');
 const cors = require('cors');
 const config = require('./config');
-const { getStats, getRecentScans } = require('./db');
+const { getStats, getRecentScans, logScan } = require('./db');
+const { optionalAuth, requireAuth, registerUser, loginUser, ensureDemoAccount, setSessionCookie, clearSessionCookie, readSessionToken, logoutToken } = require('./auth');
 const { initSocket, emitThreat, emitStats } = require('./emitter');
 const { checkLinkWithReputation } = require('./safeLinkChecker');
 const { checkNumber, isValidPhone } = require('./numberChecker');
@@ -50,6 +51,38 @@ function rateLimit({ windowMs = 60_000, max = 30 } = {}) {
 const scanLimiter = rateLimit({ max: 30 });
 
 const assistantLimiter = rateLimit({ windowMs: 60_000, max: 10 });
+const authLimiter = rateLimit({ windowMs: 15 * 60_000, max: 12 });
+
+app.post('/api/auth/register', authLimiter, (req,res) => {
+  try {
+    const result = registerUser(req.body);
+    setSessionCookie(res,result.token);
+    res.set('Cache-Control','no-store');
+    return res.status(201).json({user:result.user});
+  } catch (error) {
+    return res.status(error.statusCode || 500).json({error:error.statusCode ? error.message : 'Pendaftaran gagal. Coba lagi.'});
+  }
+});
+app.post('/api/auth/login', authLimiter, (req,res) => {
+  try {
+    const result = loginUser(req.body);
+    setSessionCookie(res,result.token);
+    res.set('Cache-Control','no-store');
+    return res.json({user:result.user});
+  } catch (error) {
+    return res.status(error.statusCode || 500).json({error:error.statusCode ? error.message : 'Login gagal. Coba lagi.'});
+  }
+});
+app.post('/api/auth/logout', (req,res) => {
+  logoutToken(readSessionToken(req));
+  clearSessionCookie(res);
+  res.set('Cache-Control','no-store');
+  return res.json({ok:true});
+});
+app.get('/api/auth/me', requireAuth, (req,res) => {
+  res.set('Cache-Control','no-store');
+  return res.json({user:req.user});
+});
 
 
 app.post('/api/assistant', assistantLimiter, async (req, res) => {
@@ -122,8 +155,9 @@ app.get('/api/stats', (req, res) => {
   res.json(getStats());
 });
 
-app.get('/api/recent', (req, res) => {
-  res.json(getRecentScans(20));
+app.get('/api/recent', requireAuth, (req,res) => {
+  res.set('Cache-Control','no-store');
+  res.json(getRecentScans(20,req.user.id));
 });
 
 app.get('/api/news', async (req, res) => {
@@ -249,7 +283,7 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', uptime: process.uptime() });
 });
 
-app.get('/api/check/:nomor', scanLimiter, async (req, res) => {
+app.get('/api/check/:nomor', scanLimiter, optionalAuth, async (req, res) => {
   const raw = req.params.nomor;
 
   if (!isValidPhone(raw)) {
@@ -261,7 +295,7 @@ app.get('/api/check/:nomor', scanLimiter, async (req, res) => {
   // Hasil komunitas dihitung dan dicatat tepat satu kali.
   let result;
   try {
-    result = checkNumber(raw);
+    result = checkNumber(raw,req.user?.id || null);
   } catch (error) {
     console.error('community number check error:', error.message);
     return res.status(500).json({ error: 'Pengecekan gagal' });
@@ -289,7 +323,7 @@ app.get('/api/check/:nomor', scanLimiter, async (req, res) => {
   emitStats();
   return res.json({ ...result, externalReputation });
 });
-app.post('/api/scan-file', scanLimiter, express.raw({ type: 'application/octet-stream', limit: '25mb' }), async (req, res) => {
+app.post('/api/scan-file', scanLimiter, optionalAuth, express.raw({ type: 'application/octet-stream', limit: '25mb' }), async (req, res) => {
   const filename = String(req.query.filename || 'upload.zip').slice(0, 180);
   if (!Buffer.isBuffer(req.body) || req.body.length === 0) {
     return res.status(400).json({ error: 'File kosong atau tidak terbaca.' });
@@ -351,6 +385,7 @@ app.post('/api/scan-file', scanLimiter, express.raw({ type: 'application/octet-s
         : '; analisis Manifest biner tidak tersedia.';
     }
 
+    logScan('apk',result.fileName,result.threatScore,result.riskLevel,result.findings,req.user?.id || null);
     emitThreat({
       type: 'apk',
       fileName: result.fileName,
@@ -358,6 +393,7 @@ app.post('/api/scan-file', scanLimiter, express.raw({ type: 'application/octet-s
       threatScore: result.threatScore,
       scannedAt: result.scannedAt,
     });
+    emitStats();
     res.set('Cache-Control', 'no-store');
     res.json(result);
   } catch (e) {
@@ -365,7 +401,7 @@ app.post('/api/scan-file', scanLimiter, express.raw({ type: 'application/octet-s
   }
 });
 
-app.post('/api/scan', scanLimiter, async (req, res) => {
+app.post('/api/scan', scanLimiter, optionalAuth, async (req, res) => {
   const { url } = req.body || {};
   if (!url || typeof url !== 'string' || !url.trim()) {
     return res.status(400).json({ error: 'Parameter "url" wajib diisi' });
@@ -379,7 +415,7 @@ app.post('/api/scan', scanLimiter, async (req, res) => {
     : `https://${url.trim()}`;
 
   try {
-    const result = await checkLinkWithReputation(target);
+    const result = await checkLinkWithReputation(target,req.user?.id || null);
     emitThreat({ type: 'link', ...result });
     emitStats();
     res.set('Cache-Control', 'no-store');
@@ -402,7 +438,9 @@ server.on('error', (e) => {
 });
 
 if (require.main === module) {
-  server.listen(config.PORT, '127.0.0.1', () => {
+  ensureDemoAccount();
+  const host = process.env.HOST || (process.env.RENDER ? '0.0.0.0' : '127.0.0.1');
+  server.listen(config.PORT, host, () => {
     console.log(`🚀 inSpectre server berjalan di port ${config.PORT}`);
   });
 }

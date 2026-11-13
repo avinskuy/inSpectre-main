@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
+import { AuthProvider } from './lib/AuthContext.jsx';
 import { AccessibilityProvider } from './lib/AccessibilityContext.jsx';
 import './index.css';
 
@@ -45,9 +46,11 @@ function ColorBlindFilters() {
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <AccessibilityProvider>
-      <ColorBlindFilters />
-      <App />
-    </AccessibilityProvider>
+    <AuthProvider>
+      <AccessibilityProvider>
+        <ColorBlindFilters />
+        <App />
+      </AccessibilityProvider>
+    </AuthProvider>
   </React.StrictMode>
 );

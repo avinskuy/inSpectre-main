@@ -1,33 +1,21 @@
 import { useEffect, useState } from 'react';
 import StatCard from '../components/StatCard.jsx';
-import RiskBadge from '../components/RiskBadge.jsx';
 import Button from '../components/Button.jsx';
-import { getHistory, getStats } from '../lib/api.js';
+import { getStats } from '../lib/api.js';
 import { useLiveFeed } from '../lib/socket.js';
 
 const fmt = (n) => new Intl.NumberFormat('id-ID').format(Number(n) || 0);
-const levelMap = { AMAN: 'aman', BELUM_DIKETAHUI: 'belum-diketahui', WASPADA: 'curiga', CURIGA: 'curiga', PHISHING: 'berbahaya', BAHAYA: 'berbahaya' };
-const typeLabel = { link: 'Tautan', scam_number: 'Nomor', scam_report: 'Laporan', apk: 'APK' };
-const time = (value) => {
-  try {
-    return new Date(value).toLocaleString('id-ID', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
-  } catch {
-    return '—';
-  }
-};
 
 export default function Dashboard() {
-  const [stats, setStats] = useState({ total: 0, bahaya: 0, aman: 0, reports: 0 });
-  const [history, setHistory] = useState([]);
+  const [stats, setStats] = useState({ total: 0, bahaya: 0, curiga: 0, aman: 0, reports: 0 });
   const [error, setError] = useState('');
-  const { events, stats: liveStats, connected } = useLiveFeed(8);
+  const { stats: liveStats, connected } = useLiveFeed();
 
   const refresh = async () => {
     setError('');
     try {
-      const [s, h] = await Promise.all([getStats(), getHistory()]);
-      setStats(s);
-      setHistory(Array.isArray(h) ? h : []);
+      const data = await getStats();
+      setStats(data);
     } catch (e) {
       setError(e.message || 'Data dashboard tidak dapat dimuat.');
     }
@@ -36,17 +24,22 @@ export default function Dashboard() {
   useEffect(() => { refresh(); }, []);
   useEffect(() => { if (liveStats) setStats(liveStats); }, [liveStats]);
 
-  const suspicious = history.filter((x) => ['PHISHING', 'BAHAYA', 'CURIGA', 'WASPADA'].includes(x.riskLevel)).length;
-  const hasScans = Number(stats.total) > 0;
-  const safePct = hasScans ? Math.round((Number(stats.aman || 0) / Number(stats.total)) * 100) : 0;
+  const total = Number(stats.total) || 0;
+  const hasScans = total > 0;
+  const safePct = hasScans ? Math.round((Number(stats.aman || 0) / total) * 100) : 0;
+  const categories = [
+    { label: 'Relatif aman', value: Number(stats.aman) || 0, color: 'bg-emerald-400' },
+    { label: 'Perlu diwaspadai', value: Number(stats.curiga) || 0, color: 'bg-amber-400' },
+    { label: 'Indikasi berbahaya', value: Number(stats.bahaya) || 0, color: 'bg-rose-400' },
+  ];
 
   return (
     <main className="page-shell dashboard-shell">
       <section className="page-intro">
         <div>
-          <p className="eyebrow">PUSAT PEMANTAUAN</p>
+          <p className="eyebrow">PUSAT PEMANTAUAN PUBLIK</p>
           <h1>Dashboard <span>inSpectre</span></h1>
-          <p>Pantau aktivitas pemeriksaan dan sinyal risiko secara real-time.</p>
+          <p>Statistik agregat dan kondisi pemantauan inSpectre. Detail riwayat pemeriksaan bersifat pribadi.</p>
         </div>
         <div className="dashboard-actions">
           <span className={`connection-pill ${connected ? 'is-online' : ''}`}><i />{connected ? 'Socket aktif' : 'Socket offline'}</span>
@@ -56,7 +49,7 @@ export default function Dashboard() {
 
       {error && <p className="inline-alert" role="alert">{error}</p>}
 
-      <section className="stats-grid dashboard-stats" aria-label="Statistik ringkas">
+      <section className="stats-grid dashboard-stats" aria-label="Statistik agregat">
         <div className="stat-wrap stat-tone-0"><StatCard icon="scan" label="Total pemeriksaan" value={fmt(stats.total)} /></div>
         <div className="stat-wrap stat-tone-1"><StatCard icon="alert" label="Indikasi berbahaya" value={fmt(stats.bahaya)} /></div>
         <div className="stat-wrap stat-tone-2"><StatCard icon="check" label="Dinilai relatif aman" value={fmt(stats.aman)} /></div>
@@ -66,34 +59,31 @@ export default function Dashboard() {
       <section className="dashboard-grid">
         <article className="surface-card chart-card">
           <div className="panel-heading">
-            <div><p className="eyebrow">7 PEMERIKSAAN TERAKHIR</p><h2>Distribusi skor risiko</h2></div>
-            <span className="mini-label">Skor 0–100</span>
+            <div><p className="eyebrow">RINGKASAN GLOBAL</p><h2>Distribusi hasil pemeriksaan</h2></div>
+            <span className="mini-label">{fmt(total)} total</span>
           </div>
-          {history.length ? (
-            <div className="bar-chart" role="img" aria-label="Diagram batang skor risiko untuk pemeriksaan terbaru">
-              {history.slice(0, 7).reverse().map((item, i) => {
-                const score = Math.max(0, Math.min(100, Number(item.threatScore) || 0));
-                return (
-                  <div className="bar-item" key={`${item.scannedAt}-${i}`}>
-                    <div className="bar-track"><div className={`bar-fill ${score >= 60 ? 'bar-danger' : score >= 35 ? 'bar-warn' : 'bar-safe'}`} style={{ height: `${Math.max(score, 3)}%` }} title={`Skor ${score}`} /></div>
-                    <span>{score}</span><small>{time(item.scannedAt).split(',')[0]}</small>
+          {hasScans ? (
+            <div className="mt-7 space-y-6">
+              {categories.map((item) => (
+                <div key={item.label}>
+                  <div className="mb-2 flex items-center justify-between gap-3 text-sm">
+                    <span className="text-slate-300">{item.label}</span>
+                    <b className="tabular-nums text-slate-100">{fmt(item.value)}</b>
                   </div>
-                );
-              })}
+                  <div className="h-2.5 overflow-hidden rounded-full bg-white/10">
+                    <div className={`h-full rounded-full ${item.color}`} style={{ width: `${Math.min(100, item.value / total * 100)}%` }} />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : (
             <div className="empty-chart">
               <span>⌁</span>
               <b>Belum ada data pemeriksaan</b>
-              <p>Hasil analisis akan divisualisasikan di sini setelah pemeriksaan pertama.</p>
-              <a href="#/analisis">Mulai analisis →</a>
+              <p>Statistik akan muncul setelah pemeriksaan pertama tercatat.</p>
             </div>
           )}
-          <div className="chart-legend">
-            <span><i className="legend-safe" /> 0–34 rendah</span>
-            <span><i className="legend-warn" /> 35–59 sedang</span>
-            <span><i className="legend-danger" /> 60–100 tinggi</span>
-          </div>
+          <p className="mt-6 text-xs leading-5 text-cyber-muted">Angka ini merupakan agregat seluruh aktivitas, bukan daftar pengguna atau detail pemeriksaan individual.</p>
         </article>
 
         <article className="surface-card health-card">
@@ -110,15 +100,14 @@ export default function Dashboard() {
               </div>
               <p className="health-description">Proporsi hasil berlabel AMAN dari total pemeriksaan yang tercatat. Ini bukan ukuran pasti keamanan internet.</p>
               <div className="mini-metrics">
-                <div><span>Aktivitas tersimpan</span><b>{fmt(history.length)}</b></div>
-                <div><span>Perlu ditinjau*</span><b>{fmt(suspicious)}</b></div>
+                <div><span>Total pemeriksaan</span><b>{fmt(total)}</b></div>
+                <div><span>Laporan komunitas</span><b>{fmt(stats.reports)}</b></div>
               </div>
-              <small className="fine-print">*Dihitung dari riwayat yang dimuat pada halaman ini.</small>
             </>
           ) : (
             <div className="empty-feed">
               <span className="empty-symbol">◉</span>
-              <div><b>Belum ada pemeriksaan</b><p>Ringkasan risiko akan tersedia setelah data analisis tercatat.</p></div>
+              <div><b>Menunggu data pemeriksaan</b><p>Ringkasan risiko akan tersedia setelah aktivitas pertama tercatat.</p></div>
             </div>
           )}
         </article>
@@ -126,31 +115,13 @@ export default function Dashboard() {
 
       <section className="surface-card recent-card">
         <div className="panel-heading">
-          <div><p className="eyebrow">MONITORING</p><h2>Aktivitas terbaru</h2><p>Event yang masuk lewat koneksi real-time.</p></div>
-          <a className="text-link" href="#/history">Lihat riwayat lengkap →</a>
+          <div><p className="eyebrow">PRIVASI AKUN</p><h2>Riwayat pemeriksaan pribadi</h2><p>Detail hasil scan hanya dapat dibuka oleh pemilik akun yang sudah masuk.</p></div>
+          <a className="text-link" href="#/login">Masuk / Daftar →</a>
         </div>
-        {events.length ? (
-          <div className="table-wrap">
-            <table className="activity-table">
-              <thead><tr><th>Aktivitas</th><th>Jenis</th><th>Waktu</th><th>Status</th></tr></thead>
-              <tbody>
-                {events.map((event, i) => (
-                  <tr key={`${event.scannedAt}-${i}`}>
-                    <td className="table-identifier">{event.url || event.number || event.fileName || 'Data disamarkan'}</td>
-                    <td>{typeLabel[event.type] || event.type || '—'}</td>
-                    <td>{time(event.scannedAt)}</td>
-                    <td>{levelMap[event.riskLevel] ? <RiskBadge level={levelMap[event.riskLevel]} /> : event.riskLevel || '—'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div className="empty-feed">
-            <span className="empty-symbol">⌁</span>
-            <div><b>Menunggu aktivitas</b><p>Aktivitas baru akan muncul saat pemeriksaan dijalankan.</p></div>
-          </div>
-        )}
+        <div className="empty-feed">
+          <span className="empty-symbol">⌑</span>
+          <div><b>Dashboard tetap terbuka untuk publik</b><p>Pengunjung dapat melihat statistik agregat, sedangkan daftar pemeriksaan dan ekspor riwayat memerlukan akun.</p></div>
+        </div>
       </section>
     </main>
   );
