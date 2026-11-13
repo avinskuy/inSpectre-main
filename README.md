@@ -161,6 +161,7 @@ Common optional integrations:
 | `GOOGLE_SAFE_BROWSING_API_KEY` | URL reputation lookup |
 | `NASA_FIRMS_MAP_KEY` | NASA FIRMS hotspot data |
 | `OPENAQ_API_KEY` | OpenAQ access, if required by the configured endpoint |
+| `WHOTAGME_API_KEY` | Optional phone-number reputation lookup |
 | `OPENROUTER_API_KEY` | AI assistant |
 | `AAPT_PATH` | Path to Android AAPT executable for APK manifest analysis |
 | `CORS_ORIGIN` | Allowed frontend origin(s), comma-separated |
