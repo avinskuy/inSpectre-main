@@ -80,29 +80,26 @@ Browser
           v
      Express API
           |
+          +-- Shared middleware
+          |     +-- CORS and JSON parsing
+          |     +-- Per-route rate limits
+          |
           +-- Domain route modules
           |     +-- Authentication and sessions
-          +-- URL and phone-number analysis
-          +-- APK / ZIP inspection
-          +-- Public aggregate statistics
-          +-- Environmental data services
-          +-- News and AI assistance
+          |     +-- URL analysis and Safe Browsing
+          |     +-- Phone checker and reputation provider
+          |     +-- APK and ZIP inspection
+          |     +-- News, environment, and platform
           |
-          +-- SQLite
+          +-- Domain services
+          |     +-- SQLite and privacy helpers
+          |     +-- External data providers
           |
-          +-- External data providers
-                +-- Google Safe Browsing
-                +-- NASA FIRMS
-                +-- OpenAQ
-                +-- BMKG
-                +-- OpenRouter (optional)
-
-     Socket.IO
-          +-- Aggregate dashboard updates
+          +-- Socket.IO
+                +-- Aggregate dashboard updates
 ```
 
 The frontend uses same-origin `/api` requests. In the Cloudflare Pages deployment path, a Pages Function proxies those requests to the configured backend and forwards the session cookie.
-
 ## Repository layout
 
 ```text
