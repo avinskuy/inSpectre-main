@@ -219,11 +219,4 @@ function analyzeLink(url) {
   };
 }
 
-function checkLink(url) {
-  const result = analyzeLink(url);
-  const { logScan } = require('./db'); // lazy: analyzeLink dapat diuji tanpa SQLite
-  logScan('link', url, result.threatScore, result.riskLevel, result.findings);
-  return result;
-}
-
-module.exports = { checkLink, analyzeLink, isWhitelisted, MODEL_VERSION };
+module.exports = { analyzeLink, isWhitelisted, MODEL_VERSION };
