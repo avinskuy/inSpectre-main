@@ -80,7 +80,8 @@ Browser
           v
      Express API
           |
-          +-- Authentication and sessions
+          +-- Domain route modules
+          |     +-- Authentication and sessions
           +-- URL and phone-number analysis
           +-- APK / ZIP inspection
           +-- Public aggregate statistics
@@ -110,6 +111,8 @@ The frontend uses same-origin `/api` requests. In the Cloudflare Pages deploymen
 │   └── workflows/          # Continuous integration
 ├── backend/
 │   ├── data/               # Public reference dataset and its license
+│   ├── middleware/         # Shared request middleware
+│   ├── routes/             # HTTP routes grouped by API domain
 │   ├── services/
 │   │   ├── accounts/       # Authentication and sessions
 │   │   ├── environment/    # NASA FIRMS, OpenAQ, and BMKG data services
@@ -138,7 +141,7 @@ The frontend uses same-origin `/api` requests. In the Cloudflare Pages deploymen
 └── README.md
 ```
 
-Backend implementation modules are grouped under `backend/services/` by domain: accounts, environment, file inspection, news, phone reputation, URL security, and storage/privacy. `backend/server.js` remains the API composition root; `config.js` and `emitter.js` remain small infrastructure modules at the backend root. Tests stay in `backend/test/` and import the domain modules directly.
+HTTP endpoints are grouped under `backend/routes/` by API domain: authentication, platform/assistant, news, environmental data, phone checks, URL analysis, and file inspection. Shared rate limiting lives in `backend/middleware/`. `backend/server.js` is intentionally limited to application setup, router composition, Socket.IO initialization, and process startup. Business logic remains in `backend/services/`, grouped by accounts, environment, files, news, phones, security, and storage/privacy. The Docker image copies the runtime directories explicitly; tests remain in `backend/test/` and are executed by the CI workflow.
 
 ## Getting started
 
@@ -237,7 +240,7 @@ All routes are served under `/api`.
 | `GET` | `/environment/weather-warnings` | Public | BMKG weather warnings |
 | `GET` | `/environment/disasters` | Public | BMKG earthquake information |
 
-The phone check accepts the phone number in the route parameter. The weather route accepts the `adm4` query parameter. Request and response details are defined in the route handlers in `backend/server.js`.
+The phone check accepts the phone number in the route parameter. The weather route accepts the `adm4` query parameter. Request and response details are defined in route handlers under `backend/routes/` and their domain services under `backend/services/`.
 
 ## Testing
 
