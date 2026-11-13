@@ -19,7 +19,7 @@ function createSecurityRouter({ scanLimiter }) {
       });
     }
 
-    const target = /^https?:\\/\\//i.test(url.trim())
+    const target = /^https?:\/\//i.test(url.trim())
       ? url.trim()
       : `https://${url.trim()}`;
 
