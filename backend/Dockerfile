@@ -4,7 +4,11 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends python3 make g++ ca-certificates aapt && command -v aapt && rm -rf /var/lib/apt/lists/*
 COPY package*.json ./
 RUN npm install --omit=dev && npm cache clean --force
-COPY . .
+COPY config.js emitter.js server.js ./
+COPY middleware/ ./middleware/
+COPY routes/ ./routes/
+COPY services/ ./services/
+COPY data/ ./data/
 RUN mkdir -p /data && chown -R node:node /app /data
 USER node
 EXPOSE 5000
