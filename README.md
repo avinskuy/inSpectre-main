@@ -1,11 +1,10 @@
+# inSpectre
 
-# 🛡️ inSpectre
+### Environmental & Threat Intelligence Platform
 
-### Real-Time Anti-Phishing Ecosystem
+An integrated platform for digital threat awareness and environmental monitoring. inSpectre brings together security checks, environmental data, public situational summaries, and practical security guidance in one interface.
 
-Deteksi tautan mencurigakan. Kenali indikator risiko. Lebih waspada terhadap penipuan digital.
-
-**Dikembangkan untuk ISCOMFEST 2026.**
+**Developed for ISCOMFEST 2026.**
 
 <p>
   <img src="https://img.shields.io/badge/JavaScript-ES6%2B-F7DF1E?logo=javascript&logoColor=000" alt="JavaScript" />
@@ -15,213 +14,230 @@ Deteksi tautan mencurigakan. Kenali indikator risiko. Lebih waspada terhadap pen
   <img src="https://img.shields.io/badge/SQLite-Database-003B57?logo=sqlite&logoColor=fff" alt="SQLite" />
 </p>
 
-<p>
-  <img src="https://img.shields.io/badge/API-REST-0A7EA4" alt="REST API" />
-  <img src="https://img.shields.io/badge/Realtime-Socket.IO-010101?logo=socketdotio&logoColor=fff" alt="Socket.IO" />
-  <img src="https://img.shields.io/badge/World%20Monitoring-Completed-16803D" alt="World Monitoring Completed" />
-</p>
-
 ---
 
-## 📌 Tentang Proyek
+## Overview
 
-**inSpectre — Environmental & Threat Intelligence Platform** adalah platform intelijen terpadu yang dirancang untuk membantu pengguna memahami, memantau, dan merespons informasi serta indikasi ancaman di lingkungan digital maupun dunia nyata.
+inSpectre is an **Environmental & Threat Intelligence** platform designed to help users interpret indicators of digital threats and monitor selected environmental information. Its modules combine URL and phone-number checks, file and QR inspection, environmental monitoring, public aggregate statistics, security news, and educational guidance.
 
-inSpectre tidak hanya berfokus pada pemeriksaan phishing atau keamanan file. Platform ini mengintegrasikan berbagai modul dalam satu ekosistem, mulai dari **Digital Security & Threat Detection**, **Environmental Intelligence**, **World Monitoring**, hingga **Security Awareness dan AI Assistance**.
+The platform is an information and awareness tool. Its findings are indicators that require context and, where appropriate, independent verification.
 
-Melalui pendekatan tersebut, inSpectre menghubungkan pemeriksaan keamanan digital, pemantauan kondisi lingkungan, informasi kebencanaan, berita keamanan, edukasi, dan dukungan asisten cerdas dalam satu pusat informasi.
+## Current capabilities
 
-### Ruang Lingkup Platform
+### Digital security
+- **URL analysis:** heuristic checks for suspicious URL patterns, domain characteristics, and phishing indicators.
+- **URL reputation:** optional Google Safe Browsing lookup when a server-side API key is configured.
+- **Phone-number checks:** community-report signals and supported reputation lookups.
+- **APK and ZIP inspection:** static archive inspection and Android manifest analysis when AAPT is available. Files are not executed.
+- **QR inspection:** QR decoding in the browser; decoded destinations are not opened automatically.
+- **Private scan history:** registered users can view their own scan records. The public dashboard exposes aggregate statistics, not individual scan details.
 
-- 🛡️ **Digital Security:** pemeriksaan URL, indikasi phishing, reputasi tautan, nomor telepon, APK, ZIP, dan QR Code.
-- 🌍 **Environmental Intelligence:** pemantauan hotspot satelit, kualitas udara, prakiraan cuaca, peringatan cuaca, dan informasi gempa bumi.
-- 🛰️ **World Monitoring:** visualisasi data dan indikasi situasional melalui peta interaktif.
-- 📊 **Security Dashboard:** ringkasan statistik, aktivitas, dan informasi penting dari berbagai modul.
-- 📰 **Security Intelligence:** berita dan informasi keamanan yang relevan.
-- 🤖 **AI Assistance:** asisten berbasis model bahasa untuk membantu pengguna memahami informasi dan memperoleh panduan.
-- 📚 **Security Awareness:** edukasi, studi kasus, checklist, dan kuis.
-- 🧾 **Activity & Reporting:** riwayat pemeriksaan, pelaporan, pencarian, dan ekspor data yang tersedia.
+### Environmental intelligence
+- **Satellite hotspots:** NASA FIRMS thermal-anomaly data.
+- **Air quality:** available observations from OpenAQ.
+- **Weather and warnings:** BMKG forecast and warning data.
+- **Earthquake information:** available BMKG earthquake feed.
+- **Interactive monitoring:** map-based presentation of supported environmental layers.
 
-Dengan menggabungkan berbagai sumber data, teknologi analisis, dan visualisasi dalam satu platform, **inSpectre bertujuan menjadi pusat Environmental & Threat Intelligence yang membantu pengguna memperoleh gambaran situasi secara lebih menyeluruh.**
+### Platform modules
+- **Public dashboard:** aggregate scan statistics and service status.
+- **Security news:** curated security-related news feed from the configured backend source.
+- **AI assistance:** optional Indonesian-language assistant using the configured OpenRouter model provider.
+- **Security education:** learning materials and practical guidance.
+- **Accessibility options:** supported display and motion preferences.
 
-> **Penting:** inSpectre merupakan platform pendukung informasi dan kewaspadaan, bukan sistem yang menjamin seluruh ancaman dapat terdeteksi atau menggantikan verifikasi dari pihak berwenang maupun tenaga ahli.
+Availability of external data depends on provider uptime, API access, network connectivity, and server configuration.
 
-## 🚦 Status Pengembangan
+## Technology
 
-| Status | Arti |
+| Layer | Technologies |
 |---|---|
-| ✅ Selesai / tersedia | Fitur sudah diimplementasikan. Ketersediaan integrasi eksternal tetap bergantung pada konfigurasi dan layanan sumber. |
-| ⏸️ Selesai, pengembangan dijeda | Fitur telah selesai dibangun untuk tahap saat ini. Pengembangan lanjutan ditunda. |
-| 🛠️ Direncanakan | Fitur masih berada dalam roadmap dan belum boleh dianggap tersedia pada deployment saat ini. |
-
-## ✨ Fitur yang Sudah Diimplementasikan
-
-| Fitur | Deskripsi |
-|---|---|
-| 🔗 Link Phishing Checker | Menganalisis indikator seperti TLD berisiko, peniruan brand, kata kunci mencurigakan, alamat IP langsung, subdomain berlapis, homoglyph, URL shortener, dan penggunaan HTTPS. |
-| 🛡️ Google Safe Browsing | Memeriksa reputasi URL terhadap kategori ancaman yang didukung API jika dikonfigurasi dan tersedia. |
-| 📱 Pemeriksaan Nomor | Memeriksa nomor berdasarkan data laporan yang tersedia. |
-| 📦 APK/ZIP Scanner | Analisis statis struktur arsip, jalur, ekstensi, string, serta AndroidManifest.xml APK menggunakan AAPT jika tersedia. Bukan antivirus. |
-| ▦ QR Code Checker | Mendekode QR di browser tanpa otomatis membuka URL hasil dekode. |
-| 📡 Live Dashboard | Menampilkan statistik dan aktivitas melalui Socket.IO. |
-| 📰 Berita Keamanan | Menampilkan berita keamanan beserta tautan penerbit jika tersedia. |
-| 🤖 inSpectre Agent | Asisten berbasis model bahasa melalui backend, bergantung pada konfigurasi penyedia model. |
-| 📚 Edukasi Keamanan | Materi, studi kasus, checklist, dan kuis pemahaman. |
-| 🧾 Riwayat & Ekspor | Pencarian, filter, dan ekspor CSV untuk data yang tersedia. |
-| ♿ Aksesibilitas | Dukungan tema, ukuran font, pengurangan animasi, dan navigasi keyboard. |
-| 🌍 World Monitoring | Peta interaktif untuk memantau indikasi hotspot di Indonesia menggunakan Leaflet, OpenStreetMap, dan integrasi data NASA FIRMS. |
-| 🔄 Pembaruan Data Hotspot | Endpoint hotspot menggunakan cache backend dan antarmuka yang memperbarui data secara berkala. |
-
-## 🌍 World Monitoring & Environmental Intelligence
-
-Modul ini menggabungkan peta interaktif dan beberapa sumber data lingkungan. Ketersediaan setiap lapisan bergantung pada layanan eksternal, konektivitas, cache, dan konfigurasi deployment.
-
-### Lapisan data yang terintegrasi
-
-- **Hotspot — NASA FIRMS:** indikasi anomali termal dari satelit.
-- **Kualitas udara — OpenAQ:** observasi kualitas udara yang tersedia dari stasiun yang didukung.
-- **Cuaca — BMKG:** prakiraan cuaca berdasarkan kode wilayah administratif.
-- **Peringatan cuaca — BMKG:** informasi peringatan dari feed yang tersedia.
-- **Gempa bumi — BMKG:** informasi kejadian gempa dari feed BMKG.
-
-### Endpoint lingkungan
-
-| Method | Endpoint | Keterangan |
-|---|---|---|
-| `GET` | `/api/environment/hotspots` | Data indikasi hotspot NASA FIRMS. |
-| `GET` | `/api/environment/air-quality` | Observasi kualitas udara dari OpenAQ. |
-| `GET` | `/api/environment/regions` | Daftar wilayah; mendukung parameter `parent`. |
-| `GET` | `/api/environment/weather?adm4=<kode-wilayah>` | Prakiraan cuaca BMKG berdasarkan kode wilayah. |
-| `GET` | `/api/environment/weather-warnings` | Feed peringatan cuaca BMKG. |
-| `GET` | `/api/environment/disasters` | Informasi gempa dari BMKG. |
-
-### Catatan interpretasi dan ketersediaan
-
-- Hotspot satelit bukan konfirmasi kebakaran; indikasi termal perlu diverifikasi.
-- Data kualitas udara hanya mewakili observasi yang tersedia dan dapat berbeda menurut lokasi serta waktu pengukuran.
-- Prakiraan dan peringatan mengikuti data yang disediakan BMKG.
-- Data dapat terlambat, tidak lengkap, kedaluwarsa, atau sementara tidak tersedia saat sumber eksternal bermasalah.
-- Peta dasar OpenStreetMap dan sejumlah sumber data membutuhkan koneksi internet.
-
-## 🧰 Tech Stack
-
-| Area | Teknologi |
-|---|---|
-| Frontend | JavaScript, React, Vite |
-| Peta interaktif | Leaflet, React Leaflet, OpenStreetMap |
+| Frontend | React 18, Vite, JavaScript |
+| Mapping | Leaflet, React Leaflet, OpenStreetMap |
 | Backend | Node.js, Express |
-| Database | SQLite |
-| Komunikasi realtime | Socket.IO |
-| Reputasi URL | Google Safe Browsing, jika dikonfigurasi |
-| Data hotspot | NASA FIRMS |
-| Data kualitas udara | OpenAQ |
-| Prakiraan, peringatan cuaca, dan data gempa | BMKG |
-| Pengujian | Node.js Test Runner |
+| Database | SQLite via better-sqlite3 |
+| Realtime updates | Socket.IO |
+| QR decoding | jsQR |
+| External intelligence | Google Safe Browsing, NASA FIRMS, OpenAQ, BMKG |
+| AI provider | OpenRouter (optional) |
+| Tests | Node.js built-in test runner |
+| Deployment support | Docker, Docker Compose, Nginx, Cloudflare Pages Function proxy |
 
-## 🏗️ Arsitektur
+## Architecture
 
 ```text
-┌─────────────────────────────────────┐
-│           Browser / React           │
-│                                     │
-│ Dashboard · Analisis · QR Checker   │
-│ World Monitoring · Berita · Edukasi │
-└──────────────────┬──────────────────┘
-                   │
-                   │ REST API
-                   ▼
-┌─────────────────────────────────────┐
-│          Node.js / Express          │
-├─────────────────────────────────────┤
-│ Link Checker dan Safe Browsing      │
-│ Number Checker                      │
-│ APK / ZIP Scanner                   │
-│ News dan inSpectre Agent            │
-│ Environmental Intelligence          │
-│ Hotspot · Air Quality · Weather      │
-│ Warnings · Earthquake Data           │
-│ SQLite dan layanan pendukung         │
-└───────────────┬─────────────┬───────┘
-                │             │
-                ▼             ▼
-        Google Safe       NASA FIRMS
-        Browsing API      Hotspot Data
-              OpenAQ · BMKG
-       Air Quality · Weather · Disasters
+Browser
+  |
+  +-- React application
+  |     +-- Nexus and public dashboard
+  |     +-- Digital security analysis
+  |     +-- Environmental monitoring
+  |     +-- News, education, and assistant
+  |     +-- Login and private scan history
+  |
+  +-- Same-origin /api requests
+          |
+          v
+     Express API
+          |
+          +-- Authentication and sessions
+          +-- URL and phone-number analysis
+          +-- APK / ZIP inspection
+          +-- Public aggregate statistics
+          +-- Environmental data services
+          +-- News and AI assistance
+          |
+          +-- SQLite
+          |
+          +-- External data providers
+                +-- Google Safe Browsing
+                +-- NASA FIRMS
+                +-- OpenAQ
+                +-- BMKG
+                +-- OpenRouter (optional)
 
-          Socket.IO → Dashboard Realtime
+     Socket.IO
+          +-- Aggregate dashboard updates
 ```
 
-Diagram ini menunjukkan gambaran arsitektur logis. Detail implementasi aktual mengikuti kode dan konfigurasi deployment.
+The frontend uses same-origin `/api` requests. In the Cloudflare Pages deployment path, a Pages Function proxies those requests to the configured backend and forwards the session cookie.
 
-## 🗺️ Roadmap — Pengembangan Berikutnya
+## Repository layout
 
-| Status | Area | Fokus |
-|---|---|---|
-| ✅ Terintegrasi | Hotspot | Data indikasi hotspot dari NASA FIRMS. |
-| ✅ Terintegrasi | Air Quality | Observasi kualitas udara melalui OpenAQ. |
-| ✅ Terintegrasi | Weather & Warnings | Prakiraan dan peringatan cuaca dari BMKG. |
-| ✅ Terintegrasi | Disaster Data | Feed informasi gempa dari BMKG. |
-| 🔧 Pengembangan lanjutan | Reliability & Observability | Memperjelas status sumber, waktu pembaruan, kegagalan layanan, dan penanganan data kedaluwarsa. |
-| 🔧 Pengembangan lanjutan | Dashboard Integration | Meninjau konsistensi ringkasan status sumber dan pengalaman lintas modul. |
+```text
+.
+├── .github/
+│   └── workflows/          # Continuous integration
+├── backend/
+│   ├── data/               # Public reference dataset and its license
+│   ├── test/               # Backend unit and integration tests
+│   ├── *.js                # API server and domain modules
+│   ├── Dockerfile
+│   └── package.json
+├── deploy/
+│   ├── nginx.conf
+│   └── smoke-test.sh
+├── frontend/
+│   ├── functions/          # Cloudflare Pages API proxy
+│   ├── public/             # Static media assets
+│   └── src/
+│       ├── components/
+│       ├── lib/
+│       └── pages/
+├── docker-compose.yml
+└── README.md
+```
 
-Status terintegrasi berarti jalur fitur tersedia di aplikasi, bukan jaminan bahwa semua penyedia eksternal selalu aktif atau semua wilayah memiliki data. Prioritas pengembangan berikutnya mengikuti hasil pengujian, keamanan, ketersediaan sumber, dan kebutuhan proyek.
+Backend modules are currently separated by domain (authentication, database, privacy, URL checks, phone checks, environmental providers, news, and archive inspection). Keep that separation when adding or refactoring functionality; avoid creating folders that only add another level without a clear ownership boundary.
 
-## 🛡️ Google Safe Browsing
+## Getting started
 
-Backend dapat menggabungkan hasil heuristik lokal dengan pemeriksaan reputasi melalui Google Safe Browsing Lookup API.
+### Requirements
+- Node.js 18 or newer
+- npm
+- A C++ build toolchain supported by better-sqlite3 on platforms where a prebuilt binary is unavailable
 
-| Status | Arti |
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/avinskuy/inSpectre-main.git
+cd inSpectre-main
+```
+
+### 2. Configure the backend
+
+```bash
+cd backend
+npm install
+cp .env.example .env
+```
+
+Set the required values in `backend/.env`. Do not commit the real `.env` file or share API keys.
+
+Common optional integrations:
+
+| Variable | Purpose |
 |---|---|
-| `threat` | Layanan melaporkan kecocokan ancaman. Hindari membuka tautan atau memasukkan informasi pribadi. |
-| `no_match` | Tidak ditemukan kecocokan ancaman dari pemeriksaan tersebut. Bukan jaminan URL aman. |
-| `unavailable` | Pemeriksaan eksternal tidak tersedia. Hasil heuristik lokal tetap merupakan lapisan pemeriksaan terpisah. |
+| `GOOGLE_SAFE_BROWSING_API_KEY` | URL reputation lookup |
+| `NASA_FIRMS_MAP_KEY` | NASA FIRMS hotspot data |
+| `OPENAQ_API_KEY` | OpenAQ access, if required by the configured endpoint |
+| `OPENROUTER_API_KEY` | AI assistant |
+| `AAPT_PATH` | Path to Android AAPT executable for APK manifest analysis |
+| `CORS_ORIGIN` | Allowed frontend origin(s), comma-separated |
+| `TRUST_PROXY` | Set to `1` only when running behind a trusted reverse proxy |
+| `INSPECTRE_DATA_DIR` | Directory for SQLite and local data files |
+| `INSPECTRE_DB_PATH` | Optional explicit SQLite database path |
+| `INSPECTRE_NUMBERS_FILE` | Optional community number-report data file |
 
-API key harus disimpan sebagai environment variable di backend, bukan di frontend, repository, respons API, atau log.
+Authentication settings for an optional jury/demo account are documented in `backend/.env.example`. Use a unique strong password and configure secrets only in the server environment.
 
-Untuk deployment systemd, gunakan file environment dengan izin akses terbatas.
+### 3. Run the backend
 
-Pemeriksaan reputasi bukan pemindaian menyeluruh terhadap isi situs. Ancaman baru atau URL yang belum terdaftar mungkin tidak terdeteksi.
+```bash
+npm start
+```
 
-## 📁 Analisis File dan QR
+The API listens on port `5000` by default. For local development, keep the backend running in its own terminal.
 
-- QR didekode di browser; URL hasil dekode tidak dibuka otomatis.
-- APK/ZIP diperiksa secara statis dan tidak dijalankan sebagai aplikasi.
-- Analisis bersifat heuristik dan bukan pengganti antivirus.
-- AndroidManifest.xml dianalisis menggunakan AAPT jika tersedia; jika gagal, keterbatasan analisis dicantumkan pada hasil.
-- Format arsip atau kompresi tertentu dapat ditolak atau dianalisis secara terbatas.
-- Pemeriksaan Manifest APK memerlukan AAPT. Lokasi executable dapat ditentukan melalui `AAPT_PATH`.
+### 4. Run the frontend
 
-## 🔐 Privasi dan Keamanan
+In a second terminal:
 
-- Data nomor pada tampilan publik disamarkan sesuai mekanisme privasi aplikasi.
-- Data URL yang ditampilkan atau disiarkan melewati mekanisme penyaringan privasi.
-- File yang diunggah ditangani melalui alur pemindaian backend.
-- Server tidak membuka URL target secara langsung untuk memeriksa isi situs. Namun, ketika pemeriksaan reputasi aktif, URL dikirim ke Google Safe Browsing untuk pencocokan reputasi.
-- Jangan mengirim URL rahasia atau sensitif ke layanan pemeriksaan eksternal.
-- API key dan token harus disimpan di environment variable atau mekanisme secret yang sesuai, bukan di repository.
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-## ⚠️ Batasan
+Vite serves the frontend on port `3000` and proxies `/api` and `/socket.io` to `http://localhost:5000` by default. Override the proxy target with `VITE_PROXY_TARGET` when needed.
 
-- Heuristik dapat menghasilkan false positive maupun false negative.
-- Skor risiko bukan probabilitas bahwa situs atau file berbahaya.
-- Pemeriksaan reputasi bergantung pada ketersediaan dan cakupan data layanan eksternal.
-- Pemeriksaan APK/ZIP tidak setara dengan analisis malware mendalam.
-- Data World Monitoring bergantung pada sumber satelit, waktu pembaruan, dan ketersediaan API.
-- Hotspot satelit tidak boleh dianggap sebagai kejadian kebakaran yang telah terkonfirmasi.
-- Kegagalan layanan eksternal dapat mengurangi kelengkapan data tanpa berarti keseluruhan aplikasi berhenti bekerja.
-- Fitur roadmap dapat berubah sebelum implementasi dan pengujian selesai.
+## Authentication and privacy
 
-## 🧪 Pengujian
+- Registration and login use server-managed sessions.
+- Session cookies are HttpOnly and are not exposed to frontend JavaScript.
+- The private history endpoint requires an authenticated session and returns records associated with that account.
+- The public dashboard uses aggregate statistics and does not expose individual scan history.
+- Scan details are not broadcast to all Socket.IO clients.
+- Use HTTPS in deployed environments and configure trusted proxy settings correctly.
+- Temporary or ephemeral storage can lose accounts, sessions, and scan history when an instance is replaced or restarted. Use persistent storage for long-term deployments.
 
-Jalankan pengujian backend:
+## API reference
+
+All routes are served under `/api`.
+
+| Method | Endpoint | Access | Purpose |
+|---|---|---|---|
+| `GET` | `/health` | Public | API health status |
+| `POST` | `/auth/register` | Public, rate-limited | Create an account and session |
+| `POST` | `/auth/login` | Public, rate-limited | Start a session |
+| `POST` | `/auth/logout` | Session-aware | End the current session |
+| `GET` | `/auth/me` | Authenticated | Get the current account |
+| `GET` | `/stats` | Public | Aggregate dashboard statistics |
+| `GET` | `/recent` | Authenticated | Current account's recent scans |
+| `GET` | `/news` | Public | Security news feed |
+| `POST` | `/assistant` | Public, rate-limited | AI assistance |
+| `GET` | `/check/:nomor` | Public, rate-limited | Phone-number check |
+| `POST` | `/scan` | Public, rate-limited | URL scan |
+| `POST` | `/scan-file` | Public, rate-limited | File scan |
+| `GET` | `/environment/hotspots` | Public | NASA FIRMS hotspot data |
+| `GET` | `/environment/air-quality` | Public | OpenAQ observations |
+| `GET` | `/environment/regions` | Public | BMKG administrative region data |
+| `GET` | `/environment/weather` | Public | BMKG forecast |
+| `GET` | `/environment/weather-warnings` | Public | BMKG weather warnings |
+| `GET` | `/environment/disasters` | Public | BMKG earthquake information |
+
+The phone check accepts the phone number in the route parameter. The weather route accepts the `adm4` query parameter. Request and response details are defined in the route handlers in `backend/server.js`.
+
+## Testing
+
+Run backend tests:
 
 ```bash
 cd backend
 npm test
 ```
 
-Build frontend:
+Build the frontend:
 
 ```bash
 cd frontend
@@ -229,61 +245,27 @@ npm install
 npm run build
 ```
 
-Pastikan tes dan build berhasil sebelum deployment. Untuk perubahan yang menyentuh integrasi eksternal, periksa juga status layanan dan penanganan kondisi gagal.
+Run both checks before proposing a deployment. Tests that depend on external services should be interpreted according to their mocked or live integration setup.
 
-## 🚀 Menjalankan Proyek
+## Deployment
 
-Persyaratan umum: Node.js dan npm yang kompatibel dengan dependensi proyek.
+- **Docker:** use the root `docker-compose.yml` to run the frontend and backend together.
+- **Nginx:** `deploy/nginx.conf` contains the reverse-proxy configuration used by the deployment setup.
+- **Cloudflare Pages:** the API proxy function is located at `frontend/functions/api/[[path]].js`.
+- **Backend hosting:** configure environment variables, persistent data storage, allowed origins, and health checks in the hosting provider.
 
-Clone repository:
+Deployment-specific instructions should be kept in the deployment documentation and updated whenever hosting configuration changes.
 
-```bash
-git clone https://github.com/avinskuy/inSpectre-main.git
-cd inSpectre-main
-```
+## Important limitations
 
-Instal dependensi dan jalankan pengujian backend:
+- Heuristic scores are not probabilities and cannot guarantee that a URL, phone number, or file is safe or malicious.
+- A clean reputation lookup is not proof of safety.
+- APK and ZIP inspection is static analysis, not full malware execution or sandbox analysis.
+- APK manifest analysis depends on AAPT being installed and configured.
+- Hotspot observations are thermal anomalies, not confirmed fires.
+- Environmental observations and forecasts may be delayed, incomplete, or unavailable.
+- External providers may impose rate limits, coverage constraints, or API-key requirements.
 
-```bash
-cd backend
-npm install
-npm test
-```
+## License
 
-Instal dependensi dan build frontend:
-
-```bash
-cd ../frontend
-npm install
-npm run build
-```
-
-Konfigurasikan environment backend sesuai layanan yang digunakan. Variabel yang mungkin diperlukan mencakup:
-
-- `GOOGLE_SAFE_BROWSING_API_KEY` — pemeriksaan reputasi URL.
-- `NASA_FIRMS_MAP_KEY` — data hotspot NASA FIRMS.
-- `OPENROUTER_API_KEY` — integrasi model bahasa, sesuai konfigurasi backend.
-
-Ikuti konfigurasi aktual pada proyek sebelum menjalankan server. Jangan menaruh API key, token, atau rahasia lainnya di repository maupun frontend.
-
-## 📡 Endpoint API
-
-Endpoint berikut merupakan daftar endpoint yang tercatat pada proyek. Kebutuhan parameter, metode HTTP, dan format respons harus mengikuti implementasi masing-masing route.
-
-| Endpoint | Fungsi |
-|---|---|
-| `/api/health` | Status kesehatan API. |
-| `/api/stats` | Statistik dashboard. |
-| `/api/recent` | Aktivitas terbaru. |
-| `/api/news` | Data berita keamanan. |
-| `/api/check/:nomor` | Pemeriksaan nomor. |
-| `/api/scan-file` | Alur pemindaian file. |
-| `/api/scan` | Alur pemindaian yang tersedia pada backend. |
-| `/api/assistant` | Integrasi asisten. |
-| `/api/environment/hotspots` | Data hotspot untuk World Monitoring. |
-
-Daftar ini perlu dicocokkan dengan route backend terbaru sebelum dijadikan dokumentasi API yang definitif.
-
-## 📄 Lisensi
-
-Proyek ini menggunakan lisensi MIT. Lihat file [`LICENSE`](LICENSE) untuk ketentuan lengkap.
+This project is licensed under the MIT License. See [LICENSE](LICENSE).
