@@ -21,15 +21,10 @@ function sanitize(report) {
   return out;
 }
 
-/* ─── Broadcast hasil scan ke semua client dashboard ─── */
+/* ─── Jangan siarkan hasil scan individual: detail hanya milik akun pemindai. ─── */
 function emitThreat(report) {
-  if (!io) return; // bot bisa jalan tanpa dashboard (io belum init)
   const safe = sanitize(report);
-  io.emit('new_threat', {
-    ...safe,
-    scannedAt: safe.scannedAt || new Date().toISOString(),
-  });
-  console.log(`[EMIT] ${safe.type} -> ${safe.riskLevel} (score ${safe.threatScore ?? 0})`);
+  console.log(`[SCAN] ${safe.type} -> ${safe.riskLevel} (score ${safe.threatScore ?? 0})`);
 }
 
 /* ─── Broadcast statistik terbaru (dipanggil setelah emitThreat) ─── */
