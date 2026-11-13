@@ -3,6 +3,7 @@
 const express = require('express');
 const { checkNumber, isValidPhone } = require('../services/phones/numberChecker');
 const { optionalAuth } = require('../services/accounts/auth');
+const { emitThreat, emitStats } = require('../emitter');
 
 function createPhoneRouter({ scanLimiter, lookupWhoTag }) {
   const router = express.Router();
@@ -41,6 +42,8 @@ function createPhoneRouter({ scanLimiter, lookupWhoTag }) {
       }
     }
 
+    emitThreat({ type: 'scam_number', ...result });
+    emitStats();
     return res.json({ ...result, externalReputation });
   });
 
