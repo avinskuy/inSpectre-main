@@ -393,6 +393,7 @@ app.post('/api/scan-file', scanLimiter, optionalAuth, express.raw({ type: 'appli
       threatScore: result.threatScore,
       scannedAt: result.scannedAt,
     });
+    emitStats();
     res.set('Cache-Control', 'no-store');
     res.json(result);
   } catch (e) {
