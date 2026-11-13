@@ -254,7 +254,7 @@ Run both checks before proposing a deployment. Tests that depend on external ser
 - **Cloudflare Pages:** the API proxy function is located at `frontend/functions/api/[[path]].js`.
 - **Backend hosting:** configure environment variables, persistent data storage, allowed origins, and health checks in the hosting provider.
 
-Deployment-specific instructions should be kept in the deployment documentation and updated whenever hosting configuration changes.
+See [docs/deployment.md](docs/deployment.md) for the current deployment workflow. Update it whenever hosting configuration changes.
 
 ## Important limitations
 
