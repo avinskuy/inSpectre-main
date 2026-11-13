@@ -15,6 +15,8 @@ import Berita from './pages/Berita.jsx';
 import AsistenAI from './pages/AsistenAI.jsx';
 import Melapor from './pages/Melapor.jsx';
 import BootScreen from './components/BootScreen.jsx';
+import AuthPage from './pages/AuthPage.jsx';
+import { useAuth } from './lib/AuthContext.jsx';
 
 const PAGES = {
   '#/': { Page: Nexus, title: 'inSpectre Nexus — Intelligence Platform' },
@@ -40,6 +42,7 @@ const PAGES = {
   '#/asisten': { Page: AsistenAI, title: 'Asisten Keamanan — inSpectre' },
   '#/melapor': { Page: Melapor, title: 'Tata Cara Melapor — inSpectre' },
   '#/history': { Page: History, title: 'Riwayat Scan — inSpectre' },
+  '#/login': { Page: AuthPage, title: 'Masuk / Daftar — inSpectre' },
   '#/dashboard': { Page: Dashboard, title: 'Dashboard Real-time — inSpectre' },
 };
 
@@ -48,6 +51,7 @@ const currentRoute = () => (window.location.hash || '#/').split('?')[0];
 export default function App() {
   const [route, setRoute] = useState(currentRoute);
   const [booting, setBooting] = useState(true);
+  const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -62,6 +66,10 @@ export default function App() {
   }, []);
 
   const { Page, title } = PAGES[route] || PAGES['#/'];
+  const pageContent = route === '#/history'
+    ? authLoading ? <main className="page-shell py-20 text-center text-cyber-muted">Memeriksa sesi akun…</main>
+      : user ? <History /> : <AuthPage returnTo="#/history" />
+    : route === '#/login' ? <AuthPage returnTo="#/history" /> : <Page />;
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -77,7 +85,7 @@ export default function App() {
       {booting && <BootScreen />}
       <Navbar />
       <div id="main-content" tabIndex={-1} key={route} className="page-transition">
-        <Page />
+        {pageContent}
       </div>
       <footer className="site-footer relative mt-10 overflow-hidden border-t border-white/10 bg-[#0b1220] px-5 py-10 text-center text-sm text-slate-300 sm:py-12">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#7dd3fc]/60 to-transparent" />
