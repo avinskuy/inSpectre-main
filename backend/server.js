@@ -1,438 +1,48 @@
+'use strict';
+
 const express = require('express');
-const http = require('http');
+const http = require('node:http');
 const cors = require('cors');
 const config = require('./config');
-const { getStats, getRecentScans, logScan } = require('./services/storage/db');
-const { optionalAuth, requireAuth, registerUser, loginUser, ensureDemoAccount, setSessionCookie, clearSessionCookie, readSessionToken, logoutToken } = require('./services/accounts/auth');
-const { initSocket, emitThreat, emitStats } = require('./emitter');
-const { checkLinkWithReputation } = require('./services/security/safeLinkChecker');
-const { checkNumber, isValidPhone } = require('./services/phones/numberChecker');
+const { ensureDemoAccount } = require('./services/accounts/auth');
 const { lookupWhoTag } = require('./services/phones/whotagProvider');
-const { getNews } = require('./services/news/news');
-const { getHotspots } = require('./services/environment/hotspots');
-const { getAirQuality } = require('./services/environment/airQuality');
-const { getRegions, getForecast, getWarnings } = require('./services/environment/weather');
-const { getDisasters } = require('./services/environment/disasters');
-const { analyzeArchive } = require('./services/files/archiveScanner');
-const {
-  analyzeApkManifest,
-  evaluateApkManifest,
-} = require('./services/files/apkManifestAnalyzer');
+const { initSocket } = require('./emitter');
+const { createRateLimit } = require('./middleware/rateLimit');
+const { createAuthRouter } = require('./routes/auth');
+const { createPlatformRouter } = require('./routes/platform');
+const { createNewsRouter } = require('./routes/news');
+const { createEnvironmentRouter } = require('./routes/environment');
+const { createPhoneRouter } = require('./routes/phones');
+const { createFileRouter } = require('./routes/files');
+const { createSecurityRouter } = require('./routes/security');
 
 const app = express();
+
 // Di container production, hanya reverse proxy internal yang boleh meneruskan client IP.
 app.set('trust proxy', process.env.TRUST_PROXY === '1' ? 1 : false);
-const server = http.createServer(app);
-
 app.use(cors({ origin: config.CORS_ORIGINS }));
 app.use(express.json({ limit: '10kb' }));
 
-/* ─── Rate limit sederhana per IP (tanpa dependensi tambahan) ─── */
-function rateLimit({ windowMs = 60_000, max = 30 } = {}) {
-  const hits = new Map();
-  setInterval(() => {
-    const now = Date.now();
-    for (const [ip, h] of hits) if (now - h.start > windowMs) hits.delete(ip);
-  }, windowMs).unref();
+const scanLimiter = createRateLimit({ max: 30 });
+const assistantLimiter = createRateLimit({ windowMs: 60_000, max: 10 });
+const authLimiter = createRateLimit({ windowMs: 15 * 60_000, max: 12 });
 
-  return (req, res, next) => {
-    const now = Date.now();
-    const h = hits.get(req.ip);
-    if (!h || now - h.start > windowMs) {
-      hits.set(req.ip, { start: now, n: 1 });
-      return next();
-    }
-    if (++h.n > max) {
-      return res.status(429).json({ error: 'Terlalu banyak permintaan. Coba lagi sebentar lagi.' });
-    }
-    next();
-  };
-}
-const scanLimiter = rateLimit({ max: 30 });
+app.use('/api', createAuthRouter({ authLimiter }));
+app.use('/api', createPlatformRouter({ assistantLimiter }));
+app.use('/api', createNewsRouter());
+app.use('/api', createEnvironmentRouter());
+app.use('/api', createPhoneRouter({ scanLimiter, lookupWhoTag }));
+app.use('/api', createFileRouter({ scanLimiter }));
+app.use('/api', createSecurityRouter({ scanLimiter }));
 
-const assistantLimiter = rateLimit({ windowMs: 60_000, max: 10 });
-const authLimiter = rateLimit({ windowMs: 15 * 60_000, max: 12 });
-
-app.post('/api/auth/register', authLimiter, (req,res) => {
-  try {
-    const result = registerUser(req.body);
-    setSessionCookie(res,result.token);
-    res.set('Cache-Control','no-store');
-    return res.status(201).json({user:result.user});
-  } catch (error) {
-    return res.status(error.statusCode || 500).json({error:error.statusCode ? error.message : 'Pendaftaran gagal. Coba lagi.'});
-  }
-});
-app.post('/api/auth/login', authLimiter, (req,res) => {
-  try {
-    const result = loginUser(req.body);
-    setSessionCookie(res,result.token);
-    res.set('Cache-Control','no-store');
-    return res.json({user:result.user});
-  } catch (error) {
-    return res.status(error.statusCode || 500).json({error:error.statusCode ? error.message : 'Login gagal. Coba lagi.'});
-  }
-});
-app.post('/api/auth/logout', (req,res) => {
-  logoutToken(readSessionToken(req));
-  clearSessionCookie(res);
-  res.set('Cache-Control','no-store');
-  return res.json({ok:true});
-});
-app.get('/api/auth/me', requireAuth, (req,res) => {
-  res.set('Cache-Control','no-store');
-  return res.json({user:req.user});
-});
-
-
-app.post('/api/assistant', assistantLimiter, async (req, res) => {
-  const question = req.body && req.body.question;
-
-  if (typeof question !== 'string' || !question.trim()) {
-    return res.status(400).json({ error: 'Tulis pertanyaan terlebih dahulu.' });
-  }
-  if (question.length > 2000) {
-    return res.status(400).json({ error: 'Pertanyaan maksimal 2000 karakter.' });
-  }
-
-  const apiKey = process.env.OPENROUTER_API_KEY;
-  if (!apiKey) {
-    return res.status(503).json({ error: 'Asisten AI belum dikonfigurasi di server.' });
-  }
-
-  try {
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        model: 'nvidia/nemotron-3.5-lightning:free',
-        messages: [
-          {
-            role: 'system',
-            content: 'Kamu adalah AsistenAI inSpectre, pendamping keamanan digital berbahasa Indonesia. Jawab jelas, praktis, dan ringkas. Bantu mengenali phishing, penipuan, APK, QR, serta langkah pelaporan. Jangan pernah meminta atau mengulang OTP, PIN, kata sandi, atau data rahasia. Jangan mengklaim telah memindai atau memverifikasi sesuatu jika belum dilakukan. Jika ada dugaan penipuan, anjurkan verifikasi melalui kanal resmi. Berikan saran keselamatan, bukan jaminan bahwa tautan atau file aman.'
-          },
-          { role: 'user', content: question.trim() }
-        ],
-        max_tokens: 700,
-        reasoning: { enabled: false }
-      }),
-      signal: AbortSignal.timeout(30000)
-    });
-
-    if (!response.ok) {
-      console.error('OpenRouter API gagal dengan status HTTP', response.status);
-      if (response.status === 429 || response.status === 402) {
-        return res.status(503).json({ error: 'Batas penggunaan AI gratis tercapai. Coba lagi nanti.' });
-      }
-      if (response.status === 401 || response.status === 403) {
-        return res.status(502).json({ error: 'OpenRouter menolak API key atau akses model. Periksa konfigurasi key di server.' });
-      }
-      return res.status(502).json({ error: 'Layanan AI sedang bermasalah. Coba lagi nanti.' });
-    }
-
-    const data = await response.json();
-    const answer = data.choices?.[0]?.message?.content;
-    if (typeof answer !== 'string' || !answer.trim()) {
-      return res.status(502).json({ error: 'AI belum memberikan jawaban teks. Coba lagi.' });
-    }
-
-    res.set('Cache-Control', 'no-store');
-    return res.json({ answer: answer.trim() });
-  } catch (error) {
-    console.error('OpenRouter request gagal:', error.name || 'Error');
-    return res.status(502).json({
-      error: error.name === 'TimeoutError'
-        ? 'AI terlalu lama merespons. Coba lagi.'
-        : 'Tidak dapat menghubungi layanan AI saat ini.'
-    });
-  }
-});
-
-app.get('/api/stats', (req, res) => {
-  res.json(getStats());
-});
-
-app.get('/api/recent', requireAuth, (req,res) => {
-  res.set('Cache-Control','no-store');
-  res.json(getRecentScans(20,req.user.id));
-});
-
-app.get('/api/news', async (req, res) => {
-  try {
-    const data = await getNews({ force: req.query.refresh === '1' });
-    res.set('Cache-Control', 'no-store');
-    res.json(data);
-  } catch (e) {
-    console.error('news error:', e.message);
-    res.status(502).json({ articles: [], updatedAt: null, error: 'Berita belum dapat dimuat. Coba lagi beberapa saat.' });
-  }
-});
-
-
-app.get('/api/environment/hotspots', async (req, res) => {
-  try {
-    const result = await getHotspots();
-    res.set('Cache-Control', 'public, max-age=60');
-    res.json(result);
-  } catch (error) {
-    console.error('hotspots error:', error.name || 'Error');
-    res.status(502).json({
-      data: [],
-      source: 'NASA FIRMS',
-      status: 'unavailable',
-      updatedAt: null,
-      error: 'Data hotspot belum dapat dimuat.'
-    });
-  }
-});
-
-app.get('/api/environment/air-quality', async (req, res) => {
-  try {
-    const result = await getAirQuality();
-    res.set('Cache-Control', 'public, max-age=60');
-    res.json(result);
-  } catch (error) {
-    console.error('air quality error:', error.name || 'Error');
-    res.status(502).json({
-      data: [],
-      source: 'OpenAQ v3',
-      status: 'unavailable',
-      fetchedAt: null,
-      error: 'Data kualitas udara belum dapat dimuat.'
-    });
-  }
-});
-
-app.get('/api/environment/regions', (req, res) => {
-  try {
-    const parent = typeof req.query.parent === 'string' ? req.query.parent : '';
-    const data = getRegions(parent);
-    res.set('Cache-Control', 'public, max-age=3600');
-    res.json({ status: 'ok', data });
-  } catch (error) {
-    res.status(error.statusCode || 500).json({
-      status: 'error',
-      data: [],
-      error: error.statusCode === 400
-        ? error.message
-        : 'Daftar wilayah belum dapat dimuat.'
-    });
-  }
-});
-
-app.get('/api/environment/weather', async (req, res) => {
-  try {
-    const adm4 = typeof req.query.adm4 === 'string' ? req.query.adm4 : '';
-    const result = await getForecast(adm4);
-    res.set('Cache-Control', 'public, max-age=300');
-    res.json(result);
-  } catch (error) {
-    const status = error.statusCode === 400 ? 400 : 502;
-    console.error('weather forecast error:', error.name || 'Error');
-    res.status(status).json({
-      status: 'unavailable',
-      source: 'BMKG',
-      forecast: [],
-      error: status === 400
-        ? error.message
-        : 'Prakiraan cuaca belum dapat dimuat. Coba lagi beberapa saat.'
-    });
-  }
-});
-
-app.get('/api/environment/weather-warnings', async (req, res) => {
-  try {
-    const result = await getWarnings();
-    res.set('Cache-Control', 'public, max-age=60');
-    res.json(result);
-  } catch (error) {
-    console.error('weather warnings error:', error.name || 'Error');
-    res.status(502).json({
-      status: 'unavailable',
-      source: 'BMKG',
-      warnings: [],
-      fetchedAt: null,
-      error: 'Peringatan cuaca BMKG belum dapat dimuat.'
-    });
-  }
-});
-
-app.get('/api/environment/disasters', async (req, res) => {
-  try {
-    const result = await getDisasters();
-    res.set('Cache-Control', 'public, max-age=60');
-    res.json(result);
-  } catch (error) {
-    console.error('disasters error:', error.name || 'Error');
-    res.status(502).json({
-      status: 'unavailable',
-      source: 'BMKG',
-      sourceUrl: 'https://data.bmkg.go.id/gempabumi/',
-      fetchedAt: null,
-      latest: null,
-      significant: [],
-      felt: [],
-      errors: { all: 'Data gempa belum dapat dimuat. Coba lagi beberapa saat.' }
-    });
-  }
-});
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', uptime: process.uptime() });
-});
-
-app.get('/api/check/:nomor', scanLimiter, optionalAuth, async (req, res) => {
-  const raw = req.params.nomor;
-
-  if (!isValidPhone(raw)) {
-    return res.status(400).json({
-      error: 'Nomor tidak valid. Gunakan format 08xx atau +62xx.',
-    });
-  }
-
-  // Hasil komunitas dihitung dan dicatat tepat satu kali.
-  let result;
-  try {
-    result = checkNumber(raw,req.user?.id || null);
-  } catch (error) {
-    console.error('community number check error:', error.message);
-    return res.status(500).json({ error: 'Pengecekan gagal' });
-  }
-
-  let externalReputation = {
-    status: 'UNAVAILABLE',
-    reason: 'INVALID_PROVIDER_NUMBER',
-  };
-
-  // Kegagalan provider tidak membatalkan hasil komunitas.
-  if (/^62\d{8,13}$/.test(result.number)) {
-    try {
-      externalReputation = await lookupWhoTag(`+${result.number}`);
-    } catch (error) {
-      console.error('WhoTag provider error:', error.message);
-      externalReputation = {
-        status: 'UNAVAILABLE',
-        reason: 'PROVIDER_ERROR',
-      };
-    }
-  }
-
-  emitThreat({ type: 'scam_number', ...result });
-  emitStats();
-  return res.json({ ...result, externalReputation });
-});
-app.post('/api/scan-file', scanLimiter, optionalAuth, express.raw({ type: 'application/octet-stream', limit: '25mb' }), async (req, res) => {
-  const filename = String(req.query.filename || 'upload.zip').slice(0, 180);
-  if (!Buffer.isBuffer(req.body) || req.body.length === 0) {
-    return res.status(400).json({ error: 'File kosong atau tidak terbaca.' });
-  }
-  if (req.body.length > 25 * 1024 * 1024) {
-    return res.status(413).json({ error: 'Ukuran file melebihi batas 25 MB.' });
-  }
-
-  try {
-    const result = analyzeArchive(req.body, filename);
-    const isApk = /\.apk$/i.test(filename);
-
-    if (isApk) {
-      const manifestResult = await analyzeApkManifest(req.body);
-      result.manifestAnalysis = manifestResult.status;
-
-      if (manifestResult.status === 'ANALYZED') {
-        const evaluated = evaluateApkManifest(manifestResult.manifest);
-
-        // Ganti heuristik permission berbasis teks dengan hasil Manifest biner.
-        result.findings = result.findings.filter(
-          (item) => item.rule !== 'SENSITIVE_ANDROID_CAPABILITIES'
-        );
-
-        const manifestFindings = evaluated.findings.map((item) => ({
-          rule: item.rule,
-          risk: item.severity,
-          points: item.points,
-          title: item.title,
-          evidence: item.evidence,
-          recommendation: item.recommendation,
-          detail: item.context,
-        }));
-
-        result.findings.push(...manifestFindings);
-        result.manifest = manifestResult.manifest;
-        result.threatScore = Math.min(
-          100,
-          result.findings.reduce((total, item) => total + (Number(item.points) || 0), 0)
-        );
-        result.manifestSummary = evaluated.summary;
-      } else {
-        result.manifestAnalysisReason = manifestResult.reason;
-        result.explanation.limitations.push(
-          'Manifest APK tidak berhasil dianalisis oleh AAPT. Temuan permission berbasis teks hanya merupakan fallback dan dapat melewatkan permission pada Manifest biner.'
-        );
-      }
-
-      result.riskLevel = result.threatScore >= 60
-        ? 'BAHAYA'
-        : result.threatScore >= 35
-          ? 'CURIGA'
-          : result.threatScore >= 15
-            ? 'WASPADA'
-            : 'AMAN';
-
-      result.explanation.method += manifestResult.status === 'ANALYZED'
-        ? ' serta analisis AndroidManifest.xml menggunakan AAPT.'
-        : '; analisis Manifest biner tidak tersedia.';
-    }
-
-    logScan('apk',result.fileName,result.threatScore,result.riskLevel,result.findings,req.user?.id || null);
-    emitThreat({
-      type: 'apk',
-      fileName: result.fileName,
-      riskLevel: result.riskLevel,
-      threatScore: result.threatScore,
-      scannedAt: result.scannedAt,
-    });
-    emitStats();
-    res.set('Cache-Control', 'no-store');
-    res.json(result);
-  } catch (e) {
-    res.status(400).json({ error: e.message || 'File tidak dapat dianalisis.' });
-  }
-});
-
-app.post('/api/scan', scanLimiter, optionalAuth, async (req, res) => {
-  const { url } = req.body || {};
-  if (!url || typeof url !== 'string' || !url.trim()) {
-    return res.status(400).json({ error: 'Parameter "url" wajib diisi' });
-  }
-  if (url.length > 2048) {
-    return res.status(400).json({ error: 'URL terlalu panjang (maks 2048 karakter)' });
-  }
-
-  const target = /^https?:\/\//i.test(url.trim())
-    ? url.trim()
-    : `https://${url.trim()}`;
-
-  try {
-    const result = await checkLinkWithReputation(target,req.user?.id || null);
-    emitThreat({ type: 'link', ...result });
-    emitStats();
-    res.set('Cache-Control', 'no-store');
-    res.json(result);
-  } catch (e) {
-    console.error('scan error:', e.message);
-    res.status(500).json({ error: 'Scan gagal' });
-  }
-});
-
+const server = http.createServer(app);
 initSocket(server);
 
-server.on('error', (e) => {
-  if (e.code === 'EADDRINUSE') {
+server.on('error', (error) => {
+  if (error.code === 'EADDRINUSE') {
     console.error(`❌ Port ${config.PORT} sudah dipakai. Ubah PORT di .env atau matikan proses lain.`);
   } else {
-    console.error('❌ Server error:', e.message);
+    console.error('❌ Server error:', error.message);
   }
   process.exit(1);
 });

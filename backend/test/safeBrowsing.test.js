@@ -104,3 +104,28 @@ test('API key kosong menghasilkan status unavailable', async () => {
     restoreKey();
   }
 });
+
+
+test('URL target tidak dijadikan alamat fetch; permintaan selalu menuju endpoint Safe Browsing', async () => {
+  setTestKey();
+  const requested = [];
+  try {
+    const result = await checkUrlReputation('http://127.0.0.1:8080/private', {
+      fetch: async (url, options) => {
+        requested.push({ url, options });
+        return { ok: true, json: async () => ({}) };
+      },
+    });
+
+    assert.equal(result.status, 'no_match');
+    assert.equal(requested.length, 1);
+    assert.equal(
+      requested[0].url,
+      'https://safebrowsing.googleapis.com/v4/threatMatches:find?key=test-key-not-real'
+    );
+    const payload = JSON.parse(requested[0].options.body);
+    assert.equal(payload.threatInfo.threatEntries[0].url, 'http://127.0.0.1:8080/private');
+  } finally {
+    restoreKey();
+  }
+});

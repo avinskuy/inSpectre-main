@@ -5,3 +5,5 @@ numbers.json*
 *.apk
 downloads
 npm-debug.log*
+test
+.git
