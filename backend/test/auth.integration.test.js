@@ -55,6 +55,26 @@ test('registrasi membuat sesi HttpOnly dan akun unik', async () => {
   assert.equal(duplicate.response.status, 409);
 });
 
+
+test('dashboard stats tetap publik dan login membuat sesi baru', async () => {
+  const stats = await fetch(`${baseUrl}/api/stats`);
+  assert.equal(stats.status, 200);
+
+  const response = await fetch(`${baseUrl}/api/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: 'alice@example.test', password: 'SecurePass123!' }),
+  });
+  assert.equal(response.status, 200);
+  const cookie = response.headers.get('set-cookie')?.split(';')[0];
+  assert.ok(cookie);
+
+  const me = await fetch(`${baseUrl}/api/auth/me`, { headers: { Cookie: cookie } });
+  const body = await me.json();
+  assert.equal(me.status, 200);
+  assert.equal(body.user.email, 'alice@example.test');
+});
+
 test('riwayat hanya berisi scan milik akun yang sedang masuk', async () => {
   const bob = await register('bob@example.test', 'Bob');
   assert.equal(bob.response.status, 201);
