@@ -110,8 +110,10 @@ The frontend uses same-origin `/api` requests. In the Cloudflare Pages deploymen
 │   └── workflows/          # Continuous integration
 ├── backend/
 │   ├── data/               # Public reference dataset and its license
+│   ├── services/
+│   │   └── environment/    # NASA FIRMS, OpenAQ, and BMKG data services
 │   ├── test/               # Backend unit and integration tests
-│   ├── *.js                # API server and domain modules
+│   ├── *.js                # API server and security/account domain modules
 │   ├── Dockerfile
 │   └── package.json
 ├── deploy/
@@ -128,7 +130,7 @@ The frontend uses same-origin `/api` requests. In the Cloudflare Pages deploymen
 └── README.md
 ```
 
-Backend modules are currently separated by domain (authentication, database, privacy, URL checks, phone checks, environmental providers, news, and archive inspection). Keep that separation when adding or refactoring functionality; avoid creating folders that only add another level without a clear ownership boundary.
+Backend modules are separated by domain. Environmental data integrations live under `backend/services/environment/`; authentication, database, privacy, URL checks, phone checks, news, and archive inspection remain at the backend root because they are currently compact, directly shared by the API and tests, and do not yet need deeper nesting. Keep future moves aligned with clear domain ownership and update imports and tests together.
 
 ## Getting started
 
