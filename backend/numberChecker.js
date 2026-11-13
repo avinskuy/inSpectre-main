@@ -44,7 +44,7 @@ function hashReporter(id) {
 }
 
 /* ─── CEK NOMOR ─── */
-function checkNumber(raw) {
+function checkNumber(raw, userId = null) {
   const norm = normalizeNumber(raw);
   const data = loadReports();
   const record = data.reports[norm];
@@ -72,7 +72,7 @@ function checkNumber(raw) {
     ? `⚠️ Ada ${count} laporan warga untuk nomor ini. JANGAN transfer uang atau berikan OTP!`
     : 'ℹ️ Belum ada laporan warga untuk nomor ini. Ini bukan bukti bahwa nomor tersebut aman.';
 
-  logScan('scam_number', norm, threatScore, riskLevel, findings);
+  logScan('scam_number', norm, threatScore, riskLevel, findings, userId);
 
   return { number: norm, riskLevel, threatScore, note, findings,
            scannedAt: new Date().toISOString() };
