@@ -9,7 +9,7 @@ const fmt = (n) => new Intl.NumberFormat('id-ID').format(Number(n) || 0);
 export default function Dashboard() {
   const [stats, setStats] = useState({ total: 0, bahaya: 0, curiga: 0, aman: 0, reports: 0 });
   const [error, setError] = useState('');
-  const { stats: liveStats, connected } = useLiveFeed(1);
+  const { stats: liveStats, connected } = useLiveFeed();
 
   const refresh = async () => {
     setError('');
