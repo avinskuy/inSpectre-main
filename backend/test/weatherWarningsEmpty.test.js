@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { getWarnings } = require('../weather');
+const { getWarnings } = require('../services/environment/weather');
 
 test('feed rusak ditolak; feed valid tanpa item berarti daftar kosong', async () => {
   const originalFetch = global.fetch;
