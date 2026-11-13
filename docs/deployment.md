@@ -17,7 +17,7 @@ docker compose logs -f backend
 
 The frontend is published on port `WEB_PORT` (default `8080`). The backend binds to `0.0.0.0` inside its container and is reachable internally by the frontend container. Compose loads backend integration credentials and settings from `backend/.env`; the root `.env` supplies Compose-level values such as `WEB_PORT` and `CORS_ORIGIN`. Configure `CORS_ORIGIN` in the root `.env` to the exact public frontend origin when deploying; use a wildcard only for local testing. Keep both environment files out of version control.
 
-The Compose volume `inspectre_data` persists backend database and local data files across container recreation.
+The Compose volume `inspectre_data` persists backend database and local data files across container recreation. The backend image also installs Debian's `aapt` package so APK binary AndroidManifest analysis is available in the container.
 
 ## Cloudflare Pages frontend with a separately hosted API
 
