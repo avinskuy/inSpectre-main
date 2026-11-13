@@ -10,7 +10,7 @@ process.env.INSPECTRE_DB_PATH = path.join(tempDir, 'auth.sqlite');
 process.env.INSPECTRE_NUMBERS_FILE = path.join(tempDir, 'numbers.json');
 
 const { server } = require('../server');
-const { logScan } = require('../services/storage/db');
+delete process.env.GOOGLE_SAFE_BROWSING_API_KEY;
 let baseUrl;
 let aliceCookie;
 let bobCookie;
@@ -80,11 +80,18 @@ test('riwayat hanya berisi scan milik akun yang sedang masuk', async () => {
   assert.equal(bob.response.status, 201);
   bobCookie = bob.cookie;
 
-  const { getUserByEmail } = require('../services/storage/db');
-  const alice = getUserByEmail('alice@example.test');
-  const bobUser = getUserByEmail('bob@example.test');
-  logScan('link', 'https://alice.example.test/path', 12, 'AMAN', [], alice.id);
-  logScan('link', 'https://bob.example.test/path', 82, 'PHISHING', [], bobUser.id);
+  const aliceScan = await fetch(`${baseUrl}/api/scan`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Cookie: aliceCookie },
+    body: JSON.stringify({ url: 'https://alice.example.test/path' }),
+  });
+  const bobScan = await fetch(`${baseUrl}/api/scan`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Cookie: bobCookie },
+    body: JSON.stringify({ url: 'https://bob.example.test/path' }),
+  });
+  assert.equal(aliceScan.status, 200);
+  assert.equal(bobScan.status, 200);
 
   const aliceHistory = await fetch(`${baseUrl}/api/recent`, { headers: { Cookie: aliceCookie } });
   const bobHistory = await fetch(`${baseUrl}/api/recent`, { headers: { Cookie: bobCookie } });
@@ -98,6 +105,13 @@ test('riwayat hanya berisi scan milik akun yang sedang masuk', async () => {
 });
 
 test('login gagal untuk kata sandi yang salah dan logout mengakhiri sesi', async () => {
+  const oversized = await fetch(`${baseUrl}/api/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: 'alice@example.test', password: 'x'.repeat(129) }),
+  });
+  assert.equal(oversized.status, 401);
+
   const bad = await fetch(`${baseUrl}/api/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
