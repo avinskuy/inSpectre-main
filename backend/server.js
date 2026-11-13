@@ -9,10 +9,10 @@ const { checkLinkWithReputation } = require('./safeLinkChecker');
 const { checkNumber, isValidPhone } = require('./numberChecker');
 const { lookupWhoTag } = require('./whotagProvider');
 const { getNews } = require('./news');
-const { getHotspots } = require('./hotspots');
-const { getAirQuality } = require('./airQuality');
-const { getRegions, getForecast, getWarnings } = require('./weather');
-const { getDisasters } = require('./disasters');
+const { getHotspots } = require('./services/environment/hotspots');
+const { getAirQuality } = require('./services/environment/airQuality');
+const { getRegions, getForecast, getWarnings } = require('./services/environment/weather');
+const { getDisasters } = require('./services/environment/disasters');
 const { analyzeArchive } = require('./archiveScanner');
 const {
   analyzeApkManifest,
