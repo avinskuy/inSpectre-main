@@ -2,7 +2,6 @@
 
 const express = require('express');
 const {
-  optionalAuth,
   requireAuth,
   registerUser,
   loginUser,
