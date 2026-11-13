@@ -1,7 +1,7 @@
 {
   "name": "inspectre-backend",
   "version": "1.0.0",
-  "description": "inSpectre — Sentinel Digital: Telegram bot scanner scam (nomor, link, APK)",
+  "description": "inSpectre Environmental & Threat Intelligence API",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
