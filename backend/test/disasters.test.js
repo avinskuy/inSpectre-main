@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { getDisasters, clearCache } = require('../disasters');
+const { getDisasters, clearCache } = require('../services/environment/disasters');
 
 test.beforeEach(() => {
   clearCache();

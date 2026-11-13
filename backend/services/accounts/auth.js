@@ -1,6 +1,6 @@
 'use strict';
 const crypto = require('node:crypto');
-const { createUser, getUserByEmail, getSessionUser, createSession, deleteSession, deleteExpiredSessions } = require('./db');
+const { createUser, getUserByEmail, getSessionUser, createSession, deleteSession, deleteExpiredSessions } = require('../storage/db');
 const COOKIE_NAME = 'inspectre_session';
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 const PASSWORD_MIN = 10;
@@ -45,6 +45,7 @@ function registerUser(input = {}) {
 function loginUser(input = {}) {
   const email = normalizeEmail(input.email);
   const password = typeof input.password === 'string' ? input.password : '';
+  if (!password || password.length > 128) throw fail('Email atau kata sandi tidak cocok.',401);
   const user = getUserByEmail(email);
   if (!user || !verifyPassword(password, user.password_hash)) throw fail('Email atau kata sandi tidak cocok.',401);
   return { user:publicUser({id:user.id,email:user.email,displayName:user.display_name,role:user.role}), token:issueSession(user.id) };

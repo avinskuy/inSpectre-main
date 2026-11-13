@@ -2,22 +2,22 @@ const express = require('express');
 const http = require('http');
 const cors = require('cors');
 const config = require('./config');
-const { getStats, getRecentScans, logScan } = require('./db');
-const { optionalAuth, requireAuth, registerUser, loginUser, ensureDemoAccount, setSessionCookie, clearSessionCookie, readSessionToken, logoutToken } = require('./auth');
+const { getStats, getRecentScans, logScan } = require('./services/storage/db');
+const { optionalAuth, requireAuth, registerUser, loginUser, ensureDemoAccount, setSessionCookie, clearSessionCookie, readSessionToken, logoutToken } = require('./services/accounts/auth');
 const { initSocket, emitThreat, emitStats } = require('./emitter');
-const { checkLinkWithReputation } = require('./safeLinkChecker');
-const { checkNumber, isValidPhone } = require('./numberChecker');
-const { lookupWhoTag } = require('./whotagProvider');
-const { getNews } = require('./news');
-const { getHotspots } = require('./hotspots');
-const { getAirQuality } = require('./airQuality');
-const { getRegions, getForecast, getWarnings } = require('./weather');
-const { getDisasters } = require('./disasters');
-const { analyzeArchive } = require('./archiveScanner');
+const { checkLinkWithReputation } = require('./services/security/safeLinkChecker');
+const { checkNumber, isValidPhone } = require('./services/phones/numberChecker');
+const { lookupWhoTag } = require('./services/phones/whotagProvider');
+const { getNews } = require('./services/news/news');
+const { getHotspots } = require('./services/environment/hotspots');
+const { getAirQuality } = require('./services/environment/airQuality');
+const { getRegions, getForecast, getWarnings } = require('./services/environment/weather');
+const { getDisasters } = require('./services/environment/disasters');
+const { analyzeArchive } = require('./services/files/archiveScanner');
 const {
   analyzeApkManifest,
   evaluateApkManifest,
-} = require('./apkManifestAnalyzer');
+} = require('./services/files/apkManifestAnalyzer');
 
 const app = express();
 // Di container production, hanya reverse proxy internal yang boleh meneruskan client IP.

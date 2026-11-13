@@ -2,7 +2,7 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { checkUrlReputation } = require('../safeBrowsing');
+const { checkUrlReputation } = require('../services/security/safeBrowsing');
 
 const originalKey = process.env.GOOGLE_SAFE_BROWSING_API_KEY;
 

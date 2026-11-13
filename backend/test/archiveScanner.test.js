@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { analyzeArchive, parseCentralDirectory } = require('../archiveScanner');
+const { analyzeArchive, parseCentralDirectory } = require('../services/files/archiveScanner');
 
 function crc32() { return 0; }
 function zip(entries) {

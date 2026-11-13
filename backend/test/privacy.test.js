@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { maskNumber, publicUrl, publicIdentifier } = require('../privacy');
+const { maskNumber, publicUrl, publicIdentifier } = require('../services/storage/privacy');
 
 test('nomor disamarkan', () => {
   assert.equal(maskNumber('6281234567890'), '6281******890');

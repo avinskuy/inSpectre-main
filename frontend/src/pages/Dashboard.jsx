@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react';
 import StatCard from '../components/StatCard.jsx';
 import Button from '../components/Button.jsx';
 import { getStats } from '../lib/api.js';
+import { useAuth } from '../lib/AuthContext.jsx';
 import { useLiveFeed } from '../lib/socket.js';
 
 const fmt = (n) => new Intl.NumberFormat('id-ID').format(Number(n) || 0);
 
 export default function Dashboard() {
+  const { user } = useAuth();
   const [stats, setStats] = useState({ total: 0, bahaya: 0, curiga: 0, aman: 0, reports: 0 });
   const [error, setError] = useState('');
   const { stats: liveStats, connected } = useLiveFeed();
@@ -116,7 +118,7 @@ export default function Dashboard() {
       <section className="surface-card recent-card">
         <div className="panel-heading">
           <div><p className="eyebrow">PRIVASI AKUN</p><h2>Riwayat pemeriksaan pribadi</h2><p>Detail hasil scan hanya dapat dibuka oleh pemilik akun yang sudah masuk.</p></div>
-          <a className="text-link" href="#/login">Masuk / Daftar →</a>
+          <a className="text-link" href={user ? "#/history" : "#/login"}>{user ? "Buka riwayat pribadi →" : "Masuk / Daftar →"}</a>
         </div>
         <div className="empty-feed">
           <span className="empty-symbol">⌑</span>

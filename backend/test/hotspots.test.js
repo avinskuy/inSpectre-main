@@ -1,7 +1,7 @@
 'use strict';
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { parseCsv, fetchHotspots } = require('../hotspots');
+const { parseCsv, fetchHotspots } = require('../services/environment/hotspots');
 
 test('CSV hotspot valid diproses', () => {
   const rows = parseCsv(

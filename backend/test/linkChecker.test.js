@@ -1,7 +1,7 @@
 // Jalankan: npm test  (memakai node:test bawaan Node 18+, tanpa dependensi tambahan)
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { analyzeLink } = require('../linkChecker');
+const { analyzeLink } = require('../services/security/linkChecker');
 
 const level = (u) => analyzeLink(u).riskLevel;
 

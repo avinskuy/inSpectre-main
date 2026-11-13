@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { getWarnings } = require('../weather');
+const { getWarnings } = require('../services/environment/weather');
 
 test('feed peringatan memetakan judul, tautan, deskripsi, dan tanggal', async () => {
   const originalFetch = global.fetch;

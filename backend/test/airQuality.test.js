@@ -2,7 +2,7 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { fetchAirQuality, chooseStations } = require('../airQuality');
+const { fetchAirQuality, chooseStations } = require('../services/environment/airQuality');
 
 const NOW = Date.parse('2026-10-27T10:00:00Z');
 

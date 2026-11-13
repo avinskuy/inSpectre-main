@@ -2,9 +2,15 @@ name: inSpectre CI
 
 on:
   push:
-    branches: [main, production-hardening, feature/auth-history]
+    branches:
+      - main
+      - production-hardening
+      - feature/auth-history
+      - chore/repository-cleanup
   pull_request:
-    branches: [main]
+    branches:
+      - main
+      - feature/auth-history
 
 permissions:
   contents: read
@@ -57,3 +63,22 @@ jobs:
 
       - name: Build frontend
         run: npm run build
+
+  backend-container:
+    name: Backend Container
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Prepare example environment files
+        run: |
+          cp .env.vps.example .env
+          cp backend/.env.example backend/.env
+
+      - name: Validate Docker Compose configuration
+        run: docker compose config --quiet
+
+      - name: Build backend container
+        run: docker build --tag inspectre-backend:ci ./backend

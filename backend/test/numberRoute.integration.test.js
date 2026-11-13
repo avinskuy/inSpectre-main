@@ -15,7 +15,7 @@ let providerCalls = 0;
 
 const originalLoad = Module._load;
 Module._load = function (request, parent, isMain) {
-  if (request === './whotagProvider' &&
+  if (request === './services/phones/whotagProvider' &&
       parent?.filename === path.resolve(__dirname, '../server.js')) {
     return {
       lookupWhoTag: async (phone) => {

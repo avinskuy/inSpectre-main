@@ -2,7 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const { getRegions, getForecast } = require('../weather');
+const { getRegions, getForecast } = require('../services/environment/weather');
 
 const csv = fs.readFileSync(
   path.join(__dirname, '..', 'data', 'bmkg-regions.csv'), 'utf8'

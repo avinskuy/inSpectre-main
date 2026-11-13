@@ -7,13 +7,13 @@ const REQUEST_TIMEOUT_MS = 20000;
 // Ini mencegah tes membuat/membuka database produksi.
 const sqliteCacheStore = {
   get(phone) {
-    return require('./db').getWhoTagCache(phone);
+    return require('../storage/db').getWhoTagCache(phone);
   },
   set(phone, value, cachedAt) {
-    return require('./db').setWhoTagCache(phone, value, cachedAt);
+    return require('../storage/db').setWhoTagCache(phone, value, cachedAt);
   },
   clear(phone) {
-    return require('./db').clearWhoTagCache(phone);
+    return require('../storage/db').clearWhoTagCache(phone);
   },
 };
 

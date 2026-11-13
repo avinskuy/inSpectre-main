@@ -1,7 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 
-const REGION_FILE = path.join(__dirname, 'data', 'bmkg-regions.csv');
+const REGION_FILE = path.join(__dirname, '..', '..', 'data', 'bmkg-regions.csv');
 const FORECAST_URL = 'https://api.bmkg.go.id/publik/prakiraan-cuaca';
 const WARNING_URL = 'https://www.bmkg.go.id/alerts/nowcast/id';
 const REQUEST_TIMEOUT_MS = 10_000;

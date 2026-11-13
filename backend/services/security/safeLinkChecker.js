@@ -2,7 +2,7 @@
 
 const { analyzeLink } = require('./linkChecker');
 const { checkUrlReputation } = require('./safeBrowsing');
-const { logScan } = require('./db');
+const { logScan } = require('../storage/db');
 
 async function checkLinkWithReputation(url, userId = null) {
   const result = analyzeLink(url);

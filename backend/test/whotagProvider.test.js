@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const {
   createWhoTagProvider,
   CACHE_TTL_MS,
-} = require('../whotagProvider');
+} = require('../services/phones/whotagProvider');
 
 function mockResponse(status, body) {
   return {
