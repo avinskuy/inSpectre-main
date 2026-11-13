@@ -29,7 +29,7 @@ function createFileRouter({ scanLimiter }) {
 
       try {
         const result = analyzeArchive(req.body, filename);
-        const isApk = /\\.apk$/i.test(filename);
+        const isApk = /\.apk$/i.test(filename);
 
         if (isApk) {
           const manifestResult = await analyzeApkManifest(req.body);
