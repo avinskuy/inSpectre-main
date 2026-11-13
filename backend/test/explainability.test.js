@@ -1,7 +1,7 @@
 // Pengujian kontrak Explainable Threat Detection: hasil harus menjelaskan indikator, bukti, dan saran.
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { analyzeLink, MODEL_VERSION } = require('../linkChecker');
+const { analyzeLink, MODEL_VERSION } = require('../services/security/linkChecker');
 
 test('hasil analisis menyediakan metadata metode dan keterbatasan', () => {
   const result = analyzeLink('https://example.org/about');

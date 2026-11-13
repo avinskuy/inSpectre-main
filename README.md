@@ -111,9 +111,17 @@ The frontend uses same-origin `/api` requests. In the Cloudflare Pages deploymen
 ├── backend/
 │   ├── data/               # Public reference dataset and its license
 │   ├── services/
-│   │   └── environment/    # NASA FIRMS, OpenAQ, and BMKG data services
+│   │   ├── accounts/       # Authentication and sessions
+│   │   ├── environment/    # NASA FIRMS, OpenAQ, and BMKG data services
+│   │   ├── files/          # APK and ZIP inspection
+│   │   ├── news/           # Security news aggregation
+│   │   ├── phones/         # Phone checks and reputation provider
+│   │   ├── security/       # URL heuristics and Safe Browsing
+│   │   └── storage/        # SQLite persistence and privacy helpers
 │   ├── test/               # Backend unit and integration tests
-│   ├── *.js                # API server and security/account domain modules
+│   ├── config.js           # Runtime configuration
+│   ├── emitter.js          # Realtime event gateway
+│   ├── server.js           # Express API entry point
 │   ├── Dockerfile
 │   └── package.json
 ├── deploy/
@@ -130,7 +138,7 @@ The frontend uses same-origin `/api` requests. In the Cloudflare Pages deploymen
 └── README.md
 ```
 
-Backend modules are separated by domain. Environmental data integrations live under `backend/services/environment/`; authentication, database, privacy, URL checks, phone checks, news, and archive inspection remain at the backend root because they are currently compact, directly shared by the API and tests, and do not yet need deeper nesting. Keep future moves aligned with clear domain ownership and update imports and tests together.
+Backend implementation modules are grouped under `backend/services/` by domain: accounts, environment, file inspection, news, phone reputation, URL security, and storage/privacy. `backend/server.js` remains the API composition root; `config.js` and `emitter.js` remain small infrastructure modules at the backend root. Tests stay in `backend/test/` and import the domain modules directly.
 
 ## Getting started
 

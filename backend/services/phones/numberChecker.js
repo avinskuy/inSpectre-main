@@ -4,7 +4,7 @@ const path = require('path');
 const crypto = require('crypto');
 const { logScan } = require('../storage/db');
 
-const NUMBERS_FILE = process.env.INSPECTRE_NUMBERS_FILE || path.join(process.env.INSPECTRE_DATA_DIR || __dirname, 'numbers.json');
+const NUMBERS_FILE = process.env.INSPECTRE_NUMBERS_FILE || path.join(process.env.INSPECTRE_DATA_DIR || path.resolve(__dirname, '../..'), 'numbers.json');
 fs.mkdirSync(path.dirname(NUMBERS_FILE), { recursive: true });
 const REPORTS_NEEDED = 3; // jumlah laporan unik minimum sebelum dianggap CURIGA
 

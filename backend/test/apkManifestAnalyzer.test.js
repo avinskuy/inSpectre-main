@@ -3,7 +3,7 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
-const { parseManifestOutput, evaluateApkManifest } = require('../apkManifestAnalyzer');
+const { parseManifestOutput, evaluateApkManifest } = require('../services/files/apkManifestAnalyzer');
 
 const sample = {
   badging: [

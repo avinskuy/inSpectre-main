@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const { publicIdentifier } = require('./privacy');
 
-const DATA_DIR = process.env.INSPECTRE_DATA_DIR || __dirname;
+const DATA_DIR = process.env.INSPECTRE_DATA_DIR || path.resolve(__dirname, '../..');
 fs.mkdirSync(DATA_DIR, { recursive: true });
 const NUMBERS_FILE = process.env.INSPECTRE_NUMBERS_FILE || path.join(DATA_DIR, 'numbers.json');
 const DB_FILE = process.env.INSPECTRE_DB_PATH || path.join(DATA_DIR, 'inspectre.db');
