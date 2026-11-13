@@ -30,7 +30,7 @@ function createPhoneRouter({ scanLimiter, lookupWhoTag }) {
       reason: 'INVALID_PROVIDER_NUMBER',
     };
 
-    if (/^62\\d{8,13}$/.test(result.number)) {
+    if (/^62\d{8,13}$/.test(result.number)) {
       try {
         externalReputation = await lookupWhoTag(`+${result.number}`);
       } catch (error) {
