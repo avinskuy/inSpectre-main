@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import StatCard from '../components/StatCard.jsx';
 import RiskBadge from '../components/RiskBadge.jsx';
 import Button from '../components/Button.jsx';
-import { getHistory, getStats } from '../lib/api.js';
+import { getStats } from '../lib/api.js';
 import { useLiveFeed } from '../lib/socket.js';
 
 const fmt = (n) => new Intl.NumberFormat('id-ID').format(Number(n) || 0);
@@ -25,9 +25,8 @@ export default function Dashboard() {
   const refresh = async () => {
     setError('');
     try {
-      const [s, h] = await Promise.all([getStats(), getHistory()]);
+      const s = await getStats();
       setStats(s);
-      setHistory(Array.isArray(h) ? h : []);
     } catch (e) {
       setError(e.message || 'Data dashboard tidak dapat dimuat.');
     }
@@ -35,6 +34,7 @@ export default function Dashboard() {
 
   useEffect(() => { refresh(); }, []);
   useEffect(() => { if (liveStats) setStats(liveStats); }, [liveStats]);
+  useEffect(() => { setHistory(events); }, [events]);
 
   const suspicious = history.filter((x) => ['PHISHING', 'BAHAYA', 'CURIGA', 'WASPADA'].includes(x.riskLevel)).length;
   const hasScans = Number(stats.total) > 0;
