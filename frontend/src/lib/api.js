@@ -1,5 +1,4 @@
-// Satu-satunya tempat yang tahu alamat backend.
-// Dev: '/api' (diteruskan oleh proxy Vite). Produksi lintas domain: set VITE_API_URL.
+// API HTTP memakai /api same-origin melalui Cloudflare Pages Function.
 const BASE = '/api';
 
 // Origin backend untuk Socket.IO (sama dengan origin halaman bila BASE relatif)
