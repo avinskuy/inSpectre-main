@@ -17,7 +17,7 @@ echo "inSpectre smoke test: $BASE_URL"
 check_http "/" "200" "Frontend mengembalikan HTTP 200"
 check_http "/api/health" "200" "Backend health endpoint sehat"
 check_http "/api/stats" "200" "API statistik merespons"
-check_http "/api/recent" "200" "API riwayat merespons"
+check_http "/api/recent" "401" "API riwayat melindungi data dengan autentikasi"
 news_code="$(curl -sS -o /tmp/inspectre-news-check.json -w '%{http_code}' "$BASE_URL/api/news" || true)"
 if [[ "$news_code" == "200" ]]; then pass "API berita merespons"; elif [[ "$news_code" == "502" ]]; then pass "Endpoint berita hidup, tetapi sumber RSS eksternal sedang tidak tersedia (HTTP 502)"; else fail "Endpoint berita memberi HTTP $news_code"; fi
 rm -f /tmp/inspectre-news-check.json
