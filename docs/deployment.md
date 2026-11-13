@@ -8,12 +8,14 @@ From the repository root:
 
 ```bash
 cp .env.vps.example .env
+cp backend/.env.example backend/.env
+# Edit .env dan backend/.env sebelum menjalankan layanan.
 docker compose up -d --build
 docker compose ps
 docker compose logs -f backend
 ```
 
-The frontend is published on port `WEB_PORT` (default `8080`). The backend is reachable internally by the frontend container. Configure `CORS_ORIGIN` to the exact public frontend origin when deploying; use a wildcard only for local testing.
+The frontend is published on port `WEB_PORT` (default `8080`). The backend binds to `0.0.0.0` inside its container and is reachable internally by the frontend container. Compose loads backend integration credentials and settings from `backend/.env`; the root `.env` supplies Compose-level values such as `WEB_PORT` and `CORS_ORIGIN`. Configure `CORS_ORIGIN` in the root `.env` to the exact public frontend origin when deploying; use a wildcard only for local testing. Keep both environment files out of version control.
 
 The Compose volume `inspectre_data` persists backend database and local data files across container recreation.
 
@@ -28,7 +30,7 @@ The Compose volume `inspectre_data` persists backend database and local data fil
 
 ## Backend environment
 
-Start from `backend/.env.example`. Configure only the integrations required by the deployment. Never commit real API keys, passwords, session secrets, or production environment files.
+Start from `backend/.env.example` and copy it to `backend/.env` for Docker Compose. Configure only the integrations required by the deployment. The Compose service loads this file with `env_file`; explicit Compose environment values such as `HOST`, `PORT`, and `CORS_ORIGIN` take precedence. Never commit real API keys, passwords, session secrets, or production environment files.
 
 At minimum, configure:
 - `NODE_ENV=production`
