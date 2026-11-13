@@ -1,6 +1,6 @@
 'use strict';
 const crypto = require('node:crypto');
-const { createUser, getUserByEmail, getSessionUser, createSession, deleteSession, deleteExpiredSessions } = require('./db');
+const { createUser, getUserByEmail, getSessionUser, createSession, deleteSession, deleteExpiredSessions } = require('../storage/db');
 const COOKIE_NAME = 'inspectre_session';
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 const PASSWORD_MIN = 10;

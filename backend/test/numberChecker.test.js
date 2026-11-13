@@ -10,7 +10,7 @@ process.env.INSPECTRE_DATA_DIR = tempDir;
 process.env.INSPECTRE_NUMBERS_FILE = path.join(tempDir, 'numbers.json');
 process.env.INSPECTRE_DB_PATH = path.join(tempDir, 'test.db');
 
-const { checkNumber, reportNumber } = require('../numberChecker');
+const { checkNumber, reportNumber } = require('../services/phones/numberChecker');
 
 test('nomor tanpa laporan bukan AMAN', () => {
   const result = checkNumber('081234567890');

@@ -10,7 +10,7 @@ process.env.INSPECTRE_DB_PATH = path.join(tempDir, 'auth.sqlite');
 process.env.INSPECTRE_NUMBERS_FILE = path.join(tempDir, 'numbers.json');
 
 const { server } = require('../server');
-const { logScan } = require('../db');
+const { logScan } = require('../services/storage/db');
 let baseUrl;
 let aliceCookie;
 let bobCookie;
@@ -80,7 +80,7 @@ test('riwayat hanya berisi scan milik akun yang sedang masuk', async () => {
   assert.equal(bob.response.status, 201);
   bobCookie = bob.cookie;
 
-  const { getUserByEmail } = require('../db');
+  const { getUserByEmail } = require('../services/storage/db');
   const alice = getUserByEmail('alice@example.test');
   const bobUser = getUserByEmail('bob@example.test');
   logScan('link', 'https://alice.example.test/path', 12, 'AMAN', [], alice.id);

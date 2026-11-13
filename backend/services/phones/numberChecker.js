@@ -2,7 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
-const { logScan } = require('./db');
+const { logScan } = require('../storage/db');
 
 const NUMBERS_FILE = process.env.INSPECTRE_NUMBERS_FILE || path.join(process.env.INSPECTRE_DATA_DIR || __dirname, 'numbers.json');
 fs.mkdirSync(path.dirname(NUMBERS_FILE), { recursive: true });
