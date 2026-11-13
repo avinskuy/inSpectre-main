@@ -25,6 +25,33 @@ db.exec(`
 `);
 
 db.exec(`
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT NOT NULL UNIQUE COLLATE NOCASE,
+    display_name TEXT NOT NULL,
+    password_hash TEXT NOT NULL,
+    role TEXT NOT NULL DEFAULT 'user',
+    created_at TEXT NOT NULL
+  );
+`);
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS sessions (
+    token_hash TEXT PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    expires_at INTEGER NOT NULL,
+    created_at TEXT NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS idx_sessions_expiry ON sessions(expires_at);
+`);
+
+const scanColumns = db.prepare('PRAGMA table_info(scans)').all().map((column) => column.name);
+if (!scanColumns.includes('user_id')) {
+  db.exec('ALTER TABLE scans ADD COLUMN user_id INTEGER REFERENCES users(id)');
+}
+db.exec('CREATE INDEX IF NOT EXISTS idx_scans_user_id ON scans(user_id, id DESC)');
+
+db.exec(`
   CREATE TABLE IF NOT EXISTS whotag_cache (
     phone TEXT PRIMARY KEY,
     value TEXT NOT NULL,
@@ -68,17 +95,18 @@ function clearWhoTagCache(phone) {
 }
 
 /* ─── Simpan hasil scan ke log ─── */
-function logScan(type, identifier, threatScore, riskLevel, findings) {
+function logScan(type, identifier, threatScore, riskLevel, findings, userId = null) {
   db.prepare(
-    `INSERT INTO scans (type, identifier, threatScore, riskLevel, findings, scannedAt)
-     VALUES (?, ?, ?, ?, ?, ?)`
+    `INSERT INTO scans (type, identifier, threatScore, riskLevel, findings, scannedAt, user_id)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`
   ).run(
     type,
     identifier,
     threatScore,
     riskLevel,
     JSON.stringify(findings || []),
-    new Date().toISOString()
+    new Date().toISOString(),
+    userId || null
   );
 }
 
@@ -104,14 +132,47 @@ function getStats() {
 }
 
 /* ─── Riwayat scan terbaru (identifier sudah disamarkan: nomor di-mask, query URL dibuang) ─── */
-function getRecentScans(limit = 20) {
-  return db
-    .prepare(
-      `SELECT type, identifier, threatScore, riskLevel, scannedAt
-       FROM scans ORDER BY id DESC LIMIT ?`
-    )
-    .all(limit)
+function getRecentScans(limit = 20, userId) {
+  if (!Number.isInteger(Number(userId)) || Number(userId) <= 0) return [];
+  return db.prepare(
+    `SELECT type, identifier, threatScore, riskLevel, scannedAt
+     FROM scans WHERE user_id = ? ORDER BY id DESC LIMIT ?`
+  ).all(Number(userId), limit)
     .map((r) => ({ ...r, identifier: publicIdentifier(r.type, r.identifier) }));
 }
 
-module.exports = { logScan, getStats, getRecentScans, getWhoTagCache, setWhoTagCache, clearWhoTagCache };
+function createUser({ email, displayName, passwordHash, role = 'user' }) {
+  const result = db.prepare(
+    `INSERT INTO users (email, display_name, password_hash, role, created_at)
+     VALUES (?, ?, ?, ?, ?)`
+  ).run(email, displayName, passwordHash, role, new Date().toISOString());
+  return getUserById(result.lastInsertRowid);
+}
+function getUserByEmail(email) {
+  return db.prepare('SELECT * FROM users WHERE email = ? COLLATE NOCASE').get(email) || null;
+}
+function getUserById(id) {
+  return db.prepare(
+    'SELECT id, email, display_name AS displayName, role, created_at AS createdAt FROM users WHERE id = ?'
+  ).get(id) || null;
+}
+function createSession(tokenHash, userId, expiresAt) {
+  db.prepare('INSERT INTO sessions (token_hash, user_id, expires_at, created_at) VALUES (?, ?, ?, ?)')
+    .run(tokenHash, userId, expiresAt, new Date().toISOString());
+}
+function getSessionUser(tokenHash, now = Date.now()) {
+  return db.prepare(
+    `SELECT u.id, u.email, u.display_name AS displayName, u.role,
+            u.created_at AS createdAt, s.expires_at AS expiresAt
+     FROM sessions s JOIN users u ON u.id = s.user_id
+     WHERE s.token_hash = ? AND s.expires_at > ?`
+  ).get(tokenHash, now) || null;
+}
+function deleteSession(tokenHash) {
+  db.prepare('DELETE FROM sessions WHERE token_hash = ?').run(tokenHash);
+}
+function deleteExpiredSessions(now = Date.now()) {
+  db.prepare('DELETE FROM sessions WHERE expires_at <= ?').run(now);
+}
+
+module.exports = { logScan, getStats, getRecentScans, getWhoTagCache, setWhoTagCache, clearWhoTagCache, createUser, getUserByEmail, getUserById, createSession, getSessionUser, deleteSession, deleteExpiredSessions };
