@@ -14,7 +14,9 @@ function publicUrl(u) {
     const path = p.pathname === '/' ? '' : p.pathname;
     return (p.host + path).slice(0, 100);
   } catch {
-    return String(u ?? '').slice(0, 100);
+    // Jangan simpan atau tampilkan input mentah yang gagal diparse karena
+    // string tersebut masih mungkin memuat token atau query sensitif.
+    return 'URL tidak valid';
   }
 }
 
