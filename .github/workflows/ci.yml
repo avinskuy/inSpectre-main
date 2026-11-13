@@ -2,9 +2,15 @@ name: inSpectre CI
 
 on:
   push:
-    branches: [main, production-hardening, feature/auth-history]
+    branches:
+      - main
+      - production-hardening
+      - feature/auth-history
+      - chore/repository-cleanup
   pull_request:
-    branches: [main]
+    branches:
+      - main
+      - feature/auth-history
 
 permissions:
   contents: read
