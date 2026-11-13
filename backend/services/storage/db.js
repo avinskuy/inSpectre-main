@@ -50,7 +50,24 @@ const scanColumns = db.prepare('PRAGMA table_info(scans)').all().map((column) =>
 if (!scanColumns.includes('user_id')) {
   db.exec('ALTER TABLE scans ADD COLUMN user_id INTEGER REFERENCES users(id)');
 }
+
 db.exec('CREATE INDEX IF NOT EXISTS idx_scans_user_id ON scans(user_id, id DESC)');
+
+// Migrasi privasi: URL lama dapat memuat token pada query string. Simpan hanya
+// host/path dan hapus bukti URL mentah dari log lama yang tidak ditampilkan di riwayat.
+const legacyLinkScans = db.prepare(
+  "SELECT id, identifier FROM scans WHERE type IN ('link', 'url')"
+).all();
+const updateLegacyLinkScan = db.prepare(
+  "UPDATE scans SET identifier = ?, findings = '[]' WHERE id = ?"
+);
+const sanitizeLegacyLinkScans = db.transaction((rows) => {
+  for (const row of rows) {
+    const identifier = publicIdentifier('link', row.identifier);
+    updateLegacyLinkScan.run(identifier, row.id);
+  }
+});
+if (legacyLinkScans.length) sanitizeLegacyLinkScans(legacyLinkScans);
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS whotag_cache (
@@ -102,10 +119,10 @@ function logScan(type, identifier, threatScore, riskLevel, findings, userId = nu
      VALUES (?, ?, ?, ?, ?, ?, ?)`
   ).run(
     type,
-    identifier,
+    publicIdentifier(type, identifier),
     threatScore,
     riskLevel,
-    JSON.stringify(findings || []),
+    JSON.stringify(type === 'link' || type === 'url' ? [] : (findings || [])),
     new Date().toISOString(),
     userId || null
   );
