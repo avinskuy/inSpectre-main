@@ -1,11 +1,22 @@
+# Environment files and secrets
 .env
 .env.*
 !.env.example
 !.env.vps.example
 
+# Dependencies and build output
 node_modules/
 dist/
+coverage/
+.vite/
+.wrangler/
 
+# Runtime data
 *.db
 *.db-shm
 *.db-wal
+*.log
+
+# Operating system / editor files
+.DS_Store
+Thumbs.db
