@@ -2,6 +2,60 @@
 
 This document describes the deployment options represented by the repository. Choose one topology and keep frontend origins, API routing, and persistent storage consistent.
 
+## Existing VPS with Node.js, systemd, and Nginx
+
+Use this path when the VPS already runs the frontend as static files under Nginx and the API as a native Node.js systemd service. Do not switch an existing host to Docker Compose as part of an application update unless the infrastructure migration is planned separately.
+
+### Backend service
+
+Keep the production environment file outside the repository and readable only by the service administrator (for example, mode `600`). It should contain the integration API keys and these deployment settings:
+
+```dotenv
+NODE_ENV=production
+PORT=5000
+HOST=127.0.0.1
+TRUST_PROXY=1
+CORS_ORIGIN=https://YOUR-DOMAIN,https://www.YOUR-DOMAIN
+INSPECTRE_DATA_DIR=/var/lib/inspectre
+INSPECTRE_DB_PATH=/var/lib/inspectre/inspectre.db
+INSPECTRE_NUMBERS_FILE=/var/lib/inspectre/numbers.json
+```
+
+Use the real public origins and the actual persistent data paths for the host. Never put real credentials in the repository. `NODE_ENV=production` is required so session cookies receive the `Secure` attribute. Set `TRUST_PROXY=1` only when exactly one trusted Nginx reverse proxy sits in front of the API and Nginx overwrites the forwarded client IP header.
+
+The systemd unit should load the protected environment file and run the API from the deployed backend directory. The relevant service settings are:
+
+```ini
+[Service]
+Type=simple
+WorkingDirectory=/opt/inspectre-source/backend
+EnvironmentFile=/etc/inspectre/inspectre-api.env
+ExecStart=/usr/bin/node server.js
+Restart=always
+RestartSec=5
+```
+
+Adapt `WorkingDirectory` and `EnvironmentFile` to the actual host paths. Do not duplicate production secrets in the unit file. After changing the unit, reload systemd and restart only the API service during an approved deployment; verify `systemctl is-active` and `GET /api/health` before considering the release healthy.
+
+### Nginx reverse proxy
+
+Keep the backend bound to loopback; do not expose port `5000` publicly. In both the `/api/` and `/socket.io/` proxy locations, forward the original HTTPS scheme:
+
+```nginx
+proxy_set_header Host $host;
+proxy_set_header X-Real-IP $remote_addr;
+proxy_set_header X-Forwarded-For $remote_addr;
+proxy_set_header X-Forwarded-Proto $scheme;
+```
+
+For Socket.IO, retain the WebSocket `Upgrade` and `Connection` headers. The `X-Forwarded-Proto` header is important for applications that need to recognize the original HTTPS request behind Nginx.
+
+### Frontend and release safety
+
+Build the frontend with `npm ci && npm run build` from `frontend/`, then publish the generated `dist/` contents to the configured Nginx document root. Keep a known-good frontend backup and the previous backend release available for rollback. Back up the SQLite database using SQLite's backup mechanism or a consistent stopped-service backup before applying schema migrations. Do not copy a live WAL database by copying only the main `.db` file.
+
+After deployment, verify HTTPS redirects, frontend HTTP 200, backend health, login/logout cookie behavior, two-account history isolation, and Socket.IO dashboard updates. Run the smoke test below, then perform browser checks for file upload, QR, map layers, and responsive layouts.
+
 ## Docker Compose
 
 From the repository root:

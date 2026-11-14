@@ -3,7 +3,7 @@ ENV NODE_ENV=production PORT=5000 HOST=0.0.0.0 INSPECTRE_DATA_DIR=/data
 WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends python3 make g++ ca-certificates aapt && command -v aapt && rm -rf /var/lib/apt/lists/*
 COPY package*.json ./
-RUN npm install --omit=dev && npm cache clean --force
+RUN npm ci --omit=dev && npm cache clean --force
 COPY config.js emitter.js server.js ./
 COPY middleware/ ./middleware/
 COPY routes/ ./routes/
