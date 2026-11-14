@@ -88,7 +88,7 @@ export default function AsistenAI() {
                   <path d="M8 8h8M8 11.5h5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
                 </svg>
               </div>
-              <p className="agent-welcome-eyebrow">INSPЕCTRE INTELLIGENCE</p>
+              <p className="agent-welcome-eyebrow">INSPECTRE INTELLIGENCE</p>
               <h2>Ada yang ingin kamu pastikan?</h2>
               <p>Ceritakan situasinya. Gue bantu memahami risikonya dan menentukan langkah aman berikutnya.</p>
               <div className="agent-suggestions">
@@ -111,7 +111,7 @@ export default function AsistenAI() {
               <div key={index} className="agent-message-row assistant">
                 <div className="agent-small-avatar" aria-hidden="true">i</div>
                 <div className="agent-message assistant">
-                  <span className="agent-message-label">INSPЕCTRE AGENT</span>
+                  <span className="agent-message-label">INSPECTRE AGENT</span>
                   <p>{item.body}</p>
                   <a href="#/melapor">Tata cara melapor <span aria-hidden="true">↗</span></a>
                 </div>
