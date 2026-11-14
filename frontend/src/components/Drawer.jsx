@@ -83,7 +83,7 @@ export default function Drawer({
         tabIndex={-1}
       />
 
-      <nav className="absolute inset-y-0 right-0 flex w-full max-w-md flex-col border-l border-white/10 bg-[#0b1220] p-5 text-slate-100 shadow-2xl sm:p-6">
+      <nav className="absolute inset-y-0 right-0 flex w-full max-w-md flex-col overflow-y-auto border-l border-white/10 bg-[#0b1220] p-5 text-slate-100 shadow-2xl sm:p-6">
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#7dd3fc]">
