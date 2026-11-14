@@ -7,22 +7,23 @@ import { useAuth } from '../lib/AuthContext.jsx';
 
 const PRIMARY_LINKS = [
   { href: '#/', label: 'Nexus', icon: 'home' },
-  { href: '#/fitur/security', label: 'Security Center', icon: 'shield' },
-  { href: '#/fitur/world-monitor', label: 'World Monitor', icon: 'globe' },
-  { href: '#/fitur/analisis', label: 'Analisis', icon: 'search' },
+  { href: '#/fitur/security', label: 'Security Center', icon: 'shield', activeRoutes: ['#/security'] },
+  { href: '#/fitur/world-monitor', label: 'World Monitor', icon: 'globe', activeRoutes: ['#/world-monitor'] },
 ];
 
-const ALL_LINKS = [
+const INFORMATION_LINKS = [
   { href: '#/fitur/edukasi', label: 'Edukasi', icon: 'book' },
   { href: '#/fitur/berita', label: 'Berita', icon: 'news' },
-  { href: '#/fitur/asisten', label: 'Asisten Keamanan', icon: 'spark' },
   { href: '#/fitur/melapor', label: 'Cara Melapor', icon: 'arrow' },
+];
+
+const UTILITY_LINKS = [
   { href: '#/dashboard', label: 'Dashboard', icon: 'dashboard' },
   { href: '#/history', label: 'Riwayat', icon: 'history' },
 ];
-function routeIsActive(current, href) {
-  if (href === '#/') return current === '#/';
-  return current === href;
+
+function routeIsActive(current, link) {
+  return current === link.href || link.activeRoutes?.includes(current);
 }
 
 export default function Navbar() {
@@ -59,9 +60,9 @@ export default function Navbar() {
                 <li key={link.href}>
                   <a
                     href={link.href}
-                    aria-current={routeIsActive(current, link.href) ? 'page' : undefined}
+                    aria-current={routeIsActive(current, link) ? 'page' : undefined}
                     className={`relative flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
-                      routeIsActive(current, link.href)
+                      routeIsActive(current, link)
                         ? 'bg-[#f5b96b]/15 text-[#f5b96b]'
                         : 'text-slate-300 hover:bg-white/5 hover:text-[#7dd3fc]'
                     }`}
@@ -75,7 +76,22 @@ export default function Navbar() {
           </nav>
 
           <div className="flex shrink-0 items-center gap-2">
-            {user ? <button type="button" onClick={async () => { await logout(); window.location.hash = '#/'; }} className="rounded-xl border border-white/15 px-3 py-2 text-xs font-semibold text-slate-300">Keluar</button> : <a href="#/login" className="rounded-xl bg-[#f5b96b] px-3 py-2 text-xs font-bold text-slate-950">Masuk</a>}
+            {user ? (
+              <button
+                type="button"
+                onClick={async () => {
+                  await logout();
+                  window.location.hash = '#/';
+                }}
+                className="rounded-xl border border-white/15 px-3 py-2 text-xs font-semibold text-slate-300"
+              >
+                Keluar
+              </button>
+            ) : (
+              <a href="#/login" className="rounded-xl bg-[#f5b96b] px-3 py-2 text-xs font-bold text-slate-950">
+                Masuk
+              </a>
+            )}
             <AccessibilityMenu />
             <button
               type="button"
@@ -98,7 +114,8 @@ export default function Navbar() {
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
         primaryLinks={PRIMARY_LINKS}
-        links={ALL_LINKS}
+        informationLinks={INFORMATION_LINKS}
+        utilityLinks={UTILITY_LINKS}
         current={current}
       />
     </>
