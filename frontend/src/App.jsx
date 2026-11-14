@@ -1,6 +1,7 @@
 import Logo from './components/Logo.jsx';
 import { useEffect, useState } from 'react';
 import Navbar from './components/Navbar.jsx';
+import FloatingAssistant from './components/FloatingAssistant.jsx';
 import Home from './pages/Home.jsx';
 import Nexus from './pages/Nexus.jsx';
 import FeatureLanding from './pages/FeatureLanding.jsx';
@@ -78,12 +79,10 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-cyber-bg text-cyber-text app-root">
-      <a
-        href="#main-content"
-        className="skip-link"
-      >Lewati ke konten utama</a>
+      <a href="#main-content" className="skip-link">Lewati ke konten utama</a>
       {booting && <BootScreen />}
       <Navbar />
+      <FloatingAssistant currentRoute={route} />
       <div id="main-content" tabIndex={-1} key={route} className="page-transition">
         {pageContent}
       </div>
@@ -102,14 +101,17 @@ export default function App() {
           </p>
           <div className="mx-auto my-6 h-px max-w-xs bg-gradient-to-r from-transparent via-slate-700 to-transparent" />
           <div className="flex justify-center">
-            <a href="https://www.instagram.com/avinnn_z?rpxt=aTBsazU4NWRtcGFu"
-              target="_blank" rel="noopener noreferrer"
+            <a
+              href="https://www.instagram.com/avinnn_z?rpxt=aTBsazU4NWRtcGFu"
+              target="_blank"
+              rel="noopener noreferrer"
               aria-label="Instagram inSpectre"
-              className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-300 transition-colors hover:border-[#F5B96B]/50 hover:text-[#F5B96B]">
+              className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-300 transition-colors hover:border-[#F5B96B]/50 hover:text-[#F5B96B]"
+            >
               <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
-                <rect x="3" y="3" width="18" height="18" rx="5"/>
-                <circle cx="12" cy="12" r="4"/>
-                <circle cx="17.5" cy="6.8" r="1" fill="currentColor" stroke="none"/>
+                <rect x="3" y="3" width="18" height="18" rx="5" />
+                <circle cx="12" cy="12" r="4" />
+                <circle cx="17.5" cy="6.8" r="1" fill="currentColor" stroke="none" />
               </svg>
             </a>
           </div>
