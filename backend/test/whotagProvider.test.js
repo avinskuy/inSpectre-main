@@ -34,8 +34,8 @@ function setup(options = {}) {
       },
     },
   });
-  let fetchImpl = async () => {
-    if (options.fetchImpl) return options.fetchImpl();
+  let fetchImpl = async (url, init) => {
+    if (options.fetchImpl) return options.fetchImpl(url, init);
     return response;
   };
   const provider = createWhoTagProvider({
@@ -46,6 +46,7 @@ function setup(options = {}) {
     },
     now: () => timestamp,
     getApiKey: () => options.apiKey === undefined ? 'test-key' : options.apiKey,
+    getAccountId: () => options.accountId || '',
   });
   return {
     provider, store,
@@ -64,6 +65,62 @@ test('hasil tersedia tersimpan dan dipakai dari cache', async () => {
   assert.equal(first.tagCount, 4);
   assert.equal(first.cache, 'MISS');
   assert.equal(second.cache, 'HIT');
+  assert.equal(t.calls(), 1);
+});
+
+
+test('akun Premium mengambil dan memetakan detail tag dari endpoint gc/info', async () => {
+  const requests = [];
+  const t = setup({
+    accountId: 'premium-account-id',
+    fetchImpl: async (url, init) => {
+      requests.push({ url, init });
+      if (url.endsWith('/v1/gc/look')) {
+        return mockResponse(200, {
+          success: true,
+          data: { result: { profile: { tagCount: 4 }, trust: {}, spamInfo: {}, comments: {} } },
+        });
+      }
+      if (url.endsWith('/v1/gc/info')) {
+        return mockResponse(200, {
+          success: true,
+          data: {
+            result: {
+              tags: [
+                { tag: 'Contact', count: 47 },
+                { tag: 'Kak Depi', count: 45 },
+                { tag: '', count: 2 },
+                null,
+              ],
+            },
+          },
+        });
+      }
+      throw new Error('Unexpected provider URL');
+    },
+  });
+
+  const result = await t.provider.lookupWhoTag('+628123456789');
+  assert.equal(requests.length, 2);
+  assert.equal(requests[0].url, 'https://api.whotag.me/v1/gc/look');
+  assert.equal(requests[1].url, 'https://api.whotag.me/v1/gc/info');
+  assert.deepEqual(JSON.parse(requests[1].init.body), {
+    phoneNumber: '+628123456789',
+    accountId: 'premium-account-id',
+  });
+  assert.equal(result.tagsStatus, 'AVAILABLE');
+  assert.deepEqual(result.tags, [
+    { tag: 'Contact', count: 47 },
+    { tag: 'Kak Depi', count: 45 },
+  ]);
+  assert.equal(result.tagCount, 4);
+});
+
+test('tanpa account ID, lookup lama tetap berjalan tanpa memanggil endpoint info', async () => {
+  const t = setup();
+  const result = await t.provider.lookupWhoTag('+628123456789');
+  assert.equal(result.status, 'AVAILABLE');
+  assert.equal(result.tagsStatus, 'NOT_CONFIGURED');
   assert.equal(t.calls(), 1);
 });
 

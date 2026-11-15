@@ -22,6 +22,7 @@ function createWhoTagProvider(options = {}) {
   const fetchImpl = options.fetchImpl || ((...args) => fetch(...args));
   const now = options.now || (() => Date.now());
   const getApiKey = options.getApiKey || (() => process.env.WHOTAGME_API_KEY);
+  const getAccountId = options.getAccountId || (() => process.env.WHOTAGME_ACCOUNT_ID);
 
   async function lookupWhoTag(phoneNumber) {
     const phone = String(phoneNumber || '').trim();
@@ -30,34 +31,43 @@ function createWhoTagProvider(options = {}) {
     }
 
     const timestamp = now();
+    const apiKey = getApiKey();
+    const accountId = String(getAccountId() || '').trim();
+
     try {
       const cached = cacheStore.get(phone);
+      const cacheHasFreshTags = !accountId || (
+        Array.isArray(cached?.value?.tags) &&
+        ['AVAILABLE', 'NO_DATA'].includes(cached?.value?.tagsStatus)
+      );
       if (
         cached &&
         cached.value &&
         cached.value.status === 'AVAILABLE' &&
+        cacheHasFreshTags &&
         timestamp - cached.cachedAt >= 0 &&
         timestamp - cached.cachedAt < CACHE_TTL_MS
       ) {
         return { ...cached.value, cache: 'HIT' };
       }
     } catch (error) {
-      // Cache bermasalah tidak boleh membuat nomor tampak aman.
       console.error('WhoTag cache read error:', error.message);
     }
 
-    const apiKey = getApiKey();
     if (!apiKey) {
       return { status: 'UNAVAILABLE', reason: 'CONFIG_MISSING' };
     }
 
+    const headers = {
+      'X-API-Key': apiKey,
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    };
+
     try {
       const response = await fetchImpl('https://api.whotag.me/v1/gc/look', {
         method: 'POST',
-        headers: {
-          'X-API-Key': apiKey,
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify({ phoneNumber: phone }),
         signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
       });
@@ -66,9 +76,7 @@ function createWhoTagProvider(options = {}) {
       if (!response.ok || json?.success !== true) {
         return {
           status: 'UNAVAILABLE',
-          reason: response.status === 429
-            ? 'QUOTA_OR_RATE_LIMIT'
-            : 'PROVIDER_ERROR',
+          reason: response.status === 429 ? 'QUOTA_OR_RATE_LIMIT' : 'PROVIDER_ERROR',
         };
       }
 
@@ -84,19 +92,57 @@ function createWhoTagProvider(options = {}) {
         Number.isFinite(Number(value)) && Number(value) >= 0
           ? Number(value)
           : null;
-
-      const tagCount = parseCount(profile.tagCount);
-      const commentCount = parseCount(comments.commentCount);
       const hasValue = (value) =>
-        value !== null && value !== undefined &&
-        String(value).trim() !== '';
+        value !== null && value !== undefined && String(value).trim() !== '';
 
+      let tags = null;
+      let tagsStatus = accountId ? 'UNAVAILABLE' : 'NOT_CONFIGURED';
+      let tagsReason = accountId ? 'PROVIDER_ERROR' : 'ACCOUNT_ID_MISSING';
+
+      if (accountId) {
+        try {
+          const infoResponse = await fetchImpl('https://api.whotag.me/v1/gc/info', {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({ phoneNumber: phone, accountId }),
+            signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+          });
+          const infoJson = await infoResponse.json().catch(() => null);
+          if (infoResponse.ok && infoJson?.success === true) {
+            const rawTags = infoJson?.data?.result?.tags;
+            if (Array.isArray(rawTags)) {
+              tags = rawTags
+                .filter((item) => item && typeof item.tag === 'string' && item.tag.trim())
+                .map((item) => ({
+                  tag: item.tag.trim().slice(0, 120),
+                  count: parseCount(item.count),
+                }));
+              tagsStatus = tags.length ? 'AVAILABLE' : 'NO_DATA';
+              tagsReason = null;
+            } else {
+              tagsStatus = 'NO_DATA';
+              tagsReason = null;
+              tags = [];
+            }
+          } else {
+            tagsReason = infoResponse.status === 429
+              ? 'QUOTA_OR_RATE_LIMIT'
+              : 'PROVIDER_ERROR';
+          }
+        } catch (error) {
+          tagsReason = error?.name === 'TimeoutError' ? 'TIMEOUT' : 'NETWORK_ERROR';
+        }
+      }
+
+      const tagCount = parseCount(profile.tagCount) ?? (Array.isArray(tags) ? tags.length : null);
+      const commentCount = parseCount(comments.commentCount);
       const hasEvidence =
         hasValue(result.badge) ||
         hasValue(trust.level) ||
         hasValue(spam.degree) ||
         tagCount !== null ||
-        commentCount !== null;
+        commentCount !== null ||
+        (Array.isArray(tags) && tags.length > 0);
 
       const noData = Boolean(data?.meta?.errorCode) || !hasEvidence;
       const value = {
@@ -107,16 +153,20 @@ function createWhoTagProvider(options = {}) {
         spamDegree: spam.degree ?? null,
         tagCount,
         commentCount,
+        tags,
+        tagsStatus,
+        ...(tagsReason ? { tagsReason } : {}),
         checkedAt: new Date(timestamp).toISOString(),
         caveat: 'Sinyal reputasi bukan bukti pasti penipuan atau keamanan.',
       };
 
-      // Hanya cache bukti yang tersedia. NO_DATA dan error tidak disimpan.
-      if (value.status === 'AVAILABLE') {
+      // Jangan cache kegagalan detail tag; percobaan berikutnya perlu bisa mencoba ulang.
+      const cacheable = value.status === 'AVAILABLE' &&
+        (!accountId || ['AVAILABLE', 'NO_DATA'].includes(tagsStatus));
+      if (cacheable) {
         try {
           cacheStore.set(phone, value, timestamp);
         } catch (error) {
-          // Hasil live tetap bisa dipakai walau cache gagal ditulis.
           console.error('WhoTag cache write error:', error.message);
         }
         return { ...value, cache: 'MISS' };
@@ -126,9 +176,7 @@ function createWhoTagProvider(options = {}) {
     } catch (error) {
       return {
         status: 'UNAVAILABLE',
-        reason: error?.name === 'TimeoutError'
-          ? 'TIMEOUT'
-          : 'NETWORK_ERROR',
+        reason: error?.name === 'TimeoutError' ? 'TIMEOUT' : 'NETWORK_ERROR',
       };
     }
   }
