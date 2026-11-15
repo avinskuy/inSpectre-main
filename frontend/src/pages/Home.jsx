@@ -50,7 +50,9 @@ function formatTime(iso) {
 
 export default function Home() {
   const [stats, setStats] = useState(EMPTY_STATS);
-  const { events, stats: liveStats, connected } = useLiveFeed(5);
+  const { stats: liveStats, connected } = useLiveFeed();
+  // Socket.IO only publishes aggregate stats; individual scan events are not exposed.
+  const events = [];
   useEffect(() => {
     let active = true;
     getStats().then((data) => active && setStats(toCards(data))).catch(() => {});
