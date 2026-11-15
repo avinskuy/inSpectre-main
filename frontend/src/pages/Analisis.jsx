@@ -224,6 +224,28 @@ export default function Analisis() {
                       <div><dt className="text-cyber-muted">Sinyal trust</dt><dd>{result.externalReputation.trustLevel ?? 'Tidak tersedia'}</dd></div>
                       <div><dt className="text-cyber-muted">Sinyal spam</dt><dd>{result.externalReputation.spamDegree ?? 'Tidak tersedia'}</dd></div>
                     </dl>
+                    {result.externalReputation.tagsStatus === 'AVAILABLE' && Array.isArray(result.externalReputation.tags) && (
+                      <div className="mt-4">
+                        <h4 className="text-sm font-semibold">Tag Getcontact</h4>
+                        <ul className="mt-2 space-y-2">
+                          {result.externalReputation.tags.map((item, index) => (
+                            <li key={`${item.tag}-${index}`} className="flex items-center justify-between gap-3 rounded-lg border border-cyber-border px-3 py-2 text-sm">
+                              <span className="min-w-0 break-words">{item.tag}</span>
+                              <span className="shrink-0 text-xs text-cyber-muted">{item.count ?? '—'} kali</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    {result.externalReputation.tagsStatus === 'NO_DATA' && (
+                      <p className="mt-3 text-sm text-cyber-muted">Provider tidak mengembalikan nama tag untuk nomor ini.</p>
+                    )}
+                    {result.externalReputation.tagsStatus === 'NOT_CONFIGURED' && (
+                      <p className="mt-3 text-sm text-cyber-muted">Detail tag Premium belum dikonfigurasi pada server.</p>
+                    )}
+                    {result.externalReputation.tagsStatus === 'UNAVAILABLE' && (
+                      <p className="mt-3 text-sm text-cyber-muted">Detail tag sementara tidak tersedia. Informasi reputasi lainnya tetap ditampilkan.</p>
+                    )}
                     <p className="mt-3 text-xs text-cyber-muted">{result.externalReputation.caveat || 'Sinyal provider bukan bukti pasti penipuan atau keamanan.'}</p>
                   </>
                 )}
