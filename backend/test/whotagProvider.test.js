@@ -34,8 +34,8 @@ function setup(options = {}) {
       },
     },
   });
-  let fetchImpl = async () => {
-    if (options.fetchImpl) return options.fetchImpl();
+  let fetchImpl = async (url, init) => {
+    if (options.fetchImpl) return options.fetchImpl(url, init);
     return response;
   };
   const provider = createWhoTagProvider({
