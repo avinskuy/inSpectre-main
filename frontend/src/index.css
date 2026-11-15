@@ -449,13 +449,6 @@ button:active { transform: scale(.985); }
   width:7px;height:7px;border-radius:50%;
   background:#62e7e0;box-shadow:0 0 14px #62e7e080;
 }
-.nexus-intro {
-  max-width:620px;
-  margin:22px 0 30px;
-  color:#aab9cc;
-  font-size:16px;
-  line-height:1.8;
-}
 .nexus-meta {
   display:flex;
   flex-wrap:wrap;
@@ -3219,7 +3212,8 @@ html:has(.page-shell .hero-panel) {
   mask-image: radial-gradient(circle, #000 62%, transparent 73%);
   pointer-events: none;
 }
-.nexus-brief {
+
+.nexus-shell .nexus-brief {
   margin-top: 8px;
   padding: 24px 0 22px;
   border: 0;
