@@ -26,7 +26,7 @@ function createWhoTagProvider(options = {}) {
 
   async function lookupWhoTag(phoneNumber) {
     const phone = String(phoneNumber || '').trim();
-    if (!/^\\+[1-9]\\d{7,14}$/.test(phone)) {
+    if (!/^\+[1-9]\d{7,14}$/.test(phone)) {
       return { status: 'INVALID_INPUT' };
     }
 
