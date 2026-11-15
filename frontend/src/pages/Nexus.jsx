@@ -127,18 +127,20 @@ export default function Nexus() {
 
   return (
     <main className="nexus-shell">
-      <section className="nexus-hero">
+      <section className="nexus-intro" aria-labelledby="nexus-title">
         <img className="nexus-earth-image" src="/earth-asia-static.png" alt="" aria-hidden="true" />
-        <div className="nexus-kicker"><span /> INSPECTRE NEXUS / PLATFORM GATEWAY</div>
-        <p className="nexus-overline">ONE PLATFORM. MULTIPLE REALITIES.</p>
-        <h1>See the signals.<br /><span>Understand the world.</span></h1>
-        <p className="nexus-intro">
-          Satu platform untuk memahami ancaman digital dan memantau sinyal
-          lingkungan yang memengaruhi dunia nyata.
-        </p>
-        <div className="nexus-meta">
-          <span><i /> MODULAR INTELLIGENCE</span>
-          <span>INDONESIA · GLOBAL OUTLOOK</span>
+        <div className="nexus-intro-copy">
+          <p className="nexus-kicker"><span /> INSPECTRE NEXUS / PLATFORM GATEWAY</p>
+          <p className="nexus-overline">ONE PLATFORM. MULTIPLE REALITIES.</p>
+          <h1 id="nexus-title">See the signals.<br /><span>Understand the world.</span></h1>
+          <p className="nexus-intro-text">
+            Satu platform untuk memahami ancaman digital dan memantau sinyal
+            lingkungan yang memengaruhi dunia nyata.
+          </p>
+          <div className="nexus-meta">
+            <span><i /> MODULAR INTELLIGENCE</span>
+            <span>INDONESIA · GLOBAL OUTLOOK</span>
+          </div>
         </div>
       </section>
 
